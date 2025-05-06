@@ -1,9 +1,9 @@
 import express from 'express'
+import configRouter from './configuration.js'
 
 const router = express.Router()
 
-router.get('/test', (req, res) => {
-  res.send('Test route is working!')
-})
+router.use('/config', configRouter)
+
 
 export default router
