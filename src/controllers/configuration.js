@@ -50,3 +50,11 @@ export const filterByConfigurationType = async (req, res, next) => {
     )
     res.status(statusCodes?.ok).send(filterByConfigurationType)
 }
+export const filterByActiveStatus = async (req, res, next) => {
+    const filterByActiveStatus = await configurationService.filterByActiveStatus(
+        req,
+        res,
+        next
+    )
+    res.status(statusCodes?.ok).send(filterByActiveStatus)
+}
