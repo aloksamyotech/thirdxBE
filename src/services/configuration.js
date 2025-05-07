@@ -94,18 +94,15 @@ export const searchConfigurationByName = async (req) => {
     return searchConfig
 }
 
-export const filterByConfigurationType = async (req) => {
-    const { type } = req?.query || {}
+export const filter = async (req) => {
+    const { type, status } = req?.query || {}
 
-    const filterConfig = await configuration.find({ configurationType: { $regex: type }, isDeleted: false })
+    let filter = {}
+    if (type) filter.configurationType = type;
+    if (status) filter.isActive = status
+    filter.isDeleted = false
 
-    return filterConfig
-}
-
-export const filterByActiveStatus = async (req) => {
-    const { status } = req?.query || {}
-
-    const filterConfig = await configuration.find({ isActive: status, isDeleted: false })
+    const filterConfig = await configuration.find(filter)
 
     return filterConfig
 }

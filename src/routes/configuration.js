@@ -3,8 +3,7 @@ import { asyncHandler } from '../utils/asyncWrapper.js'
 import {
     addConfiguration,
     deleteConfiguration,
-    filterByActiveStatus,
-    filterByConfigurationType,
+    filter,
     getAllConfiguration,
     searchConfigurationName,
     updateConfigurationStatus
@@ -33,12 +32,8 @@ router.get(
     asyncHandler(searchConfigurationName)
 )
 router.get(
-    '/filterbyconfigurationtype',
-    asyncHandler(filterByConfigurationType)
-)
-router.get(
-    '/filterbyactivestatus',
-    asyncHandler(filterByActiveStatus)
+    '/filter',
+    asyncHandler(filter)
 )
 
 export default router
