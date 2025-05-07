@@ -1,6 +1,13 @@
 import { Router } from 'express'
 import { asyncHandler } from '../utils/asyncWrapper.js'
-import { addConfiguration, deleteConfiguration, filterByConfigurationType, getAllConfiguration, searchConfigurationName, updateConfigurationStatus } from '../controllers/configuration.js'
+import {
+    addConfiguration,
+    deleteConfiguration,
+    filter,
+    getAllConfiguration,
+    searchConfigurationName,
+    updateConfigurationStatus
+} from '../controllers/configuration.js'
 
 const router = Router()
 
@@ -25,8 +32,8 @@ router.get(
     asyncHandler(searchConfigurationName)
 )
 router.get(
-    '/filterbyconfigurationtype',
-    asyncHandler(filterByConfigurationType)
+    '/filter',
+    asyncHandler(filter)
 )
 
 export default router
