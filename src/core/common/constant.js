@@ -28,6 +28,7 @@ export const statusCodes = {
 
 export const Message = {
   notFound: 'Not Found',
+  caseNotFound:"Case Not Found",
   registerSuccessfully: 'Successfully Registered',
   inValid: 'Invalid Credentials',
   successfullyUpdate: 'Updated Successfully',
@@ -44,6 +45,7 @@ export const Message = {
   notUpdate: 'Update Failed',
   serverError: 'Internal Server Error',
   emailNotFound: 'Invalid Email Address',
+  missingRequiredFields:"Missing required fields",
   emailAlreadyRegistered: 'Email Already Registered',
   phoneNumberAlreadyRegistered: 'Phone Number Already Registered',
   userIdNotFound: 'User Id Not Found',
