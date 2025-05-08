@@ -11,6 +11,16 @@ export const getAllUser = async (req, res, next) => {
   res.status(statusCodes?.ok).send(getAllUser)
 }
 
+export const getAllVolunteer = async (req, res, next) => {
+  const getAllVolunteer = await userService.getAllVolunteer(req, res, next)
+  res.status(statusCodes?.ok).send(getAllVolunteer)
+}
+
+export const getAllDonor = async (req, res, next) => {
+  const getAllDonor = await userService.getAllDonor(req, res, next)
+  res.status(statusCodes?.ok).send(getAllDonor)
+}
+
 export const getUserById = async (req, res, next) => {
   const getUserById = await userService.getUserById(req, res, next)
   res.status(statusCodes?.ok).send(getUserById)

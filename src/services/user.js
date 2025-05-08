@@ -20,7 +20,7 @@ export const addUser = async (req) => {
 }
 
 export const getAllUser = async () => {
-  const allUser = await user.find({ isDeleted: false }).sort({ createdAt: -1 })
+  const allUser = await user.find({ isDeleted: false, role: 'service_user' }).sort({ createdAt: -1 })
   if (!allUser) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -29,6 +29,30 @@ export const getAllUser = async () => {
     )
   }
   return { allUser }
+}
+
+export const getAllVolunteer = async () => {
+  const allVolunteer = await user.find({ isDeleted: false, role: 'volunteer' }).sort({ createdAt: -1 })
+  if (!allVolunteer) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  return { allVolunteer }
+}
+
+export const getAllDonor = async () => {
+  const allDonor = await user.find({ isDeleted: false, role: 'donor' }).sort({ createdAt: -1 })
+  if (!allDonor) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  return { allDonor }
 }
 
 export const getUserById = async (req) => {
