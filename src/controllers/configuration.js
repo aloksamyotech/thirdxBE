@@ -9,7 +9,6 @@ export const addConfiguration = async (req, res, next) => {
   )
   res.status(statusCodes?.ok).send(addConfiguration)
 }
-
 export const getAllConfiguration = async (req, res, next) => {
   const allConfiguration = await configurationService.getAllConfiguration(
     req,
@@ -36,8 +35,8 @@ export const searchConfigurationName = async (req, res, next) => {
     await configurationService.searchConfigurationByName(req, res, next)
   res.status(statusCodes?.ok).send(searchConfigurationName)
 }
-export const filterByConfigurationType = async (req, res, next) => {
-  const filterByConfigurationType =
-    await configurationService.filterByConfigurationType(req, res, next)
-  res.status(statusCodes?.ok).send(filterByConfigurationType)
+export const filter = async (req, res, next) => {
+  const filter =
+    await configurationService.filter(req, res, next)
+  res.status(statusCodes?.ok).send(filter)
 }
