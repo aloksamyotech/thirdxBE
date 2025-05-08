@@ -1,9 +1,9 @@
-import moment from 'moment';
+import moment from 'moment'
 import { sendMail } from '../sendMail.js'
 
 export const scheduleApnTemplate = (details, appointment) => {
-  const date = moment.utc(appointment?.date).local().format('ll');
-  const startTime = moment(appointment?.startTime, "HH:mm").format("hh:mm A");
+  const date = moment.utc(appointment?.date).local().format('ll')
+  const startTime = moment(appointment?.startTime, 'HH:mm').format('hh:mm A')
   const html = `
       <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; max-width: 600px;">
         <h2 style="color: #4CAF50;">Hello ${details?.firstName},</h2>
