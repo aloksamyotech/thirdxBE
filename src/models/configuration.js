@@ -3,24 +3,24 @@ const configurationSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     isActive: {
       type: Boolean,
-      required: true
+      required: true,
     },
     isDeleted: {
       type: Boolean,
-      default:false
+      default: false,
     },
     configurationType: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   { timestamps: true }
-);
+)
 
-const configuration = mongoose.model("configuration", configurationSchema);
+const configuration = mongoose.model('configuration', configurationSchema)
 
-export default configuration;
+export default configuration

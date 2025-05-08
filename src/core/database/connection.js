@@ -3,8 +3,6 @@ import { database_urls } from '../common/constant.js'
 import 'dotenv/config'
 import process from 'node:process'
 
-
-
 const connectDB = async () => {
   try {
     ;(async function () {
