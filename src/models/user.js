@@ -72,14 +72,14 @@ const UserSchema = new mongoose.Schema(
         letter: Boolean,
       },
     },
-    ConpanyInformation: {
+    companyInformation: {
       companyName: { type: String },
       mainContactName: { type: String },
       socialMediaLinks: { type: String },
       otherId: { type: String },
       recruitmentCampaign: { type: String },
     },
-    role: { type: String, required: true, enum: ['service_user', 'volunteer','donor'] },
+    role: { type: String, required: true, enum: ['service_user', 'volunteer', 'donor'] },
     subRole: { type: String, enum: ['donar_individual', 'donar_company', 'donar_group'] },
     isActive: { type: Boolean, required: true, default: true },
     isDeleted: { type: Boolean, default: false },
