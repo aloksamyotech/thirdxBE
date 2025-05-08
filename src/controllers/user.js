@@ -25,3 +25,9 @@ export const getUserById = async (req, res, next) => {
   const getUserById = await userService.getUserById(req, res, next)
   res.status(statusCodes?.ok).send(getUserById)
 }
+
+export const getAllUsDistricts = async (req, res, next) => {
+  const getUserDistricts = await userService.getAllUsDistricts(req, res, next)
+  res.status(statusCodes?.ok).send(getUserDistricts);
+}
+
