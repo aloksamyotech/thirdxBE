@@ -13,6 +13,7 @@ export const addCase = async (req) => {
     serviceStatus,
     caseOpened,
     caseClosed,
+    benificiary,
     campaigns,
     engagement,
     eventAttanded,
@@ -36,6 +37,7 @@ export const addCase = async (req) => {
     serviceStatus,
     caseOpened,
     caseClosed,
+    benificiary,
     campaigns,
     engagement,
     eventAttanded,
@@ -94,7 +96,7 @@ export const searchCase = async (req, res) => {
   const { serviceName, serviceStatus, serviceType, caseOpened } = req.query;
 
   const searchQuery = {
-    isDeleted: false 
+    isDeleted: false
   };
 
   if (serviceName) {
@@ -110,7 +112,7 @@ export const searchCase = async (req, res) => {
   }
 
   if (caseOpened) {
-    searchQuery.caseOpened = { $gte: new Date(caseOpened) }; 
+    searchQuery.caseOpened = { $gte: new Date(caseOpened) };
   }
 
   const cases = await Case.find(searchQuery).sort({ createdAt: -1 });
