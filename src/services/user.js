@@ -7,6 +7,12 @@ import axios from 'axios';
 
 export const addUser = async (req) => {
   const userData = req?.body || {}
+  const filePath = req?.file?.path
+
+  if (filePath) {
+    userData.otherInfo = {}
+    userData.otherInfo.file = `uploads/${filePath}`
+  }
 
   const newUser = await user.create(userData)
   if (!newUser) {
@@ -78,24 +84,24 @@ export const getUserById = async (req) => {
 }
 
 export const getAllUsDistricts = async (req) => {
-    const response = await axios.get('https://api.census.gov/data/2020/dec/pl?get=NAME&for=place:*&in=state:*');
-        
-    // Process the data
-    const [headers, ...rows] = response.data;
-    
-    const cityStateArray = rows.map(row => {
-        const [placeWithState] = row;
-        const city = placeWithState.split(',')[0]
-            .replace(/\s(city|town|CDP)$/i, '')
-            .trim();
-        const state = placeWithState.split(',')[1]
-            .replace(/\s+$/, '')
-            .trim();
-        
-        return `${city}, ${state}`;
-    });
+  const response = await axios.get('https://api.census.gov/data/2020/dec/pl?get=NAME&for=place:*&in=state:*');
 
-    return {
-        cities: cityStateArray
-    };
-  }
+  // Process the data
+  const [headers, ...rows] = response.data;
+
+  const cityStateArray = rows.map(row => {
+    const [placeWithState] = row;
+    const city = placeWithState.split(',')[0]
+      .replace(/\s(city|town|CDP)$/i, '')
+      .trim();
+    const state = placeWithState.split(',')[1]
+      .replace(/\s+$/, '')
+      .trim();
+
+    return `${city}, ${state}`;
+  });
+
+  return {
+    cities: cityStateArray
+  };
+}
