@@ -40,6 +40,9 @@ app.use(responseInterceptor)
 app.use(express.urlencoded({ extended: true }))
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')))
 app.use('/api/v1', AllRoutes)
+app.get("/api/v1/aman",(req,res)=>{
+  res.send("ci cd setup successfully")
+})
 app.use(globalExceptionHandler)
 // ResetDailyLimit();
 // CheckCompanySubscriptionExpiry();
