@@ -1,7 +1,10 @@
 import mongoose from 'mongoose';
 
 const caseSchema = new mongoose.Schema({
-  serviceName: { type: String, required: true },
+  serviceUser: {  
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   service: { type: String, required: true },
   serviceType: { type: String, required: true },
   serviceStatus: { type: String, required: true },

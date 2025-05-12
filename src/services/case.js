@@ -7,7 +7,7 @@ import Case from '../models/cases.js'
 import User from '../models/user.js'
 export const addCase = async (req) => {
   const {
-    serviceName,
+    serviceUser,
     serviceCode,
     serviceType,
     serviceStatus,
@@ -22,7 +22,7 @@ export const addCase = async (req) => {
     description
   } = req.body;
 
-  if (!serviceName || !serviceCode || !serviceType || !serviceStatus) {
+  if (!serviceUser || !serviceCode || !serviceType || !serviceStatus) {
     throw new CustomError(
       statusCodes.badRequest,
       Message.missingRequiredFields,
@@ -31,7 +31,7 @@ export const addCase = async (req) => {
   }
 
   const caseData = {
-    serviceName,
+    serviceUser,
     serviceCode,
     serviceType,
     serviceStatus,
@@ -148,32 +148,34 @@ export const getCaseById = async (req) => {
   }
   return { caseData }
 }
-
 export const getAllCases = async () => {
   const allService = await Case.find({ isDeleted: false }).sort({
     createdAt: -1,
-  })
-
-   const users = await User.find(
-      {},
-      {
-        'personalInfo.firstName': 1,
-        'personalInfo.lastName': 1,
-        _id: 0
-      }
-    );
-
-    const nameArray = users.map(user => ({
-      firstName: user.personalInfo?.firstName || '',
-      lastName: user.personalInfo?.lastName || ''
-    }));
+  }).populate('serviceUser'); 
 
   if (!allService) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
-    )
+    );
   }
-  return { allService , nameArray }
-}
+
+  const users = await User.find(
+    {},
+    {
+      'personalInfo.firstName': 1,
+      'personalInfo.lastName': 1,
+      _id: 0
+    }
+  );
+
+  const nameArray = users.map(user => ({
+    firstName: user.personalInfo?.firstName || '',
+    lastName: user.personalInfo?.lastName || '',
+    services: user.userServices || []
+  }));
+
+  return { allService, nameArray };
+};
+
