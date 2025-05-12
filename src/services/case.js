@@ -4,7 +4,7 @@ import Services from '../models/services.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import Case from '../models/cases.js'
-
+import User from '../models/user.js'
 export const addCase = async (req) => {
   const {
     serviceName,
@@ -153,6 +153,21 @@ export const getAllCases = async () => {
   const allService = await Case.find({ isDeleted: false }).sort({
     createdAt: -1,
   })
+
+   const users = await User.find(
+      {},
+      {
+        'personalInfo.firstName': 1,
+        'personalInfo.lastName': 1,
+        _id: 0
+      }
+    );
+
+    const nameArray = users.map(user => ({
+      firstName: user.personalInfo?.firstName || '',
+      lastName: user.personalInfo?.lastName || ''
+    }));
+
   if (!allService) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -160,5 +175,5 @@ export const getAllCases = async () => {
       errorCodes?.not_found
     )
   }
-  return { allService }
+  return { allService , nameArray }
 }

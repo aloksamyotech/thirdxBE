@@ -4,7 +4,8 @@ const TagSchema = new mongoose.Schema({
     isActive: { type: Boolean, default: true },
     startDate: { type: Date },
     endDate: { type: Date },
-    isDeleted: { type: Boolean, default: false }
+    isDeleted: { type: Boolean, default: false },
+    note:{type: String}
 });
 
 const tag = mongoose.model("tag", TagSchema);
