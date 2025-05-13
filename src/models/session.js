@@ -57,6 +57,6 @@ const SessionSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-const Session = mongoose.model('services', SessionSchema)
+const Session = mongoose.model('session', SessionSchema)
 
 export default Session;
