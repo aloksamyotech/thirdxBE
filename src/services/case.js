@@ -4,7 +4,7 @@ import Services from '../models/services.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import Case from '../models/cases.js'
-import User from '../models/user.js'
+import mongoose from 'mongoose';
  
 export const addCase = async (req) => {
   const {
@@ -27,7 +27,7 @@ export const addCase = async (req) => {
   if (!serviceUserId || !serviceId || !serviceType || !serviceStatus) {
     throw new CustomError(
       statusCodes.badRequest,
-      Message.missingRequiredFields || 'Missing required fields',
+      Message.missingRequiredFields,
       errorCodes.bad_request
     )
   }
@@ -47,14 +47,14 @@ export const addCase = async (req) => {
     fundraisingActivities,
     description,
   }
-  if (filePath) caseData.file = `uploads/${filePath}`
+  if (filePath) caseData.file = `${filePath}`
  
   const newCase = await Case.create(caseData)
  
   if (!newCase) {
     throw new CustomError(
       statusCodes.internalServerError,
-      Message.notCreated || 'Case creation failed',
+      Message.notCreated ,
       errorCodes.internal_error
     )
   }
@@ -63,7 +63,6 @@ export const addCase = async (req) => {
 }
  
 export const deleteCase = async (req) => {
-  // const { id } = req?.params;
   const caseId = req.params.id
   const caseData = await Case.findById(caseId)
  
@@ -91,48 +90,61 @@ export const deleteCase = async (req) => {
 }
  
 export const searchCase = async (req, res) => {
-  const { serviceUserId, serviceStatus, serviceType, caseOpened } = req.query
+  const { serviceId, serviceStatus, serviceType, caseOpened } = req.query;
  
   const searchQuery = {
     isDeleted: false,
-  }
+  };
  
-  if (serviceUserId) {
-    searchQuery.serviceUserId = { $regex: serviceUserId, $options: 'i' }
-  }
+ if (serviceId && mongoose.Types.ObjectId.isValid(serviceId)) {
+  searchQuery.serviceId = new mongoose.Types.ObjectId(serviceId);
+}
  
   if (serviceStatus) {
-    searchQuery.serviceStatus = { $regex: serviceStatus, $options: 'i' }
+    searchQuery.serviceStatus = { $regex: serviceStatus, $options: 'i' };
   }
  
   if (serviceType) {
-    searchQuery.serviceType = { $regex: serviceType, $options: 'i' }
+    searchQuery.serviceType = { $regex: serviceType, $options: 'i' };
   }
  
-  if (caseOpened) {
-    searchQuery.caseOpened = { $gte: new Date(caseOpened) }
+if (caseOpened) {
+  const parsedDate = new Date(caseOpened);
+ 
+  if (!isNaN(parsedDate)) {
+    const start = new Date(parsedDate);
+    start.setHours(0, 0, 0, 0);
+ 
+    const end = new Date(parsedDate);
+    end.setHours(23, 59, 59, 999);
+ 
+    searchQuery.caseOpened = { $gte: start, $lte: end };
   }
- 
-  const cases = await Case.find(searchQuery).sort({ createdAt: -1 })
- 
-  if (!cases.length) {
-    return res.status(404).json({
-      success: false,
-      message: 'No cases found matching your criteria.',
-    })
-  }
- 
-  return res.status(200).json(cases)
 }
+ 
+ 
+    const cases = await Case.find(searchQuery).sort({ createdAt: -1 });
+ 
+    if (!cases.length) {
+  throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    )    }
+ 
+    return {cases}
+
+};
+ 
  
 export const getCaseById = async (req) => {
   const caseId = req?.params?.id
  
   if (!caseId) {
-    throw new CustomError(
-      statusCodes.notFound,
-      Message.notFound || 'Case ID is required',
-      errorCodes.not_found
+     throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
     )
   }
  
@@ -165,10 +177,10 @@ export const getCaseById = async (req) => {
     },
   ])
  
-  if (!caseData || caseData.length === 0) {
+  if (!caseData ) {
     throw new CustomError(
       statusCodes.notFound,
-      Message.caseNotFound || 'Case not found',
+      Message.caseNotFound,
       errorCodes.user_not_found
     )
   }

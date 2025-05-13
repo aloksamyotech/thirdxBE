@@ -38,7 +38,7 @@ export const addSession = async (req) => {
   }
 
   if (req.file && req.file.filename) {
-    serviceData.file = `uploads/${req.file.filename}`
+    serviceData.file = `${req.file.filename}`
   }
 
   const newSession = await Session.create(serviceData)
@@ -54,7 +54,6 @@ export const addSession = async (req) => {
   return { newSession }
 }
 export const deleteSession = async (req) => {
-  // const { id } = req?.params;
   const sessionId = req.params.id
   const serssionData = await Session.findById(serviceId)
 
@@ -100,15 +99,16 @@ export const searchSession = async (req, res) => {
   const session = await Session.find(searchQuery)
 
   if (session.length === 0) {
-    return res.status(404).json({
-      success: false,
-      message: 'No session found matching your criteria.',
-    })
+     throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    )
   }
 
-  return res.status(200).json({
-    session,
-  })
+  return {
+    session
+  }
 }
 
 export const getSessionById = async (req) => {

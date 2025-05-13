@@ -34,7 +34,7 @@ export const addServices = async (req) => {
   }
 
   if (req.file && req.file.filename) {
-    serviceData.file = `uploads/${req.file.filename}`
+    serviceData.file = `${req.file.filename}`
   }
 
   const newService = await Services.create(serviceData)
@@ -50,7 +50,6 @@ export const addServices = async (req) => {
   return { newService }
 }
 export const deleteServices = async (req) => {
-  // const { id } = req?.params;
   const serviceId = req.params.id
   const serviceData = await Services.findById(serviceId)
 
@@ -96,15 +95,16 @@ export const searchServices = async (req, res) => {
   const services = await Services.find(searchQuery)
 
   if (services.length === 0) {
-    return res.status(404).json({
-      success: false,
-      message: 'No services found matching your criteria.',
-    })
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
   }
 
-  return res.status(200).json({
-    services,
-  })
+  return{
+    services
+  }
 }
 
 export const getServiceById = async (req) => {
