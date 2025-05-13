@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import mongoose from "mongoose";
 
 const TagCategorySchema = new mongoose.Schema({

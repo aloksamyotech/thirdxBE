@@ -1,10 +1,10 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-undef */
-import Services from '../models/services.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
+import Session from '../models/session.js'
 
-export const addServices = async (req) => {
+export const addSession = async (req) => {
   const {
     name,
     code,
@@ -16,6 +16,8 @@ export const addServices = async (req) => {
     engagement,
     eventAttanded,
     fundingInterest,
+    time,
+    date,
     fundraisingActivities,
   } = req.body
 
@@ -28,6 +30,8 @@ export const addServices = async (req) => {
     benificiary,
     campaigns,
     engagement,
+    time,
+    date,
     eventAttanded,
     fundingInterest,
     fundraisingActivities,
@@ -37,9 +41,9 @@ export const addServices = async (req) => {
     serviceData.file = `${req.file.filename}`
   }
 
-  const newService = await Services.create(serviceData)
+  const newSession = await Session.create(serviceData)
 
-  if (!newService) {
+  if (!newSession) {
     throw new CustomError(
       statusCodes.badRequest,
       Message.notCreated,
@@ -47,21 +51,21 @@ export const addServices = async (req) => {
     )
   }
 
-  return { newService }
+  return { newSession }
 }
-export const deleteServices = async (req) => {
-  const serviceId = req.params.id
-  const serviceData = await Services.findById(serviceId)
+export const deleteSession = async (req) => {
+  const sessionId = req.params.id
+  const serssionData = await Session.findById(serviceId)
 
-  if (!serviceData) {
+  if (!serssionData) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
     )
   }
-  const statusUpdate = await Services.findByIdAndUpdate(
-    serviceId,
+  const statusUpdate = await Session.findByIdAndUpdate(
+    sessionId,
     { isDeleted: true },
     { new: true }
   )
@@ -76,7 +80,7 @@ export const deleteServices = async (req) => {
   return { statusUpdate }
 }
 
-export const searchServices = async (req, res) => {
+export const searchSession = async (req, res) => {
   const { name, isActive, type } = req.query
 
   const searchQuery = {}
@@ -92,22 +96,22 @@ export const searchServices = async (req, res) => {
     searchQuery.type = { $regex: type, $options: 'i' }
   }
 
-  const services = await Services.find(searchQuery)
+  const session = await Session.find(searchQuery)
 
-  if (services.length === 0) {
-    throw new CustomError(
+  if (session.length === 0) {
+     throw new CustomError(
       statusCodes?.notFound,
-      Message?.notFound,
+      Message?.notUpdate,
       errorCodes?.not_found
     )
   }
 
-  return{
-    services
+  return {
+    session
   }
 }
 
-export const getServiceById = async (req) => {
+export const getSessionById = async (req) => {
   const serviceId = req?.params.id
 
   if (!serviceId) {
@@ -118,7 +122,7 @@ export const getServiceById = async (req) => {
     )
   }
 
-  const userData = await Services.findOne({ _id: serviceId, isDeleted: false })
+  const userData = await Session.findOne({ _id: serviceId, isDeleted: false })
   if (!userData) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -129,16 +133,16 @@ export const getServiceById = async (req) => {
   return { userData }
 }
 
-export const getAllServices = async () => {
-  const allService = await Services.find({ isDeleted: false }).sort({
+export const getAllSession = async () => {
+  const allSession = await Session.find({ isDeleted: false }).sort({
     createdAt: -1,
   })
-  if (!allService) {
+  if (!allSession) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
     )
   }
-  return { allService }
+  return { allSession }
 }

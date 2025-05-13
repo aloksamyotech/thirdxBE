@@ -6,6 +6,7 @@ import mailRouter from './mail.js'
 import tagRouter from './tag.js'
 import transactionRouter from './transaction.js'
 import caseRouter from './case.js'
+import sessionRouter from './session.js'
 
 const router = express.Router()
 
@@ -16,6 +17,9 @@ router.use('/mail', mailRouter)
 router.use('/tag', tagRouter)
 router.use('/transaction', transactionRouter)
 router.use('/cases', caseRouter)
+router.use('/session', sessionRouter)
+
+
 
 
 export default router

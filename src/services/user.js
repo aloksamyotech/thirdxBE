@@ -86,7 +86,6 @@ export const getUserById = async (req) => {
 export const getAllUsDistricts = async (req) => {
   const response = await axios.get('https://api.census.gov/data/2020/dec/pl?get=NAME&for=place:*&in=state:*');
 
-  // Process the data
   const [headers, ...rows] = response.data;
 
   const cityStateArray = rows.map(row => {

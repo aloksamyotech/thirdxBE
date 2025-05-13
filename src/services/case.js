@@ -4,11 +4,12 @@ import Services from '../models/services.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import Case from '../models/cases.js'
-import User from '../models/user.js'
+import mongoose from 'mongoose';
+ 
 export const addCase = async (req) => {
   const {
-    serviceUser,
-    serviceCode,
+    serviceUserId,
+    serviceId,
     serviceType,
     serviceStatus,
     caseOpened,
@@ -19,20 +20,21 @@ export const addCase = async (req) => {
     eventAttanded,
     fundingInterest,
     fundraisingActivities,
-    description
-  } = req.body;
-
-  if (!serviceUser || !serviceCode || !serviceType || !serviceStatus) {
+    description,
+  } = req?.body
+  const filePath = req?.file?.path
+ 
+  if (!serviceUserId || !serviceId || !serviceType || !serviceStatus) {
     throw new CustomError(
       statusCodes.badRequest,
       Message.missingRequiredFields,
       errorCodes.bad_request
-    );
+    )
   }
-
+ 
   const caseData = {
-    serviceUser,
-    serviceCode,
+    serviceUserId,
+    serviceId,
     serviceType,
     serviceStatus,
     caseOpened,
@@ -43,32 +45,27 @@ export const addCase = async (req) => {
     eventAttanded,
     fundingInterest,
     fundraisingActivities,
-    description
-  };
-
-  // Add file path if a file is uploaded
-  if (req.file && req.file.filename) {
-    caseData.file = `uploads/${req.file.filename}`;
+    description,
   }
-
-  const newCase = await Case.create(caseData);
-
+  if (filePath) caseData.file = `${filePath}`
+ 
+  const newCase = await Case.create(caseData)
+ 
   if (!newCase) {
     throw new CustomError(
-      statusCodes.badRequest,
-      Message.notCreated || "Case creation failed",
-      errorCodes.bad_request
-    );
+      statusCodes.internalServerError,
+      Message.notCreated ,
+      errorCodes.internal_error
+    )
   }
-
-  return { newCase };
+ 
+  return { newCase }
 }
-
+ 
 export const deleteCase = async (req) => {
-  // const { id } = req?.params;
   const caseId = req.params.id
   const caseData = await Case.findById(caseId)
-
+ 
   if (!caseData) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -81,7 +78,7 @@ export const deleteCase = async (req) => {
     { isDeleted: true },
     { new: true }
   )
-
+ 
   if (!statusUpdate) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -91,91 +88,152 @@ export const deleteCase = async (req) => {
   }
   return { statusUpdate }
 }
-
+ 
 export const searchCase = async (req, res) => {
-  const { serviceName, serviceStatus, serviceType, caseOpened } = req.query;
-
+  const { serviceId, serviceStatus, serviceType, caseOpened } = req.query;
+ 
   const searchQuery = {
-    isDeleted: false
+    isDeleted: false,
   };
-
-  if (serviceName) {
-    searchQuery.serviceName = { $regex: serviceName, $options: 'i' };
-  }
-
+ 
+ if (serviceId && mongoose.Types.ObjectId.isValid(serviceId)) {
+  searchQuery.serviceId = new mongoose.Types.ObjectId(serviceId);
+}
+ 
   if (serviceStatus) {
     searchQuery.serviceStatus = { $regex: serviceStatus, $options: 'i' };
   }
-
+ 
   if (serviceType) {
     searchQuery.serviceType = { $regex: serviceType, $options: 'i' };
   }
-
-  if (caseOpened) {
-    searchQuery.caseOpened = { $gte: new Date(caseOpened) };
+ 
+if (caseOpened) {
+  const parsedDate = new Date(caseOpened);
+ 
+  if (!isNaN(parsedDate)) {
+    const start = new Date(parsedDate);
+    start.setHours(0, 0, 0, 0);
+ 
+    const end = new Date(parsedDate);
+    end.setHours(23, 59, 59, 999);
+ 
+    searchQuery.caseOpened = { $gte: start, $lte: end };
   }
-
-  const cases = await Case.find(searchQuery).sort({ createdAt: -1 });
-
-  if (!cases.length) {
-    return res.status(404).json({
-      success: false,
-      message: 'No cases found matching your criteria.',
-    });
-  }
-
-  return res.status(200).json(cases);
 }
+ 
+ 
+    const cases = await Case.find(searchQuery).sort({ createdAt: -1 });
+ 
+    if (!cases.length) {
+  throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    )    }
+ 
+    return {cases}
 
+};
+ 
+ 
 export const getCaseById = async (req) => {
-  const caseId = req?.params.id
-
+  const caseId = req?.params?.id
+ 
   if (!caseId) {
-    throw new CustomError(
+     throw new CustomError(
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
     )
   }
-
-  const caseData = await Case.findOne({ _id: caseId, isDeleted: false })
-  if (!caseData) {
+ 
+  const caseData = await Case.aggregate([
+    { $match: { _id: new mongoose.Types.ObjectId(caseId), isDeleted: false } },
+    {
+      $lookup: {
+        from: 'services',
+        localField: 'serviceId',
+        foreignField: '_id',
+        as: 'serviceDetails',
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'serviceUserId',
+        foreignField: '_id',
+        as: 'userServiceDetails',
+      },
+    },
+    {
+      $unwind: { path: '$serviceDetails', preserveNullAndEmptyArrays: true },
+    },
+    {
+      $unwind: {
+        path: '$userServiceDetails',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+  ])
+ 
+  if (!caseData ) {
     throw new CustomError(
-      statusCodes?.notFound,
-      Message?.caseNotFound,
-      errorCodes?.user_not_found
+      statusCodes.notFound,
+      Message.caseNotFound,
+      errorCodes.user_not_found
     )
   }
-  return { caseData }
+ 
+  return { caseData: caseData[0] }
 }
 export const getAllCases = async () => {
-  const allService = await Case.find({ isDeleted: false }).sort({
-    createdAt: -1,
-  }).populate('serviceUser'); 
-
-  if (!allService) {
-    throw new CustomError(
-      statusCodes?.notFound,
-      Message?.notFound,
-      errorCodes?.not_found
-    );
-  }
-
-  const users = await User.find(
-    {},
+  const allService = await Case.aggregate([
+    { $match: { isDeleted: false } },
+ 
     {
-      'personalInfo.firstName': 1,
-      'personalInfo.lastName': 1,
-      _id: 0
-    }
-  );
-
-  const nameArray = users.map(user => ({
-    firstName: user.personalInfo?.firstName || '',
-    lastName: user.personalInfo?.lastName || '',
-    services: user.userServices || []
-  }));
-
-  return { allService, nameArray };
-};
-
+      $lookup: {
+        from: 'services',
+        localField: 'serviceId',
+        foreignField: '_id',
+        as: 'serviceDetails',
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'serviceUserId',
+        foreignField: '_id',
+        as: 'userServiceDetails',
+      },
+    },
+    {
+      $unwind: { path: '$serviceDetails', preserveNullAndEmptyArrays: true },
+    },
+    {
+      $unwind: {
+        path: '$userServiceDetails',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $addFields: {
+        serviceUserName: {
+          $concat: [
+            { $ifNull: ['$userServiceDetails.personalInfo.firstName', ''] },
+            ' ',
+            { $ifNull: ['$userServiceDetails.personalInfo.lastName', ''] },
+          ],
+        },
+        serviceName: {
+          $ifNull: ['$serviceDetails.name', ''],
+        },
+      },
+    },
+ 
+    { $sort: { createdAt: -1 } },
+  ])
+ 
+  return allService;
+}
+ 
