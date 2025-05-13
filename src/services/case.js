@@ -1,11 +1,8 @@
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable no-undef */
-import Services from '../models/services.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import Case from '../models/cases.js'
-import mongoose from 'mongoose';
- 
+import mongoose from 'mongoose'
+
 export const addCase = async (req) => {
   const {
     serviceUserId,
@@ -21,9 +18,9 @@ export const addCase = async (req) => {
     fundingInterest,
     fundraisingActivities,
     description,
-  } = req?.body
+  } = req.body
   const filePath = req?.file?.path
- 
+
   if (!serviceUserId || !serviceId || !serviceType || !serviceStatus) {
     throw new CustomError(
       statusCodes.badRequest,
@@ -31,7 +28,7 @@ export const addCase = async (req) => {
       errorCodes.bad_request
     )
   }
- 
+
   const caseData = {
     serviceUserId,
     serviceId,
@@ -48,24 +45,24 @@ export const addCase = async (req) => {
     description,
   }
   if (filePath) caseData.file = `${filePath}`
- 
+
   const newCase = await Case.create(caseData)
- 
+
   if (!newCase) {
     throw new CustomError(
       statusCodes.internalServerError,
-      Message.notCreated ,
+      Message.notCreated,
       errorCodes.internal_error
     )
   }
- 
+
   return { newCase }
 }
- 
+
 export const deleteCase = async (req) => {
   const caseId = req.params.id
   const caseData = await Case.findById(caseId)
- 
+
   if (!caseData) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -78,7 +75,7 @@ export const deleteCase = async (req) => {
     { isDeleted: true },
     { new: true }
   )
- 
+
   if (!statusUpdate) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -88,66 +85,68 @@ export const deleteCase = async (req) => {
   }
   return { statusUpdate }
 }
- 
-export const searchCase = async (req, res) => {
-  const { serviceId, serviceStatus, serviceType, caseOpened } = req.query;
- 
-  const searchQuery = {
-    isDeleted: false,
-  };
- 
- if (serviceId && mongoose.Types.ObjectId.isValid(serviceId)) {
-  searchQuery.serviceId = new mongoose.Types.ObjectId(serviceId);
-}
- 
-  if (serviceStatus) {
-    searchQuery.serviceStatus = { $regex: serviceStatus, $options: 'i' };
-  }
- 
-  if (serviceType) {
-    searchQuery.serviceType = { $regex: serviceType, $options: 'i' };
-  }
- 
-if (caseOpened) {
-  const parsedDate = new Date(caseOpened);
- 
-  if (!isNaN(parsedDate)) {
-    const start = new Date(parsedDate);
-    start.setHours(0, 0, 0, 0);
- 
-    const end = new Date(parsedDate);
-    end.setHours(23, 59, 59, 999);
- 
-    searchQuery.caseOpened = { $gte: start, $lte: end };
-  }
-}
- 
- 
-    const cases = await Case.find(searchQuery).sort({ createdAt: -1 });
- 
-    if (!cases.length) {
-  throw new CustomError(
-      statusCodes?.notFound,
-      Message?.notUpdate,
-      errorCodes?.not_found
-    )    }
- 
-    return {cases}
 
-};
- 
- 
-export const getCaseById = async (req) => {
-  const caseId = req?.params?.id
- 
-  if (!caseId) {
-     throw new CustomError(
+export const searchCase = async (query) => {
+  const { serviceId, serviceStatus, serviceType, caseOpened } = query
+
+  const searchQuery = { isDeleted: false }
+
+  if (serviceId && mongoose.Types.ObjectId.isValid(serviceId)) {
+    searchQuery.serviceId = new mongoose.Types.ObjectId(serviceId)
+  }
+
+  if (serviceStatus) {
+    searchQuery.serviceStatus = { $regex: serviceStatus, $options: 'i' }
+  }
+
+  if (serviceType) {
+    searchQuery.serviceType = { $regex: serviceType, $options: 'i' }
+  }
+
+  if (caseOpened) {
+    const parsedDate = new Date(caseOpened)
+    if (!isNaN(parsedDate)) {
+      const start = new Date(parsedDate)
+      start.setHours(0, 0, 0, 0)
+      const end = new Date(parsedDate)
+      end.setHours(23, 59, 59, 999)
+      searchQuery.caseOpened = { $gte: start, $lte: end }
+    }
+  }
+
+  const cases = await Case.find(searchQuery)
+    .populate({
+      path: 'serviceId',
+      select: 'name description',
+    })
+    .populate({
+      path: 'serviceUserId',
+      select: 'personalInfo.firstName personalInfo.lastName personalInfo.email',
+    })
+    .sort({ createdAt: -1 })
+
+  if (!cases.length) {
+    throw new CustomError(
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
     )
   }
- 
+
+  return cases;
+}
+
+export const getCaseById = async (req) => {
+  const caseId = req?.params?.id
+
+  if (!caseId) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+
   const caseData = await Case.aggregate([
     { $match: { _id: new mongoose.Types.ObjectId(caseId), isDeleted: false } },
     {
@@ -176,21 +175,21 @@ export const getCaseById = async (req) => {
       },
     },
   ])
- 
-  if (!caseData ) {
+
+  if (!caseData) {
     throw new CustomError(
       statusCodes.notFound,
       Message.caseNotFound,
       errorCodes.user_not_found
     )
   }
- 
+
   return { caseData: caseData[0] }
 }
 export const getAllCases = async () => {
   const allService = await Case.aggregate([
     { $match: { isDeleted: false } },
- 
+
     {
       $lookup: {
         from: 'services',
@@ -230,10 +229,9 @@ export const getAllCases = async () => {
         },
       },
     },
- 
+
     { $sort: { createdAt: -1 } },
   ])
- 
-  return allService;
+
+  return allService
 }
- 

@@ -69,7 +69,8 @@ const UserSchema = new mongoose.Schema(
         telephone: Boolean,
         email: Boolean,
         sms: Boolean,
-        letter: Boolean,
+        whatsapp: Boolean,
+        donor:Boolean,
       },
     },
     companyInformation: {

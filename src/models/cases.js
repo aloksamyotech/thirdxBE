@@ -1,14 +1,15 @@
 import mongoose from 'mongoose'
+ 
 const caseSchema = new mongoose.Schema(
   {
     serviceUserId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'services',
+      ref: 'user',
       required: true,
     },
     serviceId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
+      ref: 'services',
       required: true,
     },
     serviceType: { type: String, required: true },
@@ -48,5 +49,6 @@ const caseSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
+ 
 const Case = mongoose.model('Case', caseSchema)
-export default Case;
+export default Case
