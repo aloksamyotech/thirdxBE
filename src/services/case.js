@@ -126,13 +126,14 @@ export const searchCase = async (query) => {
     .sort({ createdAt: -1 })
 
   if (!cases.length) {
-    throw new Error('No cases found matching your criteria.')
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
   }
 
-  return {
-    success: true,
-    data: cases,
-  }
+  return cases;
 }
 
 export const getCaseById = async (req) => {
