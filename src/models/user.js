@@ -65,6 +65,7 @@ const UserSchema = new mongoose.Schema(
       contactPurposes: String,
       dateOfConfirmation: Date,
       reason: String,
+        email:String,
       contactMethods: {
         telephone: Boolean,
         email: Boolean,
