@@ -1,27 +1,22 @@
 import mongoose from 'mongoose'
-
+ 
 const SessionSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
     },
-    code: {
+    country: {
       type: String,
       required: true,
     },
     isActive: {
       type: Boolean,
-      required: true,
       default: true,
     },
     isDeleted: {
       type: Boolean,
       default: false,
-    },
-    type: {
-      type: String,
-      required: true,
     },
     file: {
       type: String,
@@ -56,7 +51,8 @@ const SessionSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
-
+ 
 const Session = mongoose.model('session', SessionSchema)
-
+ 
 export default Session;
+ 

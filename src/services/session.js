@@ -7,9 +7,7 @@ import Session from '../models/session.js'
 export const addSession = async (req) => {
   const {
     name,
-    code,
-    isActive,
-    type,
+    country,
     description,
     benificiary,
     campaigns,
@@ -20,12 +18,10 @@ export const addSession = async (req) => {
     date,
     fundraisingActivities,
   } = req.body
-
-  const serviceData = {
+ 
+  const sessionData = {
     name,
-    code,
-    isActive,
-    type,
+    country,
     description,
     benificiary,
     campaigns,
@@ -36,13 +32,13 @@ export const addSession = async (req) => {
     fundingInterest,
     fundraisingActivities,
   }
-
+ 
   if (req.file && req.file.filename) {
-    serviceData.file = `${req.file.filename}`
+    sessionData.file = `${req.file.filename}`
   }
-
-  const newSession = await Session.create(serviceData)
-
+ 
+  const newSession = await Session.create(sessionData)
+ 
   if (!newSession) {
     throw new CustomError(
       statusCodes.badRequest,
@@ -50,9 +46,10 @@ export const addSession = async (req) => {
       errorCodes.bad_request
     )
   }
-
+ 
   return { newSession }
 }
+ 
 export const deleteSession = async (req) => {
   const sessionId = req.params.id
   const serssionData = await Session.findById(serviceId)
