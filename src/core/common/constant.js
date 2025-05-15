@@ -3,7 +3,7 @@ import process from 'node:process'
 
 export const database_urls = Object.freeze({
   connection: process.env?.DB_URL || 'mongodb://127.0.0.1:27017/',
-  db_name: process.env?.DB_NAME || 'thirdx',
+  db_name: process.env?.DB_NAME || 'heyreach',
 })
 
 export const statusCodes = {
