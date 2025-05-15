@@ -17,6 +17,7 @@ export const addSession = async (req) => {
     time,
     date,
     fundraisingActivities,
+    serviceId,
   } = req.body
  
   const sessionData = {
@@ -31,6 +32,7 @@ export const addSession = async (req) => {
     eventAttanded,
     fundingInterest,
     fundraisingActivities,
+    serviceId,
   }
  
   if (req.file && req.file.filename) {
@@ -113,8 +115,9 @@ export const getSessionById = async (req) => {
     )
   }
 
-  const userData = await Session.findOne({ _id: serviceId, isDeleted: false })
-  if (!userData) {
+  const userData = await Session.find({ serviceId, isDeleted: false });
+
+  if (!userData || userData.length === 0) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.userNotGet,
