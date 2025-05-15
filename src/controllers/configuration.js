@@ -9,6 +9,18 @@ export const addConfiguration = async (req, res, next) => {
   )
   res.status(statusCodes?.ok).send(addConfiguration)
 }
+
+
+
+
+export const updatedConfiguration = async (req, res, next) => {
+  const updateDataConfiguration = await configurationService.updateConfiguration(
+    req,res,next)
+  res.status(statusCodes?.ok).send(updateDataConfiguration)
+}
+
+
+
 export const getAllConfiguration = async (req, res, next) => {
   const allConfiguration = await configurationService.getAllConfiguration(
     req,

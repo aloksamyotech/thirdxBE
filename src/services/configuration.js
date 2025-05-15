@@ -20,6 +20,41 @@ export const addConfiguration = async (req) => {
   return { newConfiguration }
 }
 
+export const updateConfiguration = async (req) => {
+    const id = req?.params?.configId
+const {  name, isActive, configurationType } = req?.body || {};
+
+  if (!id) {
+    return new CustomError(
+      statusCodes?.badRequest,
+      'Configuration ID is required',
+      errorCodes?.bad_request
+    );
+  }
+
+  const updatedConfiguration = await configuration.findByIdAndUpdate(
+    id,
+    {
+      name,
+      isActive,
+      configurationType,
+    },
+    { new: true }
+  );
+
+const UpdatedFetch = await  updatedConfiguration.save()
+
+  if (!UpdatedFetch) {
+    return new CustomError(
+      statusCodes?.notFound,
+      'Configuration not found or not updated',
+      errorCodes?.not_found
+    );
+  }
+
+  return { UpdatedFetch };
+};
+
 export const getAllConfiguration = async () => {
   const allConfiguration = await configuration
     .find({ isDeleted: false })
