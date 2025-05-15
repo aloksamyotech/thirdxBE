@@ -94,13 +94,7 @@ export const searchServices = async (req, res) => {
 
   const services = await Services.find(searchQuery)
 
-  if (services.length === 0) {
-    throw new CustomError(
-      statusCodes?.notFound,
-      Message?.notFound,
-      errorCodes?.not_found
-    )
-  }
+
 
   return{
     services

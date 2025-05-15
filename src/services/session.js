@@ -95,13 +95,7 @@ export const searchSession = async (req, res) => {
 
   const session = await Session.find(searchQuery)
 
-  if (session.length === 0) {
-     throw new CustomError(
-      statusCodes?.notFound,
-      Message?.notUpdate,
-      errorCodes?.not_found
-    )
-  }
+
 
   return {
     session
