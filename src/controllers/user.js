@@ -31,3 +31,12 @@ export const getAllUsDistricts = async (req, res, next) => {
   res.status(statusCodes?.ok).send(getUserDistricts);
 }
 
+export const editUser = async (req, res, next) => {
+  const addUser = await userService.editUser(req, res, next)
+  res.status(statusCodes?.ok).send(addUser)
+}
+
+export const deleteUser = async (req, res, next) => {
+  const deleteUser = await userService.deleteUser(req, res, next)
+  res.status(statusCodes?.ok).send(deleteUser)
+}

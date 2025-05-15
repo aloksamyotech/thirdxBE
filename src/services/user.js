@@ -104,3 +104,81 @@ export const getAllUsDistricts = async (req) => {
     cities: cityStateArray
   };
 }
+
+export const editUser = async (req) => { 
+  const { userId } = req.params
+  const userData = req?.body || {}
+  const filePath = req?.file?.path
+
+  if (!userId) {
+    return new CustomError(
+      statusCodes?.badRequest,
+      'Invalid user ID',
+      errorCodes?.bad_request
+    )
+  }
+
+  const existingUser = await user.findById({_id:userId})
+
+  if (!existingUser) {
+    return new CustomError(
+      statusCodes?.notFound,
+      Message?.userNotFound || 'User not found',
+      errorCodes?.not_found
+    )
+  }
+
+
+  if (filePath) {
+    if (!userData.otherInfo) {
+      userData.otherInfo = {}
+    }
+    userData.otherInfo.file = `uploads/${filePath}`
+  }
+
+
+  const updatedUser = await user.findByIdAndUpdate(
+{   _id: userId},
+    { $set: userData },
+    { new: true, runValidators: true }
+  )
+
+  if (!updatedUser) {
+    return new CustomError(
+      statusCodes?.badRequest,
+      Message?.userNotUpdated || 'User could not be updated',
+      errorCodes?.bad_request
+    )
+  }
+
+  return { updatedUser }
+}
+
+export const deleteUser = async (req) => {
+  const { userId } = req?.params || {}
+  const checkExist = await user.findById({_id:userId})
+
+  if (!checkExist) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  const statusUpdate = await user.findByIdAndUpdate(
+    {_id:userId},
+    { isDeleted: true },
+    { new: true }
+  )
+
+  if (!statusUpdate) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    )
+  }
+  return { statusUpdate }
+}
+
+
