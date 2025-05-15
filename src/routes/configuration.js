@@ -7,10 +7,11 @@ import {
   getAllConfiguration,
   searchConfigurationName,
   updateConfigurationStatus,
+  updatedConfiguration
 } from '../controllers/configuration.js'
 
 const router = Router()
-
+router.put('/updateConfigurationData/:configId',asyncHandler(updatedConfiguration));
 router.post('/addconfiguration', asyncHandler(addConfiguration))
 router.get('/getallconfiguration', asyncHandler(getAllConfiguration))
 router.put(
