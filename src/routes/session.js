@@ -15,7 +15,7 @@ const router = Router()
 
 router.post('/addSession', upload.single('file'), asyncHandler(addSession))
 router.patch('/deleteSession/:id', asyncHandler(deleteSession))
-router.get('/search', searchSession)
+router.get('/search', asyncHandler(searchSession))
 router.get('/getSessionById/:id', asyncHandler(getSessionById))
 router.get('/getAllSession', asyncHandler(getAllSession))
 

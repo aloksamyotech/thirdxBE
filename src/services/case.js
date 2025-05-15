@@ -125,14 +125,6 @@ export const searchCase = async (query) => {
     })
     .sort({ createdAt: -1 })
 
-  if (!cases.length) {
-    throw new CustomError(
-      statusCodes?.notFound,
-      Message?.notFound,
-      errorCodes?.not_found
-    )
-  }
-
   return cases;
 }
 
