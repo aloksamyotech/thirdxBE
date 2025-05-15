@@ -50,6 +50,7 @@ export const Message = {
   phoneNumberAlreadyRegistered: 'Phone Number Already Registered',
   userIdNotFound: 'User Id Not Found',
   userNotFound: 'User Not Found',
+  userNotUpdated:'User could not be updated',
   passValidityExpired: 'Pass Validity Expired Please Renew for Access ',
   passValidityPerDayExpired: "Today's Pass Limit Reached.",
   passNotFound: 'Pass Not Found',
