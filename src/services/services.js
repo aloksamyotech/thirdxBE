@@ -4,39 +4,7 @@ import Services from '../models/services.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 
-export const addServices = async (req) => {
-  const {
-    name,
-    code,
-    isActive,
-    type,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-  } = req.body
-
-  const serviceData = {
-    name,
-    code,
-    isActive,
-    type,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-  }
-
-  if (req.file && req.file.filename) {
-    serviceData.file = `${req.file.filename}`
-  }
-
+export const addServices = async (serviceData) => {
   const newService = await Services.create(serviceData)
 
   if (!newService) {
@@ -50,8 +18,7 @@ export const addServices = async (req) => {
   return { newService }
 }
 
-export const deleteServices = async (req) => {
-  const serviceId = req.params.id
+export const deleteServices = async (serviceId) => {
   const serviceData = await Services.findById(serviceId)
 
   if (!serviceData) {
@@ -77,8 +44,8 @@ export const deleteServices = async (req) => {
   return { statusUpdate }
 }
 
-export const searchServices = async (req, res) => {
-  const { name, isActive, type } = req.query
+export const searchServices = async (queryData) => {
+  const { name, isActive, type } = queryData;
 
   const searchQuery = {}
   if (name) {
@@ -102,9 +69,7 @@ export const searchServices = async (req, res) => {
   }
 }
 
-export const getServiceById = async (req) => {
-  const serviceId = req?.params.id
-
+export const getServiceById = async (serviceId) => {
   if (!serviceId) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -138,23 +103,8 @@ export const getAllServices = async () => {
   return { allService }
 }
 
-export const editServices = async (req) => {
-  const { serviceId } = req.params.serviceId;
-
-  const {
-    name,
-    code,
-    isActive,
-    type,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-  } = req.body;
-
+export const editServices = async (serviceId, serviceData) => {
+ 
   if (!serviceId) {
     throw new CustomError(
       statusCodes?.badRequest,
@@ -171,24 +121,6 @@ export const editServices = async (req) => {
       Message?.notFound || 'Service not found',
       errorCodes?.not_found
     );
-  }
-
-  const serviceData = {
-    name,
-    code,
-    isActive,
-    type,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-  };
-
-  if (req.file && req.file.filename) {
-    serviceData.file = req.file.filename;
   }
 
   const updatedService = await Services.findByIdAndUpdate(
