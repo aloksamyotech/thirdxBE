@@ -11,7 +11,7 @@ export const addUser = async (req) => {
 
   if (filePath) {
     userData.otherInfo = {}
-    userData.otherInfo.file = `uploads/${filePath}`
+    userData.otherInfo.file = `${filePath}`
   }
 
   const newUser = await user.create(userData)
