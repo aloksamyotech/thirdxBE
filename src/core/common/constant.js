@@ -28,7 +28,7 @@ export const statusCodes = {
 
 export const Message = {
   notFound: 'Not Found',
-  caseNotFound:"Case Not Found",
+  caseNotFound: 'Case Not Found',
   registerSuccessfully: 'Successfully Registered',
   inValid: 'Invalid Credentials',
   successfullyUpdate: 'Updated Successfully',
@@ -45,12 +45,12 @@ export const Message = {
   notUpdate: 'Update Failed',
   serverError: 'Internal Server Error',
   emailNotFound: 'Invalid Email Address',
-  missingRequiredFields:"Missing required fields",
+  missingRequiredFields: 'Missing required fields',
   emailAlreadyRegistered: 'Email Already Registered',
   phoneNumberAlreadyRegistered: 'Phone Number Already Registered',
   userIdNotFound: 'User Id Not Found',
   userNotFound: 'User Not Found',
-  userNotUpdated:'User could not be updated',
+  userNotUpdated: 'User could not be updated',
   passValidityExpired: 'Pass Validity Expired Please Renew for Access ',
   passValidityPerDayExpired: "Today's Pass Limit Reached.",
   passNotFound: 'Pass Not Found',
@@ -153,9 +153,16 @@ export const checkRole = {
   security: 'security',
   guard: 'guard',
   receptionist: 'receptionist',
+  donor: 'donor',
+  volunteer: 'volunteer',
+  service_user: 'service_user',
 }
 
 export const urls = {
   success: `${process.env.FE_URL}/dashboard/payment/success`,
   cancel: `${process.env.FE_URL}/dashboard/upgradepackage`,
+}
+
+export const externalAPI = {
+  district: `https://api.census.gov/data/2020/dec/pl?get=NAME&for=place:*&in=state:*`,
 }
