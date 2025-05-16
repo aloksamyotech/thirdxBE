@@ -1,13 +1,13 @@
-name: Deploy to develop
+name: Deploy to new-dev
 
 on:
   push:
     branches:
-      - "develop"
+      - "new-dev"
 
 jobs:
   redeploy_backend:
-    name: Deploy Backend to develop
+    name: Deploy Backend to new-dev
     runs-on: ubuntu-latest
 
     steps:
@@ -32,8 +32,8 @@ jobs:
             cd /thirdx/thirdxBE
             git stash
             git fetch --all
-            git checkout develop
-            git pull origin develop
+            git checkout new-dev
+            git pull origin new-dev
             git log -1
             npm install
             pm2 restart thirdXBE
