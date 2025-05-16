@@ -51,6 +51,76 @@ export const addSession = async (req) => {
  
   return { newSession }
 }
+
+export const editSession = async (req) => {
+  const id = req.params.id;
+  const {
+    name,
+    country,
+    description,
+    benificiary,
+    campaigns,
+    engagement,
+    eventAttanded,
+    fundingInterest,
+    time,
+    date,
+    fundraisingActivities,
+    serviceId,
+  } = req.body
+
+   if (!id) {
+      throw new CustomError(
+        statusCodes?.badRequest,
+       Message.notFound,
+        errorCodes?.bad_request
+      );
+    }
+  
+    const existingSession = await Session.findById(id);
+  
+    if (!existingSession) {
+      throw new CustomError(
+        statusCodes?.notFound,
+        Message?.notFound,
+        errorCodes?.not_found
+      );
+    }
+ 
+  const sessionData = {
+    name,
+    country,
+    description,
+    benificiary,
+    campaigns,
+    engagement,
+    time,
+    date,
+    eventAttanded,
+    fundingInterest,
+    fundraisingActivities,
+    serviceId,
+  }
+ 
+  if (req.file && req.file.filename) {
+    sessionData.file = `${req.file.filename}`
+  }
+ 
+  const updateSession = await Session.findByIdAndUpdate(id,
+    {$set : sessionData},
+    {new: true}
+  );
+ 
+  if (!updateSession) {
+    throw new CustomError(
+      statusCodes.badRequest,
+      Message.notCreated,
+      errorCodes.bad_request
+    )
+  }
+ 
+  return { updateSession }
+}
  
 export const deleteSession = async (req) => {
   const sessionId = req.params.id

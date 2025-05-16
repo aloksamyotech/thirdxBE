@@ -27,3 +27,21 @@ export const filter = async (req, res, next) => {
     )
     res.status(statusCodes?.ok).send(filter)
 }
+
+export const editTransaction = async (req, res, next) => {
+    const editTransaction = await transactionService.editTransaction(
+        req,
+        res,
+        next
+    )
+    res.status(statusCodes?.ok).send(editTransaction)
+}
+
+export const deleteTransaction = async (req, res, next) => {
+    const deleteTransaction = await transactionService.deleteTransaction(
+        req,
+        res,
+        next
+    )
+    res.status(statusCodes?.ok).send(deleteTransaction)
+}
