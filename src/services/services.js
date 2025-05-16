@@ -146,8 +146,6 @@ export const getAllServices = async (query) => {
     ...(status !== undefined && status !== '' && { isActive: status === 'true' })
   };
 
-  console.log('filter', filter);
-
   const allService = await Services.find(filter)
     .skip(skip)
     .limit(limitNumber)
