@@ -140,3 +140,37 @@ export const getAllSession = async () => {
   }
   return { allSession }
 }
+
+export const updateSession = async (req) => {
+  const sessionId = req.params.id;
+
+  if (!sessionId) {
+    throw new CustomError(
+      statusCodes.notFound,
+      Message.notFound,
+      errorCodes.not_found
+    );
+  }
+
+  const updateFields = { ...req.body };
+
+  if (req.file && req.file.filename) {
+    updateFields.file = req.file.filename;
+  }
+
+  const updatedSession = await Session.findByIdAndUpdate(
+    sessionId,
+    { $set: updateFields },
+    { new: true } 
+  );
+
+  if (!updatedSession) {
+    throw new CustomError(
+      statusCodes.badRequest,
+      Message.notUpdated,
+      errorCodes.bad_request
+    );
+  }
+
+  return { updatedSession };
+};

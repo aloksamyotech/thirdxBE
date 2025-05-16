@@ -25,3 +25,8 @@ export const getAllSession = async (req, res, next) => {
   const searchData = await session.getAllSession(req, res, next)
   res.status(statusCodes?.ok).send(searchData)
 }
+
+export const updateSession = async (req, res, next) => {
+  const searchData = await session.updateSession(req, res, next)
+  res.status(statusCodes?.ok).send(searchData)
+}

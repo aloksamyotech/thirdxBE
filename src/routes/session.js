@@ -8,6 +8,7 @@ import {
   searchSession,
   getSessionById,
   getAllSession,
+  updateSession,
 } from '../controllers/session.js'
 import { upload } from '../core/helpers/multer.js'
 
@@ -18,5 +19,7 @@ router.patch('/deleteSession/:id', asyncHandler(deleteSession))
 router.get('/search', asyncHandler(searchSession))
 router.get('/getSessionById/:id', asyncHandler(getSessionById))
 router.get('/getAllSession', asyncHandler(getAllSession))
+router.patch('/updateSession/:id', upload.single('file'), asyncHandler(updateSession));
+
 
 export default router
