@@ -12,13 +12,17 @@ export const addUser = async (req, res) => {
   res.status(statusCodes?.ok).send(addUser)
 }
 
-export const getAllUser = async (req, res) => {
-  const getAllUser = await userService.getAllUser()
+export const getAllServiceUser = async (req, res) => {
+  const getAllUser = await userService.getAllServiceUser()
   res.status(statusCodes?.ok).send(getAllUser)
 }
 
 export const getAllVolunteer = async (req, res) => {
   const getAllVolunteer = await userService.getAllVolunteer()
+  res.status(statusCodes?.ok).send(getAllVolunteer)
+}
+export const getAllUsers = async (req, res) => {
+  const getAllVolunteer = await userService.getAllUsers()
   res.status(statusCodes?.ok).send(getAllVolunteer)
 }
 
