@@ -35,7 +35,17 @@ export const filter = async (req) => {
 
     let filter = {}
     if (name) filter.assignedTo = name
-    if (date) filter.createdAt = new Date(date);
+    
+     if (date) {
+    const parsedDate = new Date(date)
+    if (!isNaN(parsedDate)) {
+      const start = new Date(parsedDate)
+      start.setHours(0, 0, 0, 0)
+      const end = new Date(parsedDate)
+      end.setHours(23, 59, 59, 999)
+      filter.createdAt = { $gte: start, $lte: end }
+    }
+  }
     if (campaign) filter.campaign = campaign;
 
     const filterData = await transaction.find(filter)
