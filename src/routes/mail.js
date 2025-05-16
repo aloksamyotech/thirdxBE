@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { asyncHandler } from '../utils/asyncWrapper.js'
-import { addMail, filter, getAllMail } from '../controllers/mail.js'
+import { addMail, filter, getAllMail, editMail, deleteMail } from '../controllers/mail.js'
 
 const router = Router()
 
@@ -16,4 +16,11 @@ router.get(
     '/filter',
     asyncHandler(filter)
 )
+router.put(
+    '/editmail/:mailId',
+    asyncHandler(editMail)
+)
+
+router.put('/deletemail/:mailId', asyncHandler(deleteMail));
+
 export default router

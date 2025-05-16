@@ -36,3 +36,21 @@ export const filter = async (req, res, next) => {
     )
     res.status(statusCodes?.ok).send(filter)
 }
+
+export const editTags = async (req, res, next) => {
+    const editTags = await tagService.editTags(
+        req,
+        res,
+        next
+    )
+    res.status(statusCodes?.ok).send(editTags)
+}
+
+export const deleteTags = async (req, res, next) => {
+    const deleteTags = await tagService.deleteTags(
+        req,
+        res,
+        next
+    )
+    res.status(statusCodes?.ok).send(deleteTags)
+}

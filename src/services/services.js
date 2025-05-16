@@ -49,6 +49,7 @@ export const addServices = async (req) => {
 
   return { newService }
 }
+
 export const deleteServices = async (req) => {
   const serviceId = req.params.id
   const serviceData = await Services.findById(serviceId)
@@ -136,3 +137,73 @@ export const getAllServices = async () => {
   }
   return { allService }
 }
+
+export const editServices = async (req) => {
+  const { serviceId } = req.params.serviceId;
+
+  const {
+    name,
+    code,
+    isActive,
+    type,
+    description,
+    benificiary,
+    campaigns,
+    engagement,
+    eventAttanded,
+    fundingInterest,
+    fundraisingActivities,
+  } = req.body;
+
+  if (!serviceId) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      'Invalid Service ID',
+      errorCodes?.bad_request
+    );
+  }
+
+  const existingService = await Services.findById(serviceId);
+
+  if (!existingService) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound || 'Service not found',
+      errorCodes?.not_found
+    );
+  }
+
+  const serviceData = {
+    name,
+    code,
+    isActive,
+    type,
+    description,
+    benificiary,
+    campaigns,
+    engagement,
+    eventAttanded,
+    fundingInterest,
+    fundraisingActivities,
+  };
+
+  if (req.file && req.file.filename) {
+    serviceData.file = req.file.filename;
+  }
+
+  const updatedService = await Services.findByIdAndUpdate(
+    serviceId,
+    { $set: serviceData },
+    { new: true }
+  );
+
+  if (!updatedService) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      Message?.serviceNotUpdated || 'Service update failed',
+      errorCodes?.bad_request
+    );
+  }
+
+  return { updatedService };
+};

@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { asyncHandler } from '../utils/asyncWrapper.js'
-import { addTags, filter, getAllTags, updateTagStatus } from '../controllers/tag.js'
+import { addTags, filter, getAllTags, updateTagStatus, editTags, deleteTags } from '../controllers/tag.js'
 
 const router = Router()
 
@@ -19,6 +19,15 @@ router.get(
 router.put(
     '/updateTagStatus/:tagId',
     asyncHandler(updateTagStatus)
+)
+router.put(
+    '/editTag/:tagId',
+    asyncHandler(editTags)
+)
+
+router.put(
+    '/deleteTag/:tagId',
+    asyncHandler(deleteTags)
 )
 
 export default router
