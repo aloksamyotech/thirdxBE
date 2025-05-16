@@ -47,7 +47,11 @@ const SessionSchema = new mongoose.Schema(
     },
     date:{
       type: Date
-    }
+    },
+     serviceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'services',
+    },
   },
   { timestamps: true }
 )
