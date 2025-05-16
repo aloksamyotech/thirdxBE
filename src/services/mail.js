@@ -2,10 +2,7 @@ import mail from '../models/mail.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 
-export const addMail = async (req) => {
-
-    const data = req?.body || {}
-    
+export const addMail = async (data) => {
     const newMail = await mail.create(data)
     if (!newMail) {
         return new CustomError(
@@ -18,7 +15,6 @@ export const addMail = async (req) => {
 }
 
 export const getAllMail = async () => {
-
     const allMail = await mail.find().sort({ createdAt: -1 })
     if (!allMail) {
         throw new CustomError(
@@ -30,9 +26,7 @@ export const getAllMail = async () => {
     return { allMail }
 }
 
-export const filter = async (req) => {
-    const { tag, name } = req?.query || {}
-
+export const filter = async (tag, name) => {
     let filter = {}
     if (tag) filter.tags = tag;
     if (name) filter.name = name
@@ -42,10 +36,7 @@ export const filter = async (req) => {
     return filterData
 }
 
-export const editMail = async (req) => {
-    const { mailId } = req.params.mailId;
-    const {name, tags, channelSettings, purposeSettings, includeArchived} = req.body;
-
+export const editMail = async ( mailId, mailData) => {
      if (!mailId) {
         throw new CustomError(
           statusCodes?.badRequest,
@@ -63,10 +54,7 @@ export const editMail = async (req) => {
           errorCodes?.not_found
         );
       }
-    const mailData = {
-        name, tags, channelSettings, purposeSettings, includeArchived
-      };
-
+  
    const updatedMail = await mail.findByIdAndUpdate(mailId,
     {$set: mailData},
     {new : true}
@@ -81,8 +69,7 @@ export const editMail = async (req) => {
     return { updatedMail }
 }
 
-export const deleteMail = async (req) => {
-  const mailId = req.params.mailId;
+export const deleteMail = async (mailId) => {
   const mailData = await mail.findById(mailId)
 
   if (!mailData) {

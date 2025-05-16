@@ -2,14 +2,8 @@ import configuration from '../models/configuration.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 
-export const addConfiguration = async (req) => {
-  const { name, isActive, configurationType } = req?.body || {}
-
-  const newConfiguration = await configuration.create({
-    name,
-    isActive,
-    configurationType,
-  })
+export const addConfiguration = async (configData) => {
+  const newConfiguration = await configuration.create(configData)
   if (!newConfiguration) {
     return new CustomError(
       statusCodes?.badRequest,
@@ -20,11 +14,8 @@ export const addConfiguration = async (req) => {
   return { newConfiguration }
 }
 
-export const updateConfiguration = async (req) => {
-    const id = req?.params?.configId
-const {  name, isActive, configurationType } = req?.body || {};
-
-  if (!id) {
+export const updateConfiguration = async (configId, configData) => {
+  if (!configId) {
     return new CustomError(
       statusCodes?.badRequest,
       'Configuration ID is required',
@@ -35,9 +26,7 @@ const {  name, isActive, configurationType } = req?.body || {};
   const updatedConfiguration = await configuration.findByIdAndUpdate(
     id,
     {
-      name,
-      isActive,
-      configurationType,
+     $set : configData
     },
     { new: true }
   );
@@ -69,9 +58,8 @@ export const getAllConfiguration = async () => {
   return { allConfiguration }
 }
 
-export const updateConfigurationStatus = async (req) => {
-  const { configId } = req?.params || {}
-  const { isActive } = req?.body || {}
+export const updateConfigurationStatus = async (configId, isActive) => {
+ 
   const checkExist = await configuration.findById(configId)
 
   if (!checkExist) {
@@ -97,8 +85,7 @@ export const updateConfigurationStatus = async (req) => {
   return { statusUpdate }
 }
 
-export const deleteConfiguration = async (req) => {
-  const { configId } = req?.params || {}
+export const deleteConfiguration = async (configId) => {
   const checkExist = await configuration.findById(configId)
 
   if (!checkExist) {
@@ -124,9 +111,7 @@ export const deleteConfiguration = async (req) => {
   return { statusUpdate }
 }
 
-export const searchConfigurationByName = async (req) => {
-  const { name } = req?.query || {}
-
+export const searchConfigurationByName = async (name) => {
   const searchConfig = await configuration.find({
     name: { $regex: name },
     isDeleted: false,
@@ -135,9 +120,7 @@ export const searchConfigurationByName = async (req) => {
   return searchConfig
 }
 
-export const filter = async (req) => {
-    const { type, status } = req?.query || {}
-
+export const filter = async (type, status) => {
     let filter = {}
     if (type) filter.configurationType = type;
     if (status) filter.isActive = status

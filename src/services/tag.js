@@ -3,9 +3,6 @@ import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 
 export const addTags = async (req) => {
-
-    const data = req?.body || {}
-
     const newTag = await tag.create(data)
     if (!newTag) {
         return new CustomError(
@@ -18,7 +15,6 @@ export const addTags = async (req) => {
 }
 
 export const getAllTags = async () => {
-
     const allTags = await tag.find({ isDeleted: false }).sort({ createdAt: -1 })
     if (!allTags) {
         throw new CustomError(
@@ -30,9 +26,7 @@ export const getAllTags = async () => {
     return { allTags }
 }
 
-export const updateTagStatus = async (req) => {
-    const { tagId } = req?.params || {}
-    const { isActive } = req?.body || {}
+export const updateTagStatus = async ( tagId, isActive) => {
     const checkExist = await tag.findById(tagId)
 
     if (!checkExist) {
@@ -58,9 +52,7 @@ export const updateTagStatus = async (req) => {
     return { statusUpdate }
 }
 
-export const filter = async (req) => {
-    const { name, status } = req?.query || {}
-
+export const filter = async (name, status) => {
     let filter = {}
     if (name) filter.name = name
     if (status) filter.isActive = status;
@@ -70,16 +62,7 @@ export const filter = async (req) => {
     return filterData
 }
 
-export const editTags = async (req) => {
-    const { tagId } = req.params.tagId;
-  
-    const {
-        name,
-        startDate,
-        endDate,
-        note
-    } = req.body;
-  
+export const editTags = async (tagId, tagData) => {
     if (!tagId) {
       throw new CustomError(
         statusCodes?.badRequest,
@@ -98,14 +81,6 @@ export const editTags = async (req) => {
       );
     }
   
-    const tagData = {
-        name,
-        startDate,
-        endDate,
-        note
-    };
-  
-   
     const updatedTag = await tag.findByIdAndUpdate(
       tagId,
       { $set: tagData },
@@ -123,8 +98,7 @@ export const editTags = async (req) => {
     return { updatedTag };
 };
 
-export const deleteTags = async (req) => {
-  const tagId = req.params.tagId
+export const deleteTags = async (tagId) => {
   const tagData = await tag.findById(tagId)
 
   if (!tagData) {
