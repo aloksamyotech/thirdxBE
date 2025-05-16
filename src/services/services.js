@@ -126,7 +126,6 @@ export const getServiceById = async (req) => {
 
 export const getAllServices = async (query) => {
   const { search, status, page = 1, limit = 10 } = query || {};
-  console.log('query', page, limit);
   let pageNumber = Number(page);
   let limitNumber = Number(limit);
   if (pageNumber < 1) {
