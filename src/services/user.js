@@ -1,19 +1,15 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
-import user from '../models/user.js';
-import { errorCodes, Message, statusCodes } from '../core/common/constant.js';
-import CustomError from '../utils/exception.js';
-import axios from 'axios';
+import user from '../models/user.js'
+import {
+  checkRole,
+  errorCodes,
+  externalAPI,
+  Message,
+  statusCodes,
+} from '../core/common/constant.js'
+import CustomError from '../utils/exception.js'
+import axios from 'axios'
 
-export const addUser = async (req) => {
-  const userData = req?.body || {}
-  const filePath = req?.file?.path
-
-  if (filePath) {
-    userData.otherInfo = {}
-    userData.otherInfo.file = `${filePath}`
-  }
-
+export const addUser = async (userData) => {
   const newUser = await user.create(userData)
   if (!newUser) {
     return new CustomError(
@@ -26,7 +22,9 @@ export const addUser = async (req) => {
 }
 
 export const getAllUser = async () => {
-  const allUser = await user.find({ isDeleted: false, role: 'service_user' }).sort({ createdAt: -1 })
+  const allUser = await user
+    .find({ isDeleted: false, role: checkRole.service_user })
+    .sort({ createdAt: -1 })
   if (!allUser) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -38,7 +36,9 @@ export const getAllUser = async () => {
 }
 
 export const getAllVolunteer = async () => {
-  const allVolunteer = await user.find({ isDeleted: false, role: 'volunteer' }).sort({ createdAt: -1 })
+  const allVolunteer = await user
+    .find({ isDeleted: false, role: checkRole.volunteer })
+    .sort({ createdAt: -1 })
   if (!allVolunteer) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -50,7 +50,9 @@ export const getAllVolunteer = async () => {
 }
 
 export const getAllDonor = async () => {
-  const allDonor = await user.find({ isDeleted: false, role: 'donor' }).sort({ createdAt: -1 })
+  const allDonor = await user
+    .find({ isDeleted: false, role: checkRole.donor })
+    .sort({ createdAt: -1 })
   if (!allDonor) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -61,9 +63,7 @@ export const getAllDonor = async () => {
   return { allDonor }
 }
 
-export const getUserById = async (req) => {
-  const { userId } = req?.params || {}
-
+export const getUserById = async (userId) => {
   if (!userId) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -83,32 +83,29 @@ export const getUserById = async (req) => {
   return userData
 }
 
-export const getAllUsDistricts = async (req) => {
-  const response = await axios.get('https://api.census.gov/data/2020/dec/pl?get=NAME&for=place:*&in=state:*');
+export const getAllUsDistricts = async () => {
+  const response = await axios.get(externalAPI.district)
 
-  const [headers, ...rows] = response.data;
+  const [headers, ...rows] = response.data
 
-  const cityStateArray = rows.map(row => {
-    const [placeWithState] = row;
-    const city = placeWithState.split(',')[0]
+  const cityStateArray = rows.map((row) => {
+    const [placeWithState] = row
+    const city = placeWithState
+      .split(',')[0]
       .replace(/\s(city|town|CDP)$/i, '')
-      .trim();
-    const state = placeWithState.split(',')[1]
-      .replace(/\s+$/, '')
-      .trim();
+      .trim()
+    const state = placeWithState.split(',')[1].replace(/\s+$/, '').trim()
 
-    return `${city}, ${state}`;
-  });
+    return `${city}, ${state}`
+  })
 
   return {
-    cities: cityStateArray
-  };
+    cities: cityStateArray,
+  }
 }
 
-export const editUser = async (req) => { 
-  const { userId } = req.params
-  const userData = req?.body || {}
-  const filePath = req?.file?.path
+export const editUser = async (userData) => {
+  const { userId, ...rest } = userData
 
   if (!userId) {
     return new CustomError(
@@ -118,7 +115,7 @@ export const editUser = async (req) => {
     )
   }
 
-  const existingUser = await user.findById({_id:userId})
+  const existingUser = await user.findById({ _id: userId })
 
   if (!existingUser) {
     return new CustomError(
@@ -128,18 +125,9 @@ export const editUser = async (req) => {
     )
   }
 
-
-  if (filePath) {
-    if (!userData.otherInfo) {
-      userData.otherInfo = {}
-    }
-    userData.otherInfo.file = `uploads/${filePath}`
-  }
-
-
   const updatedUser = await user.findByIdAndUpdate(
-{   _id: userId},
-    { $set: userData },
+    { _id: userId },
+    { $set: rest },
     { new: true, runValidators: true }
   )
 
@@ -154,9 +142,8 @@ export const editUser = async (req) => {
   return { updatedUser }
 }
 
-export const deleteUser = async (req) => {
-  const { userId } = req?.params || {}
-  const checkExist = await user.findById({_id:userId})
+export const deleteUser = async (userId) => {
+  const checkExist = await user.findById({ _id: userId })
 
   if (!checkExist) {
     throw new CustomError(
@@ -166,7 +153,7 @@ export const deleteUser = async (req) => {
     )
   }
   const statusUpdate = await user.findByIdAndUpdate(
-    {_id:userId},
+    { _id: userId },
     { isDeleted: true },
     { new: true }
   )
@@ -180,5 +167,3 @@ export const deleteUser = async (req) => {
   }
   return { statusUpdate }
 }
-
-

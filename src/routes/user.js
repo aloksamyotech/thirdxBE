@@ -1,8 +1,16 @@
 import { Router } from 'express'
 import { asyncHandler } from '../utils/asyncWrapper.js'
-import { addUser, getAllDonor, getAllUser, getAllVolunteer, getUserById, getAllUsDistricts,editUser, deleteUser } from '../controllers/user.js'
+import {
+  addUser,
+  getAllDonor,
+  getAllUser,
+  getAllVolunteer,
+  getUserById,
+  getAllUsDistricts,
+  editUser,
+  deleteUser,
+} from '../controllers/user.js'
 import { upload } from '../core/helpers/multer.js'
-
 
 const router = Router()
 
