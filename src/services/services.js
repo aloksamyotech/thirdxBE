@@ -3,6 +3,7 @@
 import Services from '../models/services.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
+import { regexFilter } from '../core/common/common.js'
 
 export const addServices = async (req) => {
   const {
@@ -96,7 +97,7 @@ export const searchServices = async (req, res) => {
 
 
 
-  return{
+  return {
     services
   }
 }
@@ -123,16 +124,43 @@ export const getServiceById = async (req) => {
   return { userData }
 }
 
-export const getAllServices = async () => {
-  const allService = await Services.find({ isDeleted: false }).sort({
-    createdAt: -1,
-  })
-  if (!allService) {
-    throw new CustomError(
-      statusCodes?.notFound,
-      Message?.notFound,
-      errorCodes?.not_found
-    )
+export const getAllServices = async (query) => {
+  const { search, status, page = 1, limit = 10 } = query || {};
+  console.log('query', page, limit);
+  let pageNumber = Number(page);
+  let limitNumber = Number(limit);
+  if (pageNumber < 1) {
+    pageNumber = 1
   }
-  return { allService }
+
+  if (limitNumber < 1) {
+    limitNumber = 10
+  }
+  const skip = (pageNumber - 1) * limitNumber;
+  const searchKeys = {
+    name: search,
+  };
+
+  const filter = {
+    ...regexFilter(searchKeys),
+    ...(status !== undefined && status !== '' && { isActive: status === 'true' })
+  };
+
+  console.log('filter', filter);
+
+  const allService = await Services.find(filter)
+    .skip(skip)
+    .limit(limitNumber)
+    .sort({ createdAt: -1 });
+
+  const total = await Services.countDocuments(filter);
+  return {
+    data: allService,
+    meta: {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber)
+    }
+  };
 }
