@@ -3,6 +3,7 @@
 import Services from '../models/services.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
+import { regexFilter } from '../core/common/common.js'
 
 export const addServices = async (req) => {
   const {
@@ -49,6 +50,7 @@ export const addServices = async (req) => {
 
   return { newService }
 }
+
 export const deleteServices = async (req) => {
   const serviceId = req.params.id
   const serviceData = await Services.findById(serviceId)
@@ -96,7 +98,7 @@ export const searchServices = async (req, res) => {
 
 
 
-  return{
+  return {
     services
   }
 }
@@ -123,16 +125,110 @@ export const getServiceById = async (req) => {
   return { userData }
 }
 
-export const getAllServices = async () => {
-  const allService = await Services.find({ isDeleted: false }).sort({
-    createdAt: -1,
-  })
-  if (!allService) {
+export const getAllServices = async (query) => {
+  const { search, status, page = 1, limit = 10 } = query || {};
+  let pageNumber = Number(page);
+  let limitNumber = Number(limit);
+  if (pageNumber < 1) {
+    pageNumber = 1
+  }
+
+  if (limitNumber < 1) {
+    limitNumber = 10
+  }
+  const skip = (pageNumber - 1) * limitNumber;
+  const searchKeys = {
+    name: search,
+  };
+
+  const filter = {
+    ...regexFilter(searchKeys),
+    ...(status !== undefined && status !== '' && { isActive: status === 'true' })
+  };
+
+  const allService = await Services.find(filter)
+    .skip(skip)
+    .limit(limitNumber)
+    .sort({ createdAt: -1 });
+
+  const total = await Services.countDocuments(filter);
+  return {
+    data: allService,
+    meta: {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber)
+    }
+  };
+}
+
+export const editServices = async (req) => {
+  const { serviceId } = req.params.serviceId;
+
+  const {
+    name,
+    code,
+    isActive,
+    type,
+    description,
+    benificiary,
+    campaigns,
+    engagement,
+    eventAttanded,
+    fundingInterest,
+    fundraisingActivities,
+  } = req.body;
+
+  if (!serviceId) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      'Invalid Service ID',
+      errorCodes?.bad_request
+    );
+  }
+
+  const existingService = await Services.findById(serviceId);
+
+  if (!existingService) {
     throw new CustomError(
       statusCodes?.notFound,
-      Message?.notFound,
+      Message?.notFound || 'Service not found',
       errorCodes?.not_found
-    )
+    );
   }
-  return { allService }
-}
+
+  const serviceData = {
+    name,
+    code,
+    isActive,
+    type,
+    description,
+    benificiary,
+    campaigns,
+    engagement,
+    eventAttanded,
+    fundingInterest,
+    fundraisingActivities,
+  };
+
+  if (req.file && req.file.filename) {
+    serviceData.file = req.file.filename;
+  }
+
+  const updatedService = await Services.findByIdAndUpdate(
+    serviceId,
+    { $set: serviceData },
+    { new: true }
+  );
+
+  if (!updatedService) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      Message?.serviceNotUpdated || 'Service update failed',
+      errorCodes?.bad_request
+    );
+  }
+
+  return { updatedService };
+};

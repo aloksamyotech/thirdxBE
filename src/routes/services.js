@@ -8,6 +8,7 @@ import {
   searchServices,
   getServiceById,
   getAllServices,
+  editServices
 } from '../controllers/services.js'
 import { upload } from '../core/helpers/multer.js'
 
@@ -18,5 +19,6 @@ router.patch('/deleteService/:id', asyncHandler(deleteServices))
 router.get('/search', asyncHandler(searchServices))
 router.get('/getServiceById/:id', asyncHandler(getServiceById))
 router.get('/getAllServices', asyncHandler(getAllServices))
+router.put('/editServices/:serviceId', upload.single('file'), asyncHandler(editServices));
 
 export default router

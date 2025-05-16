@@ -52,3 +52,91 @@ export const filter = async (req) => {
 
     return filterData
 }
+
+export const editTransaction = async (req) => {
+  const { id } = req.params.id;
+
+  const {
+    assignedTo,
+    campaign,
+    amountPaid,
+    paymentMethod,
+    processingCost,
+    currency,
+    receiptNumber,
+    transactionId,
+  } = req.body;
+
+  if (!id) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      Message.notFound,
+      errorCodes?.bad_request
+    );
+  }
+
+  const existingTransaction = await transaction.findById(id);
+
+  if (!existingTransaction) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    );
+  }
+
+  const transactionData = {
+    assignedTo,
+    campaign,
+    amountPaid,
+    paymentMethod,
+    processingCost,
+    currency,
+    receiptNumber,
+    transactionId,
+  };
+
+  const updatedTransaction = await transaction.findByIdAndUpdate(
+    id,
+    { $set: transactionData },
+    { new: true }
+  );
+
+  if (!updatedTransaction) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      Message?.notUpdate,
+      errorCodes?.bad_request
+    );
+  }
+
+  return { updatedTransaction };
+};
+
+export const deleteTransaction = async (req) => {
+  const id = req.params.id
+  const transactionData = await transaction.findById(id)
+
+  if (!transactionData) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  const updatedTransaction = await transaction.findByIdAndUpdate(
+    id,
+    { isDeleted: true },
+    { new: true }
+  )
+
+  if (!updatedTransaction) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    )
+  }
+  return { updatedTransaction }
+}
+

@@ -59,6 +59,7 @@ export const Message = {
   incorrrectPassword: 'Incorrect Password',
   inValidData: 'Invalid Data',
   duplicateData: 'Duplicate Visitor Data',
+  serviceNotUpdated:'Service could not be updated',
 }
 
 export const errorCodes = Object.freeze({
@@ -149,6 +150,7 @@ export const errorCodes = Object.freeze({
 export const checkRole = {
   superAdmin: 'superAdmin',
   admin: 'admin',
+  user: 'user',
   hr: 'hr',
   security: 'security',
   guard: 'guard',

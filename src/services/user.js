@@ -21,7 +21,7 @@ export const addUser = async (userData) => {
   return { newUser }
 }
 
-export const getAllUser = async () => {
+export const getAllServiceUser = async () => {
   const allUser = await user
     .find({ isDeleted: false, role: checkRole.service_user })
     .sort({ createdAt: -1 })
@@ -38,6 +38,19 @@ export const getAllUser = async () => {
 export const getAllVolunteer = async () => {
   const allVolunteer = await user
     .find({ isDeleted: false, role: checkRole.volunteer })
+    .sort({ createdAt: -1 })
+  if (!allVolunteer) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  return { allVolunteer }
+}
+export const getAllUsers = async () => {
+  const allVolunteer = await user
+    .find({ isDeleted: false, role: checkRole.user })
     .sort({ createdAt: -1 })
   if (!allVolunteer) {
     throw new CustomError(

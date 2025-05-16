@@ -69,3 +69,84 @@ export const filter = async (req) => {
 
     return filterData
 }
+
+export const editTags = async (req) => {
+    const { tagId } = req.params.tagId;
+  
+    const {
+        name,
+        startDate,
+        endDate,
+        note
+    } = req.body;
+  
+    if (!tagId) {
+      throw new CustomError(
+        statusCodes?.badRequest,
+        'Invalid Tag ID',
+        errorCodes?.bad_request
+      );
+    }
+  
+    const existingTag = await tag.findById(tagId);
+  
+    if (!existingTag) {
+      throw new CustomError(
+        statusCodes?.notFound,
+        Message?.notFound || 'Tag not found',
+        errorCodes?.not_found
+      );
+    }
+  
+    const tagData = {
+        name,
+        startDate,
+        endDate,
+        note
+    };
+  
+   
+    const updatedTag = await tag.findByIdAndUpdate(
+      tagId,
+      { $set: tagData },
+      { new: true }
+    );
+  
+    if (!updatedTag) {
+      throw new CustomError(
+        statusCodes?.badRequest,
+        Message?.notUpdate || 'Tag update failed',
+        errorCodes?.bad_request
+      );
+    }
+  
+    return { updatedTag };
+};
+
+export const deleteTags = async (req) => {
+  const tagId = req.params.tagId
+  const tagData = await tag.findById(tagId)
+
+  if (!tagData) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  const tagUpdate = await tag.findByIdAndUpdate(
+    tagId,
+    { isDeleted: true },
+    { new: true }
+  )
+
+  if (!tagUpdate) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    )
+  }
+  return { tagUpdate }
+}
+

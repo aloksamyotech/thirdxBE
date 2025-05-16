@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { asyncHandler } from '../utils/asyncWrapper.js'
-import { addTransaction, filter, getAllTransaction } from '../controllers/transaction.js'
+import { addTransaction, editTransaction, filter, getAllTransaction,  deleteTransaction } from '../controllers/transaction.js'
 
 const router = Router()
 
@@ -15,5 +15,13 @@ router.get(
 router.get(
     '/filter',
     asyncHandler(filter)
+)
+router.put(
+    '/edit_transaction/:id',
+    asyncHandler(editTransaction)
+)
+router.put(
+    '/delete_transaction/:id',
+    asyncHandler(deleteTransaction)
 )
 export default router

@@ -27,3 +27,23 @@ export const filter = async (req, res, next) => {
     )
     res.status(statusCodes?.ok).send(filter)
 }
+
+export const editMail = async (req, res, next) => {
+    const editMail = await mailService.editMail(
+        req,
+        res,
+        next
+    )
+    res.status(statusCodes?.ok).send(editMail)
+}
+
+export const deleteMail = async (req, res, next) => {
+    const deleteMail = await mailService.deleteMail(
+        req,
+        res,
+        next
+    )
+    res.status(statusCodes?.ok).send(deleteMail)
+}
+
+
