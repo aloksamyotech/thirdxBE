@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { asyncHandler } from '../utils/asyncWrapper.js'
-import { addTransaction, editTransaction, filter, getAllTransaction, editTransaction, deleteTransaction } from '../controllers/transaction.js'
+import { addTransaction, editTransaction, filter, getAllTransaction,  deleteTransaction } from '../controllers/transaction.js'
 
 const router = Router()
 

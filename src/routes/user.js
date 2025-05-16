@@ -3,19 +3,21 @@ import { asyncHandler } from '../utils/asyncWrapper.js'
 import {
   addUser,
   getAllDonor,
-  getAllUser,
   getAllVolunteer,
   getUserById,
   getAllUsDistricts,
   editUser,
   deleteUser,
+  getAllServiceUser,
+  getAllUsers,
 } from '../controllers/user.js'
 import { upload } from '../core/helpers/multer.js'
 
 const router = Router()
 
 router.post('/adduser', upload.single('file'), asyncHandler(addUser))
-router.get('/getalluser', asyncHandler(getAllUser))
+router.get('/getallServiceUser', asyncHandler(getAllServiceUser))
+router.get('/getalluser', asyncHandler(getAllUsers))
 router.get('/getallvolunteer', asyncHandler(getAllVolunteer))
 router.get('/getalldonor', asyncHandler(getAllDonor))
 router.get('/getUserById/:userId', asyncHandler(getUserById))
