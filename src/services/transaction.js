@@ -2,10 +2,7 @@ import transaction from '../models/transaction.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 
-export const addTransaction = async (req) => {
-
-    const data = req?.body || {}
-
+export const addTransaction = async (data) => {
     const newTransaction = await transaction.create(data)
     if (!newTransaction) {
         return new CustomError(
@@ -30,9 +27,7 @@ export const getAllTransaction = async () => {
     return { allTransaction }
 }
 
-export const filter = async (req) => {
-    const { name, date, campaign } = req?.query || {}
-
+export const filter = async (name, date, campaign) => {
     let filter = {}
     if (name) filter.assignedTo = name
     
@@ -53,20 +48,8 @@ export const filter = async (req) => {
     return filterData
 }
 
-export const editTransaction = async (req) => {
-  const { id } = req.params.id;
-
-  const {
-    assignedTo,
-    campaign,
-    amountPaid,
-    paymentMethod,
-    processingCost,
-    currency,
-    receiptNumber,
-    transactionId,
-  } = req.body;
-
+export const editTransaction = async (id, transactionData) => {
+ 
   if (!id) {
     throw new CustomError(
       statusCodes?.badRequest,
@@ -85,17 +68,6 @@ export const editTransaction = async (req) => {
     );
   }
 
-  const transactionData = {
-    assignedTo,
-    campaign,
-    amountPaid,
-    paymentMethod,
-    processingCost,
-    currency,
-    receiptNumber,
-    transactionId,
-  };
-
   const updatedTransaction = await transaction.findByIdAndUpdate(
     id,
     { $set: transactionData },
@@ -113,8 +85,7 @@ export const editTransaction = async (req) => {
   return { updatedTransaction };
 };
 
-export const deleteTransaction = async (req) => {
-  const id = req.params.id
+export const deleteTransaction = async (id) => {
   const transactionData = await transaction.findById(id)
 
   if (!transactionData) {

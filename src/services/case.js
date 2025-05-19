@@ -3,8 +3,8 @@ import CustomError from '../utils/exception.js'
 import Case from '../models/cases.js'
 import mongoose from 'mongoose'
 
-export const addCase = async (req) => {
-  const {
+export const addCase = async (caseData) => {
+  const {  
     serviceUserId,
     serviceId,
     serviceType,
@@ -18,9 +18,9 @@ export const addCase = async (req) => {
     fundingInterest,
     fundraisingActivities,
     description,
-  } = req.body
-  const filePath = req?.file?.path
-
+    filePath
+   } = caseData
+ 
   if (!serviceUserId || !serviceId || !serviceType || !serviceStatus) {
     throw new CustomError(
       statusCodes.badRequest,
@@ -28,23 +28,6 @@ export const addCase = async (req) => {
       errorCodes.bad_request
     )
   }
-
-  const caseData = {
-    serviceUserId,
-    serviceId,
-    serviceType,
-    serviceStatus,
-    caseOpened,
-    caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-    description,
-  }
-  if (filePath) caseData.file = `${filePath}`
 
   const newCase = await Case.create(caseData)
 
@@ -59,8 +42,7 @@ export const addCase = async (req) => {
   return { newCase }
 }
 
-export const editCase = async (req) => {
-  const { caseId } = req.params.caseId;
+export const editCase = async (caseId, caseData) => {
   const {
     serviceUserId,
     serviceId,
@@ -75,8 +57,7 @@ export const editCase = async (req) => {
     fundingInterest,
     fundraisingActivities,
     description,
-  } = req.body
-  const filePath = req?.file?.path
+  } = caseData;
 
   if (!caseId) {
     throw new CustomError(
@@ -104,23 +85,6 @@ export const editCase = async (req) => {
     )
   }
 
-  const caseData = {
-    serviceUserId,
-    serviceId,
-    serviceType,
-    serviceStatus,
-    caseOpened,
-    caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-    description,
-  }
-  if (filePath) caseData.file = `${filePath}`
-
   const updatedCase = await Case.findByIdAndUpdate(caseId,
     {$set: caseData},
     {new: true}
@@ -137,8 +101,7 @@ export const editCase = async (req) => {
   return { updatedCase }
 }
 
-export const deleteCase = async (req) => {
-  const caseId = req.params.id
+export const deleteCase = async (caseId) => {
   const caseData = await Case.findById(caseId)
 
   if (!caseData) {
@@ -206,9 +169,7 @@ export const searchCase = async (query) => {
   return cases;
 }
 
-export const getCaseById = async (req) => {
-  const caseId = req?.params?.id
-
+export const getCaseById = async (caseId) => {
   if (!caseId) {
     throw new CustomError(
       statusCodes?.notFound,
