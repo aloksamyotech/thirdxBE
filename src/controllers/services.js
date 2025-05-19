@@ -21,6 +21,11 @@ export const getServiceById = async (req, res, next) => {
   res.status(statusCodes?.ok).send(searchData)
 }
 
+export const getServiceswithPagination = async (req, res) => {
+  const searchData = await services.getServiceswithPagination(req?.query)
+  res.status(statusCodes?.ok).send(searchData)
+}
+
 export const getAllServices = async (req, res) => {
   const searchData = await services.getAllServices(req?.query)
   res.status(statusCodes?.ok).send(searchData)
