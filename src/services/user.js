@@ -221,10 +221,19 @@ export const getUserwithPagination = async (query) => {
   const skip = (pageNumber - 1) * limitNumber
   const searchKeys = {
     'personalInfo.firstName': search,
+    'personalInfo.lastName': search,
+    role: search,
+    subRole: search,
   }
 
+  const searchConditions = Object.entries(regexFilter(searchKeys)).map(
+    ([key, value]) => ({
+      [key]: value,
+    })
+  )
+
   const filter = {
-    ...regexFilter(searchKeys),
+    $or: searchConditions,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
   }
