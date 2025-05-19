@@ -1,7 +1,13 @@
 import mongoose from 'mongoose'
- 
+import { v4 as uuidv4 } from 'uuid'
+
 const caseSchema = new mongoose.Schema(
   {
+    uniqueId: {
+      type: String,
+      unique: true,
+      default: uuidv4,
+    },
     serviceUserId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'user',
@@ -39,8 +45,8 @@ const caseSchema = new mongoose.Schema(
       default: false,
     },
     isArchive: {
-        type: Boolean,
-        default: false,
+      type: Boolean,
+      default: false,
     },
     isActive: {
       type: Boolean,
@@ -53,6 +59,6 @@ const caseSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
- 
+
 const Case = mongoose.model('Case', caseSchema)
 export default Case
