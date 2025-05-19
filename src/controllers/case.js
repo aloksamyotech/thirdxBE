@@ -18,7 +18,8 @@ export const addCase = async (req, res) => {
     description,
   } = req.body
 
-  const filePath = req?.file?.path
+
+ 
 
   const caseData = {
     serviceUserId,
@@ -35,6 +36,9 @@ export const addCase = async (req, res) => {
     fundraisingActivities,
     description,
   }
+  
+  const filePath = req?.file?.path?.replace(/\\/g, '/');
+
   if (filePath) caseData.file = `${filePath}`
 
   const addCases = await cases.addCase(caseData)
