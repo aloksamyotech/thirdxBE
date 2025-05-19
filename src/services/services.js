@@ -133,7 +133,7 @@ export const editServices = async (serviceId, serviceData) => {
   if (!serviceId) {
     throw new CustomError(
       statusCodes?.badRequest,
-      'Invalid Service ID',
+     Message.invalidServiceId,
       errorCodes?.bad_request
     );
   }
@@ -143,7 +143,7 @@ export const editServices = async (serviceId, serviceData) => {
   if (!existingService) {
     throw new CustomError(
       statusCodes?.notFound,
-      Message?.notFound || 'Service not found',
+      Message?.notFound ,
       errorCodes?.not_found
     );
   }
