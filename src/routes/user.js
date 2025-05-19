@@ -10,6 +10,7 @@ import {
   deleteUser,
   getAllServiceUser,
   getAllUsers,
+  getUserwithPagination
 } from '../controllers/user.js'
 import { upload } from '../core/helpers/multer.js'
 
@@ -24,5 +25,6 @@ router.get('/getUserById/:userId', asyncHandler(getUserById))
 router.get('/getAllUsDistricts', asyncHandler(getAllUsDistricts))
 router.post('/edituser/:userId', upload.single('file'), asyncHandler(editUser))
 router.put('/deleteuser/:userId', asyncHandler(deleteUser))
+router.get('/allwithpagination', asyncHandler(getUserwithPagination))
 
 export default router

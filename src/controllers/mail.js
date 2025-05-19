@@ -41,4 +41,9 @@ export const deleteMail = async (req, res) => {
     res.status(statusCodes?.ok).send(deleteMail)
 }
 
+export const getMailWithPagination = async (req, res) => {
+  const searchData = await  mailService.getMailWithPagination(req?.query)
+  res.status(statusCodes?.ok).send(searchData)
+}
+
 
