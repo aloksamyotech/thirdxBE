@@ -31,11 +31,7 @@ export const deleteCaseNote = async (req, res) => {
   const deletedServices = await casesNote.deleteCaseNote(caseNoteId)
   res.status(statusCodes?.ok).send(deletedServices)
 }
- 
-// export const searchCase = async (req, res, next) => {
-//     const searchData = await cases.searchCase(req.query);
-//     res.status(statusCodes.ok).send(searchData);
-// };
+
  
 export const getCaseNoteById = async (req, res) => {
     const caseNoteId = req?.params?.id

@@ -13,10 +13,10 @@ import { upload } from '../core/helpers/multer.js'
 
 const router = Router()
 
-router.post('/addCaseNote',  upload.single('file'),asyncHandler(addCaseNote));
-router.patch('/deleteCaseNote/:id', asyncHandler(deleteCaseNote))
-router.get('/getCaseNoteById/:id', asyncHandler(getCaseNoteById))
-router.get('/getAllCasesNote', asyncHandler(getAllCaseNote))
-router.put('/editCaseNote/:caseNoteId', upload.single('file'), asyncHandler(editCaseNote));
+router.post('/add',  upload.single('file'),asyncHandler(addCaseNote));
+router.patch('/delete/:id', asyncHandler(deleteCaseNote))
+router.get('/getById/:id', asyncHandler(getCaseNoteById))
+router.get('/getAll', asyncHandler(getAllCaseNote))
+router.put('/edit/:caseNoteId', upload.single('file'), asyncHandler(editCaseNote));
 
 export default router
