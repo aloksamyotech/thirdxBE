@@ -36,6 +36,7 @@ export const Message = {
   userNotGet: 'Fetching Error User',
   slot_unavailable: 'Slot Not Available',
   notCreated: 'Not Created',
+  invalidServiceId: 'Invalid Service ID',
   notUpdated: ' Not Updated',
   notDeleted: ' Not Deleted',
   notRegistered: 'User Not Registered',
