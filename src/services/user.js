@@ -181,6 +181,31 @@ export const deleteUser = async (userId) => {
   }
   return { statusUpdate }
 }
+export const editArchiveVolunteer = async (userId) => {
+  const checkExist = await user.findById({ _id: userId })
+
+  if (!checkExist) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  const statusUpdate = await user.findByIdAndUpdate(
+    { _id: userId },
+    { isArchive: true },
+    { new: true }
+  )
+
+  if (!statusUpdate) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    )
+  }
+  return { statusUpdate }
+}
 
 export const getUserwithPagination = async (query) => {
   const { search, status, page = 1, limit = 10 } = query || {}
