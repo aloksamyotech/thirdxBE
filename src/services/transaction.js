@@ -123,11 +123,23 @@ export const getTransactionwithPagination = async (query) => {
   }
   const skip = (pageNumber - 1) * limitNumber
   const searchKeys = {
+    assignedTo: search,
     campaign: search,
   }
 
+  const searchConditions = Object.entries(regexFilter(searchKeys)).map(
+    ([key, value]) => ({
+      [key]: value,
+    })
+  )
+
+  const filter = {
+    $or: searchConditions,
+  }
+
+
   const allTransaction = await transaction
-    .find(regexFilter(searchKeys))
+    .find(filter)
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })

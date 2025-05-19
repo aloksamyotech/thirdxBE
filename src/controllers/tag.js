@@ -53,3 +53,8 @@ export const deleteTags = async (req, res) => {
     const deleteTags = await tagService.deleteTags(tagId)
     res.status(statusCodes?.ok).send(deleteTags)
 }
+
+export const getTagwithPagination = async (req, res) => {
+  const searchData = await tagService.getTagwithPagination(req?.query)
+  res.status(statusCodes?.ok).send(searchData)
+}

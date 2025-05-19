@@ -2,9 +2,10 @@ import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import Case from '../models/cases.js'
 import mongoose from 'mongoose'
+import { regexFilter } from '../core/common/common.js'
 
 export const addCase = async (caseData) => {
-  const {  
+  const {
     serviceUserId,
     serviceId,
     serviceType,
@@ -18,9 +19,9 @@ export const addCase = async (caseData) => {
     fundingInterest,
     fundraisingActivities,
     description,
-    filePath
-   } = caseData
- 
+    filePath,
+  } = caseData
+
   if (!serviceUserId || !serviceId || !serviceType || !serviceStatus) {
     throw new CustomError(
       statusCodes.badRequest,
@@ -57,24 +58,24 @@ export const editCase = async (caseId, caseData) => {
     fundingInterest,
     fundraisingActivities,
     description,
-  } = caseData;
+  } = caseData
 
   if (!caseId) {
     throw new CustomError(
       statusCodes?.badRequest,
-     Message.notFound,
+      Message.notFound,
       errorCodes?.bad_request
-    );
+    )
   }
 
-  const existingCase = await Case.findById(caseId);
+  const existingCase = await Case.findById(caseId)
 
   if (!existingCase) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
-    );
+    )
   }
 
   if (!serviceUserId || !serviceId || !serviceType || !serviceStatus) {
@@ -85,10 +86,11 @@ export const editCase = async (caseId, caseData) => {
     )
   }
 
-  const updatedCase = await Case.findByIdAndUpdate(caseId,
-    {$set: caseData},
-    {new: true}
-  );
+  const updatedCase = await Case.findByIdAndUpdate(
+    caseId,
+    { $set: caseData },
+    { new: true }
+  )
 
   if (!updatedCase) {
     throw new CustomError(
@@ -166,7 +168,7 @@ export const searchCase = async (query) => {
     })
     .sort({ createdAt: -1 })
 
-  return cases;
+  return cases
 }
 
 export const getCaseById = async (caseId) => {
