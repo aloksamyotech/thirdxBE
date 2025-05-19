@@ -40,6 +40,10 @@ const caseNoteSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    isArchive: {
+        type: Boolean,
+        default: false,
+    }
 })
 
 const CaseNote = mongoose.model('CaseNote', caseNoteSchema)
