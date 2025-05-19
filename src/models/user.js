@@ -85,7 +85,7 @@ const UserSchema = new mongoose.Schema(
     role: {
       type: String,
       required: true,
-      enum: ['service_user', 'volunteer', 'donor'],
+      enum: ['service_user', 'volunteer', 'donor','user'],
     },
     subRole: {
       type: String,
