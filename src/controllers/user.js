@@ -5,9 +5,12 @@ import user from '../models/user.js'
 export const addUser = async (req, res) => {
   const userData = req?.body || {}
   const filePath = req?.file?.path
+
   if (filePath) {
-    userData.otherInfo = {}
-    userData.otherInfo.file = `${filePath}`
+   
+   const normalizedPath = '/' + filePath.replace(/\\/g, '/');
+    userData.otherInfo = {};
+    userData.otherInfo.file = normalizedPath;
   }
   const addUser = await userService.addUser(userData)
   res.status(statusCodes?.ok).send(addUser)

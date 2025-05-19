@@ -94,7 +94,7 @@ export const getUserById = async (userId) => {
       errorCodes?.user_not_found
     )
   }
-  return userData
+ return userData
 }
 
 export const getAllUsDistricts = async () => {
