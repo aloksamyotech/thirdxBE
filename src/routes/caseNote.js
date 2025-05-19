@@ -5,9 +5,10 @@ import { asyncHandler } from '../utils/asyncWrapper.js'
 import {
 addCaseNote,
 editCaseNote,
-getAllCaseNote,
+getAllWithPagination,
 getCaseNoteById,
-deleteCaseNote
+deleteCaseNote,
+getAllCaseNote
 } from '../controllers/caseNote.js'
 import { upload } from '../core/helpers/multer.js'
 
@@ -17,6 +18,7 @@ router.post('/add',  upload.single('file'),asyncHandler(addCaseNote));
 router.patch('/delete/:id', asyncHandler(deleteCaseNote))
 router.get('/getById/:id', asyncHandler(getCaseNoteById))
 router.get('/getAll', asyncHandler(getAllCaseNote))
+router.get('/getAllWithPagination', asyncHandler(getAllWithPagination))
 router.put('/edit/:caseNoteId', upload.single('file'), asyncHandler(editCaseNote));
 
 export default router
