@@ -9,6 +9,10 @@ const MailingListSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
       },
+      isArchive: {
+        type: Boolean,
+        default: false,
+    },
     filters: [
         {
             logic: {
