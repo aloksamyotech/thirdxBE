@@ -17,6 +17,9 @@ const SessionSchema = new mongoose.Schema(
     isDeleted: {
       type: Boolean,
       default: false,
+    },isArchive: {
+        type: Boolean,
+        default: false,
     },
     file: {
       type: String,

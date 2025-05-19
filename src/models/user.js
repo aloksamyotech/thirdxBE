@@ -85,7 +85,7 @@ const UserSchema = new mongoose.Schema(
     role: {
       type: String,
       required: true,
-      enum: ['service_user', 'volunteer', 'donor','user'],
+      enum: ['service_user', 'volunteer', 'donor', 'user'],
     },
     subRole: {
       type: String,
@@ -93,6 +93,10 @@ const UserSchema = new mongoose.Schema(
     },
     isActive: { type: Boolean, required: true, default: true },
     isDeleted: { type: Boolean, default: false },
+    isArchive: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 )

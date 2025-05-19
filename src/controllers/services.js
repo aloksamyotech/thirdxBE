@@ -64,7 +64,7 @@ export const getServiceswithPagination = async (req, res) => {
 }
 
 export const getAllServices = async (req, res) => {
-  const searchData = await services.getAllServices()
+  const searchData = await services.getAllServices(req?.query)
   res.status(statusCodes?.ok).send(searchData)
 }
 
