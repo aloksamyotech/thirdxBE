@@ -52,3 +52,8 @@ export const deleteTransaction = async (req, res) => {
     const deleteTransaction = await transactionService.deleteTransaction(id)
     res.status(statusCodes?.ok).send(deleteTransaction)
 }
+
+export const getTransactionwithPagination = async (req, res) => {
+  const searchData = await transactionService.getTransactionwithPagination(req?.query)
+  res.status(statusCodes?.ok).send(searchData)
+}
