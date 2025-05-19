@@ -90,7 +90,7 @@ export const getServiceById = async (serviceId) => {
   return { userData }
 }
 
-export const getAllServices = async (query) => {
+export const getServiceswithPagination = async (query) => {
   const { search, status, page = 1, limit = 10 } = query || {};
   let pageNumber = Number(page);
   let limitNumber = Number(limit);
@@ -138,6 +138,9 @@ export const editServices = async (serviceId, serviceData) => {
     );
   }
 
+
+
+
   const existingService = await Services.findById(serviceId);
 
   if (!existingService) {
@@ -164,3 +167,10 @@ export const editServices = async (serviceId, serviceData) => {
 
   return { updatedService };
 };
+
+
+export const getAllServices = async () => {
+  return await Services.find({ isDeleted: false }).sort({
+    createdAt: -1,
+  });
+}
