@@ -25,7 +25,7 @@ export const addCaseNote = async (req, res) => {
    res.status(statusCodes?.ok).send(addCases);
 }
  
-export const deleteCase = async (req, res) => {
+export const deleteCaseNote = async (req, res) => {
     const caseNoteId = req.params.id
   const deletedServices = await casesNote.deleteCaseNote(caseNoteId)
   res.status(statusCodes?.ok).send(deletedServices)
