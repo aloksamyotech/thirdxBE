@@ -38,12 +38,19 @@ export const getCaseNoteById = async (req, res) => {
     const searchData = await casesNote.getCaseNoteById(caseNoteId)
   res.status(statusCodes?.ok).send(searchData)
 }
+
  
 export const getAllCaseNote = async (req, res) => {
+  const searchData = await casesNote.getAllCaseNote()
+  res.status(statusCodes?.ok).send(searchData)
+}
+
+ 
+export const getAllWithPagination = async (req, res) => {
 
    const { search, status, page, limit } = req.query;
     
-    const result = await casesNote.getAllCaseNote({
+    const result = await casesNote.getAllWithPagination({
       search,
       status,
       page,

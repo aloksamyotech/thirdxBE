@@ -79,7 +79,21 @@ export const getCaseNoteById = async (caseNoteId) => {
   return { caseNoteData }
 }
 
-export const getAllCaseNote = async (query) => {
+export const getAllCaseNote = async () => {
+  const allCaseNote = await CaseNote.find({ isDeleted: false }).sort({
+    createdAt: -1,
+  })
+  if (!allCaseNote) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  return { allCaseNote }
+}
+
+export const getAllWithPagination = async (query) => {
   const { search, status, page = 1, limit = 10 } = query || {};
   let pageNumber = Number(page);
   let limitNumber = Number(limit);
