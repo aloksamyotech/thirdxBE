@@ -91,41 +91,50 @@ export const getServiceById = async (serviceId) => {
 }
 
 export const getServiceswithPagination = async (query) => {
-  const { search, status, page = 1, limit = 10 } = query || {};
-  let pageNumber = Number(page);
-  let limitNumber = Number(limit);
+  const { search, status, page = 1, limit = 10 } = query || {}
+  let pageNumber = Number(page)
+  let limitNumber = Number(limit)
   if (pageNumber < 1) {
     pageNumber = 1
   }
-
+ 
   if (limitNumber < 1) {
     limitNumber = 10
   }
-  const skip = (pageNumber - 1) * limitNumber;
+  const skip = (pageNumber - 1) * limitNumber
   const searchKeys = {
     name: search,
-  };
-
+    code: search,
+  }
+  const searchConditions = Object.entries(regexFilter(searchKeys)).map(
+    ([key, value]) => ({
+      [key]: value,
+    })
+  )
+ 
   const filter = {
-    ...regexFilter(searchKeys),
-    ...(status !== undefined && status !== '' && { isActive: status === 'true' })
-  };
-
+    $or: searchConditions,
+    ...(status !== undefined &&
+      status !== '' && { isActive: status === 'true' }),
+  }
+ 
+  console.log('filter', filter)
+ 
   const allService = await Services.find(filter)
     .skip(skip)
     .limit(limitNumber)
-    .sort({ createdAt: -1 });
-
-  const total = await Services.countDocuments(filter);
+    .sort({ createdAt: -1 })
+ 
+  const total = await Services.countDocuments(filter)
   return {
     data: allService,
     meta: {
       total,
       page: pageNumber,
       limit: limitNumber,
-      totalPages: Math.ceil(total / limitNumber)
-    }
-  };
+      totalPages: Math.ceil(total / limitNumber),
+    },
+  }
 }
 
 export const editServices = async (serviceId, serviceData) => {
