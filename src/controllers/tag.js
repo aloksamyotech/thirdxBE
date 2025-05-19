@@ -1,56 +1,55 @@
 import * as tagService from '../services/tag.js'
 import { statusCodes } from '../core/common/constant.js'
 
-export const addTags = async (req, res, next) => {
-    const addTags = await tagService.addTags(
-        req,
-        res,
-        next
-    )
+export const addTags = async (req, res) => {
+    const data = req?.body || {}
+    const addTags = await tagService.addTags(data)
     res.status(statusCodes?.ok).send(addTags)
 }
 
-export const getAllTags = async (req, res, next) => {
-    const alltags = await tagService.getAllTags(
-        req,
-        res,
-        next
-    )
+export const getAllTags = async (req, res) => {
+    const alltags = await tagService.getAllTags()
     res.status(statusCodes?.ok).send(alltags)
 }
 
-export const updateTagStatus = async (req, res, next) => {
-    const updateTagStatus = await tagService.updateTagStatus(
-        req,
-        res,
-        next
-    )
+export const updateTagStatus = async (req, res) => {
+    const { tagId } = req?.params || {}
+    const { isActive } = req?.body || {}
+    const updateTagStatus = await tagService.updateTagStatus(tagId, isActive)
     res.status(statusCodes?.ok).send(updateTagStatus)
 }
 
-export const filter = async (req, res, next) => {
-    const filter = await tagService.filter(
-        req,
-        res,
-        next
-    )
+export const filter = async (req, res) => {
+    const { name, status } = req?.query || {}
+    const filter = await tagService.filter(name, status)
     res.status(statusCodes?.ok).send(filter)
 }
 
 export const editTags = async (req, res, next) => {
+    const { tagId } = req.params.tagId;
+  
+    const {
+        name,
+        startDate,
+        endDate,
+        note
+    } = req.body;
+
+    const tagData = {
+        name,
+        startDate,
+        endDate,
+        note
+    };
+  
     const editTags = await tagService.editTags(
-        req,
-        res,
-        next
+        tagId, tagData
     )
     res.status(statusCodes?.ok).send(editTags)
 }
 
-export const deleteTags = async (req, res, next) => {
-    const deleteTags = await tagService.deleteTags(
-        req,
-        res,
-        next
-    )
+export const deleteTags = async (req, res) => {
+    const tagId = req.params.tagId
+    const deleteTags = await tagService.deleteTags(tagId)
     res.status(statusCodes?.ok).send(deleteTags)
 }

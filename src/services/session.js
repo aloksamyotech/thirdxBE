@@ -4,41 +4,7 @@ import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import Session from '../models/session.js'
 
-export const addSession = async (req) => {
-  const {
-    name,
-    country,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    time,
-    date,
-    fundraisingActivities,
-    serviceId,
-  } = req.body
- 
-  const sessionData = {
-    name,
-    country,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    time,
-    date,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-    serviceId,
-  }
- 
-  if (req.file && req.file.filename) {
-    sessionData.file = `${req.file.filename}`
-  }
- 
+export const addSession = async (sessionData) => {
   const newSession = await Session.create(sessionData)
  
   if (!newSession) {
@@ -52,23 +18,7 @@ export const addSession = async (req) => {
   return { newSession }
 }
 
-export const editSession = async (req) => {
-  const id = req.params.id;
-  const {
-    name,
-    country,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    time,
-    date,
-    fundraisingActivities,
-    serviceId,
-  } = req.body
-
+export const editSession = async (id, sessionData) => {
    if (!id) {
       throw new CustomError(
         statusCodes?.badRequest,
@@ -87,25 +37,6 @@ export const editSession = async (req) => {
       );
     }
  
-  const sessionData = {
-    name,
-    country,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    time,
-    date,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-    serviceId,
-  }
- 
-  if (req.file && req.file.filename) {
-    sessionData.file = `${req.file.filename}`
-  }
- 
   const updateSession = await Session.findByIdAndUpdate(id,
     {$set : sessionData},
     {new: true}
@@ -122,9 +53,8 @@ export const editSession = async (req) => {
   return { updateSession }
 }
  
-export const deleteSession = async (req) => {
-  const sessionId = req.params.id
-  const serssionData = await Session.findById(serviceId)
+export const deleteSession = async (sessionId) => {
+  const serssionData = await Session.findById(sessionId)
 
   if (!serssionData) {
     throw new CustomError(
@@ -149,9 +79,7 @@ export const deleteSession = async (req) => {
   return { statusUpdate }
 }
 
-export const searchSession = async (req, res) => {
-  const { name, isActive, type } = req.query
-
+export const searchSession = async (name, isActive, type) => {
   const searchQuery = {}
   if (name) {
     searchQuery.name = { $regex: name, $options: 'i' }
@@ -174,9 +102,7 @@ export const searchSession = async (req, res) => {
   }
 }
 
-export const getSessionById = async (req) => {
-  const serviceId = req?.params.id
-
+export const getSessionById = async (serviceId) => {
   if (!serviceId) {
     throw new CustomError(
       statusCodes?.notFound,
