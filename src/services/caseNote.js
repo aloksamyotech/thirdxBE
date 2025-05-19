@@ -6,7 +6,7 @@ import { regexFilter } from '../core/common/common.js'
 
 
 export const createCaseNote = async (caseNoteData) => {
-  const { caseId, date, configurationId, subject, note, filePath } = caseNoteData;
+  const { caseId, date, configurationId, subject, note, filePath, time} = caseNoteData;
 
         if (!caseId || !date || !configurationId || !subject) {
             throw new CustomError(
@@ -23,6 +23,7 @@ export const createCaseNote = async (caseNoteData) => {
             subject,
             note: note || '',
             file: filePath || '',
+            time
         });
 
         return newCaseNote;

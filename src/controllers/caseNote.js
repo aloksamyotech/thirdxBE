@@ -1,13 +1,13 @@
 import * as casesNote from '../services/caseNote.js'
 import { statusCodes } from '../core/common/constant.js'
-import CaseNote from '../models/caseNote.js'
- 
+
 export const addCaseNote = async (req, res) => {
   const {
     caseId,
     date,
     configurationId,
     subject,
+    time,
     note
   } = req.body
 
@@ -19,6 +19,7 @@ export const addCaseNote = async (req, res) => {
     configurationId,
     subject,
     note,
+    time,
     filePath
   }
    const addCases = await casesNote.createCaseNote(caseNoteData)
@@ -61,25 +62,28 @@ export const getAllCaseNote = async (req, res) => {
 }
 
 export const editCaseNote = async (req, res) => {
-   const {
-    caseId,
-    date,
-    configurationId,
-    subject,
-    note
-  } = req.body
-    const { caseNoteId } = req.params;
-   const caseNoteData = {
-    caseId,
-    date,
-    configurationId,
-    subject,
-    note,
-    filePath
-  }
-  const filePath = req?.file?.path
-  const editCase = await casesNote.editCaseNote(caseNoteId,caseNoteData,filePath)
+    const {
+      caseId,
+      date,
+      configurationId,
+      subject,
+      note,
+      time
+    } = req.body;
 
-  res.status(statusCodes?.ok).send(editCase)
+    const { caseNoteId } = req.params;
+    const filePath = req?.file?.path || null;
+
+    const caseNoteData = {
+      caseId,
+      date,
+      configurationId,
+      subject,
+      note,
+      time
+    };
+
+    const updatedNote = await casesNote.editCaseNote(caseNoteId, caseNoteData, filePath);
+    res.status(statusCodes?.ok).send(updatedNote)
 }
  
