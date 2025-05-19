@@ -8,6 +8,7 @@ import {
 } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import axios from 'axios'
+import { regexFilter } from '../core/common/common.js'
 
 export const addUser = async (userData) => {
   const newUser = await user.create(userData)
@@ -93,7 +94,7 @@ export const getUserById = async (userId) => {
       errorCodes?.user_not_found
     )
   }
-  return userData
+ return userData
 }
 
 export const getAllUsDistricts = async () => {
@@ -179,4 +180,44 @@ export const deleteUser = async (userId) => {
     )
   }
   return { statusUpdate }
+}
+
+export const getUserwithPagination = async (query) => {
+  const { search, status, page = 1, limit = 10 } = query || {}
+  let pageNumber = Number(page)
+  let limitNumber = Number(limit)
+  if (pageNumber < 1) {
+    pageNumber = 1
+  }
+
+  if (limitNumber < 1) {
+    limitNumber = 10
+  }
+  const skip = (pageNumber - 1) * limitNumber
+  const searchKeys = {
+    'personalInfo.firstName': search,
+  }
+
+  const filter = {
+    ...regexFilter(searchKeys),
+    ...(status !== undefined &&
+      status !== '' && { isActive: status === 'true' }),
+  }
+
+  const allUser = await user
+    .find(filter)
+    .skip(skip)
+    .limit(limitNumber)
+    .sort({ createdAt: -1 })
+
+  const total = await user.countDocuments(filter)
+  return {
+    data: allUser,
+    meta: {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
+    },
+  }
 }
