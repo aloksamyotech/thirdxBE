@@ -181,7 +181,9 @@ export const deleteUser = async (userId) => {
   }
   return { statusUpdate }
 }
-export const editArchiveVolunteer = async (userId) => {
+
+
+export const archiveUser = async (userId) => {
   const checkExist = await user.findById({ _id: userId })
 
   if (!checkExist) {
@@ -193,7 +195,7 @@ export const editArchiveVolunteer = async (userId) => {
   }
   const statusUpdate = await user.findByIdAndUpdate(
     { _id: userId },
-    { isArchive: true },
+    { archive: true },
     { new: true }
   )
 
@@ -236,6 +238,7 @@ export const getUserwithPagination = async (query) => {
     $or: searchConditions,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
+      archive:false,
     ...(district !== undefined && district !== '' && { 'contactInfo.district': district }),
     ...(gender !== undefined && gender !== '' && { 'personalInfo.gender': gender }),
     ...(nickName !== undefined && nickName !== '' && { 'personalInfo.nickName': nickName }),

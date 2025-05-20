@@ -8,7 +8,8 @@ import {
   searchSession,
   getSessionById,
   getAllSession,
-  editSession
+  editSession,
+  getAllWithPagination,
 } from '../controllers/session.js'
 import { upload } from '../core/helpers/multer.js'
 
@@ -20,6 +21,6 @@ router.get('/search', asyncHandler(searchSession))
 router.get('/getSessionById/:id', asyncHandler(getSessionById))
 router.get('/getAllSession', asyncHandler(getAllSession))
 router.put('/editSession/:id', upload.single('file'), asyncHandler(editSession))
-
+router.get('/allwithpagination', asyncHandler(getAllWithPagination))
 
 export default router
