@@ -1,7 +1,6 @@
 import Form from '../models/form.js';
 
-export const addForm = async (req) => {
-    const fields = req?.body
+export const addForm = async (fields) => {
     let setTitle
     const formatfields = fields
         .map((f, index) => {
@@ -19,7 +18,7 @@ export const addForm = async (req) => {
         })
 
     const form = new Form({
-        title: setTitle,//baad me user fill karega
+        title: setTitle,
         template: 'default',
         fields: formatfields
     });
@@ -28,8 +27,7 @@ export const addForm = async (req) => {
     return form
 }
 
-export const getFormById = async (req) => {
-    const { formId } = req?.params
+export const getFormById = async (formId) => {
     const form = await Form.findById({ _id: formId });
     if (!form) return res.status(404).json({ error: 'Form not found' });
     return form
