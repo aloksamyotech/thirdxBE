@@ -16,14 +16,14 @@ export const addConfiguration = async (configData) => {
 }
 
 export const updateConfiguration = async (configId, configData) => {
-if (!configId) {
+  if (!configId) {
     return new CustomError(
       statusCodes?.badRequest,
       'Configuration ID is required',
       errorCodes?.bad_request
     )
   }
-const updatedConfiguration = await configuration.findByIdAndUpdate(
+  const updatedConfiguration = await configuration.findByIdAndUpdate(
     configId,
     {
       $set: configData,

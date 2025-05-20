@@ -137,7 +137,6 @@ export const getTransactionwithPagination = async (query) => {
     $or: searchConditions,
   }
 
-
   const allTransaction = await transaction
     .find(filter)
     .skip(skip)

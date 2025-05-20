@@ -285,13 +285,13 @@ export const getCasewithPagination = async (query) => {
   if (search) {
     filter.serviceUserId = search
   }
-  
+
   const allCase = await Case.find(filter)
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
     .populate('serviceUserId')
-    
+
   const total = await Case.countDocuments(filter)
 
   return {
@@ -304,5 +304,3 @@ export const getCasewithPagination = async (query) => {
     },
   }
 }
-
-

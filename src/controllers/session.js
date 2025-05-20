@@ -16,7 +16,7 @@ export const addSession = async (req, res) => {
     fundraisingActivities,
     serviceId,
   } = req.body
- 
+
   const sessionData = {
     name,
     country,
@@ -31,7 +31,7 @@ export const addSession = async (req, res) => {
     fundraisingActivities,
     serviceId,
   }
- 
+
   if (req.file && req.file.filename) {
     sessionData.file = `${req.file.filename}`
   }
@@ -64,7 +64,7 @@ export const getAllSession = async (req, res) => {
 }
 
 export const editSession = async (req, res) => {
-  const id = req.params.id;
+  const id = req.params.id
   const {
     name,
     country,
@@ -94,7 +94,7 @@ export const editSession = async (req, res) => {
     fundraisingActivities,
     serviceId,
   }
- 
+
   if (req.file && req.file.filename) {
     sessionData.file = `${req.file.filename}`
   }
@@ -107,4 +107,3 @@ export const getAllWithPagination = async (req, res) => {
   const searchData = await session.getAllWithPagination(req?.query)
   res.status(statusCodes?.ok).send(searchData)
 }
-

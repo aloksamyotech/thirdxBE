@@ -94,7 +94,7 @@ export const getUserById = async (userId) => {
       errorCodes?.user_not_found
     )
   }
- return userData
+  return userData
 }
 
 export const getAllUsDistricts = async () => {
@@ -182,7 +182,6 @@ export const deleteUser = async (userId) => {
   return { statusUpdate }
 }
 
-
 export const archiveUser = async (userId) => {
   const checkExist = await user.findById({ _id: userId })
 
@@ -210,7 +209,19 @@ export const archiveUser = async (userId) => {
 }
 
 export const getUserwithPagination = async (query) => {
-  const { search, status, district, createdAt, gender, nickName, uniqueId, campaigns, country, page = 1, limit = 10 } = query || {}
+  const {
+    search,
+    status,
+    district,
+    createdAt,
+    gender,
+    nickName,
+    uniqueId,
+    campaigns,
+    country,
+    page = 1,
+    limit = 10,
+  } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -238,21 +249,28 @@ export const getUserwithPagination = async (query) => {
     $or: searchConditions,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
-      archive:false,
-    ...(district !== undefined && district !== '' && { 'contactInfo.district': district }),
-    ...(gender !== undefined && gender !== '' && { 'personalInfo.gender': gender }),
-    ...(nickName !== undefined && nickName !== '' && { 'personalInfo.nickName': nickName }),
-    ...(uniqueId !== undefined && uniqueId !== '' && { 'uniqueId': uniqueId }),
-    ...(campaigns !== undefined && campaigns !== '' && { 'otherInfo.campaigns': campaigns }),
-    ...(country !== undefined && country !== '' && { 'contactInfo.country': country }),
+    archive: false,
+    ...(district !== undefined &&
+      district !== '' && { 'contactInfo.district': district }),
+    ...(gender !== undefined &&
+      gender !== '' && { 'personalInfo.gender': gender }),
+    ...(nickName !== undefined &&
+      nickName !== '' && { 'personalInfo.nickName': nickName }),
+    ...(uniqueId !== undefined && uniqueId !== '' && { uniqueId: uniqueId }),
+    ...(campaigns !== undefined &&
+      campaigns !== '' && { 'otherInfo.campaigns': campaigns }),
+    ...(country !== undefined &&
+      country !== '' && { 'contactInfo.country': country }),
 
-    ...(createdAt !== undefined && createdAt !== '' && {
-      createdAt: {
-        $gte: new Date(createdAt),
-        $lt: new Date(new Date(createdAt).setDate(new Date(createdAt).getDate() + 1))
-      }
-    }),
-
+    ...(createdAt !== undefined &&
+      createdAt !== '' && {
+        createdAt: {
+          $gte: new Date(createdAt),
+          $lt: new Date(
+            new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
+          ),
+        },
+      }),
   }
 
   const allUser = await user
