@@ -61,6 +61,7 @@ export const Message = {
   inValidData: 'Invalid Data',
   duplicateData: 'Duplicate Visitor Data',
   serviceNotUpdated: 'Service could not be updated',
+  TagIDRequired:'TagID Required'
 }
 
 export const errorCodes = Object.freeze({
