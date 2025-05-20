@@ -5,10 +5,10 @@ import { asyncHandler } from '../utils/asyncWrapper.js'
 import {
 addCaseNote,
 editCaseNote,
-getAllWithPagination,
 getCaseNoteById,
 deleteCaseNote,
-getAllCaseNote
+getAllCaseNote,
+getAllWithPagination
 } from '../controllers/caseNote.js'
 import { upload } from '../core/helpers/multer.js'
 

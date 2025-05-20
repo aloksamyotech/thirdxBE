@@ -102,3 +102,9 @@ export const editSession = async (req, res) => {
   const editSession = await session.editSession(id, sessionData)
   res.status(statusCodes?.ok).send(editSession)
 }
+
+export const getAllWithPagination = async (req, res) => {
+  const searchData = await session.getAllWithPagination(req?.query)
+  res.status(statusCodes?.ok).send(searchData)
+}
+
