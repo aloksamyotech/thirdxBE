@@ -1,16 +1,20 @@
 import mongoose from 'mongoose'
+import { v4 as uuidv4 } from 'uuid'
 const UserSchema = new mongoose.Schema(
   {
+    uniqueId: {
+      type: String,
+      unique: true,
+      default: uuidv4,
+    },
     personalInfo: {
       title: String,
       firstName: {
         type: String,
-        // required: true,
       },
       middleName: String,
       lastName: {
         type: String,
-        // required: true
       },
       nickName: String,
       gender: String,
@@ -85,7 +89,7 @@ const UserSchema = new mongoose.Schema(
     role: {
       type: String,
       required: true,
-      enum: ['service_user', 'volunteer', 'donor','user'],
+      enum: ['service_user', 'volunteer', 'donor', 'user'],
     },
     subRole: {
       type: String,

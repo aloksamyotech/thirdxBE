@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { asyncHandler } from '../utils/asyncWrapper.js'
-import { addMail, filter, getAllMail, editMail, deleteMail } from '../controllers/mail.js'
+import { addMail, filter, getAllMail, editMail, deleteMail, getMailWithPagination } from '../controllers/mail.js'
 
 const router = Router()
 
@@ -22,5 +22,7 @@ router.put(
 )
 
 router.put('/deletemail/:mailId', asyncHandler(deleteMail));
+
+router.get('/allwithpagination', asyncHandler(getMailWithPagination))
 
 export default router

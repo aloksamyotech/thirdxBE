@@ -5,6 +5,10 @@ const TagSchema = new mongoose.Schema({
     startDate: { type: Date },
     endDate: { type: Date },
     isDeleted: { type: Boolean, default: false },
+    isArchive: {
+        type: Boolean,
+        default: false,
+    },
     note:{type: String}
 });
 

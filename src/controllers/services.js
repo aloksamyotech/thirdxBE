@@ -30,9 +30,9 @@ export const addServices = async (req, res) => {
     fundraisingActivities,
   }
 
-  if (req.file && req.file.filename) {
-    serviceData.file = `${req.file.filename}`
-  }
+ if (req.file && req.file.filename) {
+  serviceData.file = `/uploads/${req.file.filename}`; 
+}
   const addServices = await services.addServices(serviceData)
   res.status(statusCodes?.ok).send(addServices)
 }
@@ -64,7 +64,7 @@ export const getServiceswithPagination = async (req, res) => {
 }
 
 export const getAllServices = async (req, res) => {
-  const searchData = await services.getAllServices()
+  const searchData = await services.getAllServices(req?.query)
   res.status(statusCodes?.ok).send(searchData)
 }
 

@@ -18,6 +18,10 @@ const caseNoteSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    time:{
+        type: String,
+        required: true
+    },
     note: {
         type: String,
     },
@@ -36,6 +40,10 @@ const caseNoteSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    isArchive: {
+        type: Boolean,
+        default: false,
+    }
 })
 
 const CaseNote = mongoose.model('CaseNote', caseNoteSchema)

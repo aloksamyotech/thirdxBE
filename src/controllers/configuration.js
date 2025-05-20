@@ -54,3 +54,8 @@ export const filter = async (req, res, next) => {
   const filter = await configurationService.filter(type, status)
   res.status(statusCodes?.ok).send(filter)
 }
+
+export const getConfigurationWithPagination = async (req, res) => {
+  const searchData = await configurationService.getConfigurationWithPagination(req?.query)
+  res.status(statusCodes?.ok).send(searchData)
+}

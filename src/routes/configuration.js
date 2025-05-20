@@ -7,7 +7,8 @@ import {
   getAllConfiguration,
   searchConfigurationName,
   updateConfigurationStatus,
-  updatedConfiguration
+  updatedConfiguration,
+  getConfigurationWithPagination
 } from '../controllers/configuration.js'
 
 const router = Router()
@@ -24,5 +25,8 @@ router.get(
   '/filter',
   asyncHandler(filter)
 )
+router.get('/allwithpagination', asyncHandler(getConfigurationWithPagination))
+
+
 
 export default router

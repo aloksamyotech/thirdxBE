@@ -6,7 +6,11 @@ const TagCategorySchema = new mongoose.Schema({
     tagsCanBeAppliedTo: [String],
     isActive: { type: Boolean, default: true },
     tags: [TagSchema],
-    isDeleted: { type: Boolean, default: false }
+    isDeleted: { type: Boolean, default: false },
+    isArchive: {
+        type: Boolean,
+        default: false,
+    },
 },
     { timestamps: true });
 
