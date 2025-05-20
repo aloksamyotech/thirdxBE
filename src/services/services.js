@@ -122,6 +122,7 @@ export const getServiceswithPagination = async (query) => {
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
+    .populate('serviceType', 'name')
 
   const total = await Services.countDocuments(filter)
   return {
@@ -176,5 +177,4 @@ export const getAllServices = async () => {
     .sort({
       createdAt: -1,
     })
-    .populate('serviceType', 'name')
 }
