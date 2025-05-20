@@ -68,7 +68,7 @@ export const editTags = async (tagId, tagData) => {
   if (!tagId) {
     throw new CustomError(
       statusCodes?.badRequest,
-      'TagId is required',
+      Message?.TagIDRequired,
       errorCodes?.bad_request
     )
   }
@@ -78,7 +78,7 @@ export const editTags = async (tagId, tagData) => {
   if (!existingTag) {
     throw new CustomError(
       statusCodes?.notFound,
-      Message?.notFound || 'Tag not found or Invalid TagID',
+      Message?.notFound,
       errorCodes?.not_found
     )
   }
