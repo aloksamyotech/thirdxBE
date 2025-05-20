@@ -181,7 +181,9 @@ export const deleteUser = async (userId) => {
   }
   return { statusUpdate }
 }
-export const editArchiveVolunteer = async (userId) => {
+
+
+export const archiveUser = async (userId) => {
   const checkExist = await user.findById({ _id: userId })
 
   if (!checkExist) {
@@ -193,7 +195,7 @@ export const editArchiveVolunteer = async (userId) => {
   }
   const statusUpdate = await user.findByIdAndUpdate(
     { _id: userId },
-    { isArchive: true },
+    { archive: true },
     { new: true }
   )
 

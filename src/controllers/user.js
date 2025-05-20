@@ -71,9 +71,13 @@ export const deleteUser = async (req, res) => {
   res.status(statusCodes?.ok).send(deleteUser)
 }
 
+export const archiveUser = async (req, res) => {
+  const { userId } = req?.params || {}
+  const archiveUser = await userService.archiveUser(userId)
+  res.status(statusCodes?.ok).send(archiveUser)
+}
 export const editArchiveVolunteer = async (req, res) => {
   const { userId } = req?.params || {}
-
   const editArchiveVolunteer = await userService.editArchiveVolunteer(userId)
   res.status(statusCodes?.ok).send(editArchiveVolunteer)
 }

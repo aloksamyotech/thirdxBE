@@ -11,7 +11,8 @@ import {
   editArchiveVolunteer,
   getAllServiceUser,
   getAllUsers,
-  getUserwithPagination
+  getUserwithPagination,
+  archiveUser
 } from '../controllers/user.js'
 import { upload } from '../core/helpers/multer.js'
 
@@ -27,6 +28,7 @@ router.get('/getAllUsDistricts', asyncHandler(getAllUsDistricts))
 router.post('/edituser/:userId', upload.single('file'), asyncHandler(editUser))
 router.put('/deleteuser/:userId', asyncHandler(deleteUser))
 router.put('/editArchiveVolunteer/:userId', asyncHandler(editArchiveVolunteer))
+router.put('/archive/:userId', asyncHandler(archiveUser))
 router.get('/allwithpagination', asyncHandler(getUserwithPagination))
 
 export default router
