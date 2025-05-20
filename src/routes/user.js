@@ -12,7 +12,7 @@ import {
   getAllServiceUser,
   getAllUsers,
   getUserwithPagination,
-  archiveUser
+  archiveUser,
 } from '../controllers/user.js'
 import { upload } from '../core/helpers/multer.js'
 

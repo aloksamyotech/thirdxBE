@@ -7,10 +7,9 @@ export const addUser = async (req, res) => {
   const filePath = req?.file?.path
 
   if (filePath) {
-   
-   const normalizedPath = '/' + filePath.replace(/\\/g, '/');
-    userData.otherInfo = {};
-    userData.otherInfo.file = normalizedPath;
+    const normalizedPath = '/' + filePath.replace(/\\/g, '/')
+    userData.otherInfo = {}
+    userData.otherInfo.file = normalizedPath
   }
   const addUser = await userService.addUser(userData)
   res.status(statusCodes?.ok).send(addUser)
@@ -83,8 +82,6 @@ export const editArchiveVolunteer = async (req, res) => {
 }
 
 export const getUserwithPagination = async (req, res) => {
-  const searchData = await userService.getUserwithPagination(req?.query);
+  const searchData = await userService.getUserwithPagination(req?.query)
   res.status(statusCodes?.ok).send(searchData)
 }
-
-

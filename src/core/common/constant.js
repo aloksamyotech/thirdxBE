@@ -60,7 +60,7 @@ export const Message = {
   incorrrectPassword: 'Incorrect Password',
   inValidData: 'Invalid Data',
   duplicateData: 'Duplicate Visitor Data',
-  serviceNotUpdated:'Service could not be updated',
+  serviceNotUpdated: 'Service could not be updated',
 }
 
 export const errorCodes = Object.freeze({

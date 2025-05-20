@@ -9,18 +9,18 @@ import {
   getCaseById,
   getAllCases,
   editCase,
-  getCasewithPagination
+  getCasewithPagination,
 } from '../controllers/case.js'
 import { upload } from '../core/helpers/multer.js'
 
 const router = Router()
 
-router.post('/addCase', upload.single('file'), asyncHandler(addCase));
+router.post('/addCase', upload.single('file'), asyncHandler(addCase))
 router.patch('/deleteCase/:id', asyncHandler(deleteCase))
 router.get('/search', asyncHandler(searchCase))
 router.get('/getCaseById/:id', asyncHandler(getCaseById))
 router.get('/getAllCases', asyncHandler(getAllCases))
-router.put('/editCase/:caseId', upload.single('file'), asyncHandler(editCase));
+router.put('/editCase/:caseId', upload.single('file'), asyncHandler(editCase))
 router.get('/allwithpagination', asyncHandler(getCasewithPagination))
 
 export default router

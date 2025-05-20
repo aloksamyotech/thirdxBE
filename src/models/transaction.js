@@ -6,10 +6,10 @@ const TransactionSchema = new mongoose.Schema(
     campaign: { type: String },
     amountPaid: { type: Number, required: true },
     paymentMethod: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "configuration",
-            required: true
-        },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'configuration',
+      required: true,
+    },
     processingCost: { type: Number, default: 0 },
     currency: {
       type: String,
