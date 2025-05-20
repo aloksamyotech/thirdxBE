@@ -290,3 +290,9 @@ export const getUserwithPagination = async (query) => {
     },
   }
 }
+
+
+export const isExistUser = async (userId) => {
+  const exists = await user.exists({ _id: userId });
+  return Boolean(exists);
+}
