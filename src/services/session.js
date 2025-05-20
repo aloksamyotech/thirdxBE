@@ -1,5 +1,3 @@
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable no-undef */
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import Session from '../models/session.js'
@@ -134,6 +132,10 @@ export const getAllSession = async () => {
     )
   }
   return { allSession }
+}
+export const isExistSession = async (userId) => {
+  const exists = await Session.exists({ _id: userId });
+  return Boolean(exists);
 }
 
 export const getAllWithPagination = async (query) => {
