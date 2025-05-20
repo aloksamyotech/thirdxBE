@@ -8,6 +8,7 @@ import transactionRouter from './transaction.js'
 import caseRouter from './case.js'
 import sessionRouter from './session.js'
 import caseNoteRouter from './caseNote.js';
+import attendeesRouter from './attendees.js'
 
 const router = express.Router()
 
@@ -20,7 +21,6 @@ router.use('/transaction', transactionRouter)
 router.use('/cases', caseRouter)
 router.use('/session', sessionRouter)
 router.use('/caseNote', caseNoteRouter)
-
-
+router.use('/attendees',attendeesRouter) 
 
 export default router

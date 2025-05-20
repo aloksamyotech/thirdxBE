@@ -33,6 +33,8 @@ export const Message = {
   inValid: 'Invalid Credentials',
   successfullyUpdate: 'Updated Successfully',
   alreadyExist: 'Already Exist',
+  userNotFound: 'User Not Found',
+  sessionNotFound: 'Sesion Not Found',
   userNotGet: 'Fetching Error User',
   slot_unavailable: 'Slot Not Available',
   notCreated: 'Not Created',

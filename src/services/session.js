@@ -136,3 +136,7 @@ export const getAllSession = async () => {
   }
   return { allSession }
 }
+export const isExistSession = async (userId) => {
+  const exists = await Session.exists({ _id: userId });
+  return Boolean(exists);
+}

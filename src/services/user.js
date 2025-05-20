@@ -94,7 +94,7 @@ export const getUserById = async (userId) => {
       errorCodes?.user_not_found
     )
   }
- return userData
+  return userData
 }
 
 export const getAllUsDistricts = async () => {
@@ -257,4 +257,10 @@ export const getUserwithPagination = async (query) => {
       totalPages: Math.ceil(total / limitNumber),
     },
   }
+}
+
+
+export const isExistUser = async (userId) => {
+  const exists = await user.exists({ _id: userId });
+  return Boolean(exists);
 }
