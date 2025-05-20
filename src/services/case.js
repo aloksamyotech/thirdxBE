@@ -270,7 +270,7 @@ export const getAllCases = async () => {
 }
 
 export const getCasewithPagination = async (query) => {
-  const { search, page = 1, limit = 10 } = query || {}
+  const { search, status, serviceType, createdAt, page = 1, limit = 10 } = query || {}
 
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
@@ -278,12 +278,29 @@ export const getCasewithPagination = async (query) => {
   if (pageNumber < 1) pageNumber = 1
   if (limitNumber < 1) limitNumber = 10
 
-  const skip = (pageNumber - 1) * limitNumber
+  const skip = (pageNumber - 1) * limitNumber;
 
-  const filter = {}
+  const searchKeys = {
+    campaigns: search,
+    benificiary: search,
+  }
+  const searchConditions = Object.entries(regexFilter(searchKeys)).map(
+    ([key, value]) => ({
+      [key]: value,
+    })
+  )
 
-  if (search) {
-    filter.serviceUserId = search
+  const filter = {
+    $or: searchConditions,
+    ...(status !== undefined && status !== '' && { isActive: status === 'true' }),
+    ...(serviceType !== undefined && serviceType !== '' && { 'serviceType': serviceType }),
+
+    ...(createdAt !== undefined && createdAt !== '' && {
+      createdAt: {
+        $gte: new Date(createdAt),
+        $lt: new Date(new Date(createdAt).setDate(new Date(createdAt).getDate() + 1))
+      }
+    }),
   }
 
   const allCase = await Case.find(filter)

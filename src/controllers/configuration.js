@@ -54,7 +54,7 @@ export const searchConfigurationName = async (req, res) => {
   res.status(statusCodes?.ok).send(searchConfigurationName)
 }
 
-export const filter = async (req, res, next) => {
+export const filter = async (req, res) => {
   const { type, status } = req?.query || {}
   const filter = await configurationService.filter(type, status)
   res.status(statusCodes?.ok).send(filter)

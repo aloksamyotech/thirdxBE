@@ -134,7 +134,7 @@ export const filter = async (type, status) => {
 }
 
 export const getConfigurationWithPagination = async (query) => {
-  const { search, status, page = 1, limit = 10 } = query || {}
+  const { search, status, configurationType, page = 1, limit = 10 } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -160,6 +160,8 @@ export const getConfigurationWithPagination = async (query) => {
     $or: searchConditions,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
+      ...(configurationType !== undefined && configurationType !== '' && { 'configurationType': configurationType }),
+    
   }
 
   const allConfiguration = await configuration

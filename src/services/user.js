@@ -219,9 +219,11 @@ export const getUserwithPagination = async (query) => {
     uniqueId,
     campaigns,
     country,
+    archive,
     page = 1,
     limit = 10,
   } = query || {}
+  
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -249,18 +251,13 @@ export const getUserwithPagination = async (query) => {
     $or: searchConditions,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
-    archive: false,
-    ...(district !== undefined &&
-      district !== '' && { 'contactInfo.district': district }),
-    ...(gender !== undefined &&
-      gender !== '' && { 'personalInfo.gender': gender }),
-    ...(nickName !== undefined &&
-      nickName !== '' && { 'personalInfo.nickName': nickName }),
-    ...(uniqueId !== undefined && uniqueId !== '' && { uniqueId: uniqueId }),
-    ...(campaigns !== undefined &&
-      campaigns !== '' && { 'otherInfo.campaigns': campaigns }),
-    ...(country !== undefined &&
-      country !== '' && { 'contactInfo.country': country }),
+      ...(archive !== undefined && archive !== '' && { 'archive': archive }),
+    ...(district !== undefined && district !== '' && { 'contactInfo.district': district }),
+    ...(gender !== undefined && gender !== '' && { 'personalInfo.gender': gender }),
+    ...(nickName !== undefined && nickName !== '' && { 'personalInfo.nickName': nickName }),
+    ...(uniqueId !== undefined && uniqueId !== '' && { 'uniqueId': uniqueId }),
+    ...(campaigns !== undefined && campaigns !== '' && { 'otherInfo.campaigns': campaigns }),
+    ...(country !== undefined && country !== '' && { 'contactInfo.country': country }),
 
     ...(createdAt !== undefined &&
       createdAt !== '' && {

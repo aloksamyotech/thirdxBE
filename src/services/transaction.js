@@ -111,7 +111,7 @@ export const deleteTransaction = async (id) => {
 }
 
 export const getTransactionwithPagination = async (query) => {
-  const { search, page = 1, limit = 10 } = query || {}
+  const { search, name, createdAt, campaign, page = 1, limit = 10 } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -135,6 +135,15 @@ export const getTransactionwithPagination = async (query) => {
 
   const filter = {
     $or: searchConditions,
+    ...(name !== undefined && name !== '' && { 'assignedTo': name }),
+    ...(campaign !== undefined && campaign !== '' && { 'campaign': campaign }),
+
+    ...(createdAt !== undefined && createdAt !== '' && {
+      createdAt: {
+        $gte: new Date(createdAt),
+        $lt: new Date(new Date(createdAt).setDate(new Date(createdAt).getDate() + 1))
+      }
+    }),
   }
 
   const allTransaction = await transaction
@@ -143,7 +152,7 @@ export const getTransactionwithPagination = async (query) => {
     .limit(limitNumber)
     .sort({ createdAt: -1 })
 
-  const total = await transaction.countDocuments(regexFilter(searchKeys))
+  const total = await transaction.countDocuments(filter)
   return {
     data: allTransaction,
     meta: {
