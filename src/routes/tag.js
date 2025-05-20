@@ -12,13 +12,13 @@ import {
 
 const router = Router()
 
-router.post('/addtag', asyncHandler(addTags))
-router.get('/getalltag', asyncHandler(getAllTags))
-router.get('/filter', asyncHandler(filter))
-router.put('/updateTagStatus/:tagId', asyncHandler(updateTagStatus))
-router.put('/editTag/:tagId', asyncHandler(editTags))
+router.post('/', asyncHandler(addTags))
+router.get('/getalltag', asyncHandler(getAllTags));
+// router.get('/filter', asyncHandler(filter))
+router.put('/updateStatus/:tagId', asyncHandler(updateTagStatus));
+router.put('/edit/:tagId', asyncHandler(editTags));
 
-router.put('/deleteTag/:tagId', asyncHandler(deleteTags))
+router.put('/delete/:tagId', asyncHandler(deleteTags))
 
 router.get('/allwithpagination', asyncHandler(getTagwithPagination))
 

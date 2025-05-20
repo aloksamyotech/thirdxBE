@@ -14,8 +14,8 @@ const configurationSchema = new mongoose.Schema(
       default: false,
     },
     isArchive: {
-        type: Boolean,
-        default: false,
+      type: Boolean,
+      default: false,
     },
     configurationType: {
       type: String,

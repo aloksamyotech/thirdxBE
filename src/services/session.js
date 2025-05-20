@@ -1,12 +1,10 @@
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable no-undef */
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import Session from '../models/session.js'
 
 export const addSession = async (sessionData) => {
   const newSession = await Session.create(sessionData)
- 
+
   if (!newSession) {
     throw new CustomError(
       statusCodes.badRequest,
@@ -14,34 +12,35 @@ export const addSession = async (sessionData) => {
       errorCodes.bad_request
     )
   }
- 
+
   return { newSession }
 }
 
 export const editSession = async (id, sessionData) => {
-   if (!id) {
-      throw new CustomError(
-        statusCodes?.badRequest,
-       Message.notFound,
-        errorCodes?.bad_request
-      );
-    }
-  
-    const existingSession = await Session.findById(id);
-  
-    if (!existingSession) {
-      throw new CustomError(
-        statusCodes?.notFound,
-        Message?.notFound,
-        errorCodes?.not_found
-      );
-    }
- 
-  const updateSession = await Session.findByIdAndUpdate(id,
-    {$set : sessionData},
-    {new: true}
-  );
- 
+  if (!id) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      Message.notFound,
+      errorCodes?.bad_request
+    )
+  }
+
+  const existingSession = await Session.findById(id)
+
+  if (!existingSession) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+
+  const updateSession = await Session.findByIdAndUpdate(
+    id,
+    { $set: sessionData },
+    { new: true }
+  )
+
   if (!updateSession) {
     throw new CustomError(
       statusCodes.badRequest,
@@ -49,10 +48,10 @@ export const editSession = async (id, sessionData) => {
       errorCodes.bad_request
     )
   }
- 
+
   return { updateSession }
 }
- 
+
 export const deleteSession = async (sessionId) => {
   const serssionData = await Session.findById(sessionId)
 
@@ -95,10 +94,8 @@ export const searchSession = async (name, isActive, type) => {
 
   const session = await Session.find(searchQuery)
 
-
-
   return {
-    session
+    session,
   }
 }
 
@@ -111,7 +108,7 @@ export const getSessionById = async (serviceId) => {
     )
   }
 
-  const userData = await Session.find({ serviceId, isDeleted: false });
+  const userData = await Session.find({ serviceId, isDeleted: false })
 
   if (!userData || userData.length === 0) {
     throw new CustomError(
@@ -139,4 +136,34 @@ export const getAllSession = async () => {
 export const isExistSession = async (userId) => {
   const exists = await Session.exists({ _id: userId });
   return Boolean(exists);
+}
+
+export const getAllWithPagination = async (query) => {
+  const { page = 1, limit = 10 } = query || {}
+  let pageNumber = Number(page)
+  let limitNumber = Number(limit)
+  if (pageNumber < 1) {
+    pageNumber = 1
+  }
+
+  if (limitNumber < 1) {
+    limitNumber = 10
+  }
+  const skip = (pageNumber - 1) * limitNumber
+
+  const allSession = await Session.find()
+    .skip(skip)
+    .limit(limitNumber)
+    .sort({ createdAt: -1 })
+
+  const total = await Session.countDocuments()
+  return {
+    data: allSession,
+    meta: {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
+    },
+  }
 }
