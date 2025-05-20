@@ -97,10 +97,7 @@ const UserSchema = new mongoose.Schema(
     },
     isActive: { type: Boolean, required: true, default: true },
     isDeleted: { type: Boolean, default: false },
-    isArchive: {
-      type: Boolean,
-      default: false,
-    },
+    archive: { type: Boolean, default: false },
   },
   { timestamps: true }
 )

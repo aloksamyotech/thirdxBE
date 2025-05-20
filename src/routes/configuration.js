@@ -8,11 +8,14 @@ import {
   searchConfigurationName,
   updateConfigurationStatus,
   updatedConfiguration,
-  getConfigurationWithPagination
+  getConfigurationWithPagination,
 } from '../controllers/configuration.js'
 
 const router = Router()
-router.put('/updateConfigurationData/:configId',asyncHandler(updatedConfiguration));
+router.put(
+  '/updateConfigurationData/:configId',
+  asyncHandler(updatedConfiguration)
+)
 router.post('/addconfiguration', asyncHandler(addConfiguration))
 router.get('/getallconfiguration', asyncHandler(getAllConfiguration))
 router.put(
@@ -21,12 +24,7 @@ router.put(
 )
 router.put('/deleteconfiguration/:configId', asyncHandler(deleteConfiguration))
 router.get('/searchconfigurationbyname', asyncHandler(searchConfigurationName))
-router.get(
-  '/filter',
-  asyncHandler(filter)
-)
+router.get('/filter', asyncHandler(filter))
 router.get('/allwithpagination', asyncHandler(getConfigurationWithPagination))
-
-
 
 export default router
