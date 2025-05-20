@@ -238,6 +238,7 @@ export const getUserwithPagination = async (query) => {
     $or: searchConditions,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
+      archive:false
   }
 
   const allUser = await user
