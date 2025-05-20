@@ -13,7 +13,7 @@ import {
 const router = Router()
 
 router.post('/', asyncHandler(addTags))
-// router.get('/getalltag', asyncHandler(getAllTags))
+router.get('/getalltag', asyncHandler(getAllTags));
 // router.get('/filter', asyncHandler(filter))
 router.put('/updateStatus/:tagId', asyncHandler(updateTagStatus));
 router.put('/edit/:tagId', asyncHandler(editTags));
