@@ -78,7 +78,6 @@ export const archiveUser = async (req, res) => {
 }
 export const editArchiveVolunteer = async (req, res) => {
   const { userId } = req?.params || {}
-
   const editArchiveVolunteer = await userService.editArchiveVolunteer(userId)
   res.status(statusCodes?.ok).send(editArchiveVolunteer)
 }
