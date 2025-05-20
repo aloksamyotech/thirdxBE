@@ -3,7 +3,7 @@ import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import { regexFilter } from '../core/common/common.js'
 
-export const addTags = async (req) => {
+export const addTags = async (data) => {
   const newTag = await tag.create(data)
   if (!newTag) {
     return new CustomError(
@@ -64,10 +64,11 @@ export const filter = async (name, status) => {
 }
 
 export const editTags = async (tagId, tagData) => {
+
   if (!tagId) {
     throw new CustomError(
       statusCodes?.badRequest,
-      'Invalid Tag ID',
+      'TagId is required',
       errorCodes?.bad_request
     )
   }
@@ -77,7 +78,7 @@ export const editTags = async (tagId, tagData) => {
   if (!existingTag) {
     throw new CustomError(
       statusCodes?.notFound,
-      Message?.notFound || 'Tag not found',
+      Message?.notFound || 'Tag not found or Invalid TagID',
       errorCodes?.not_found
     )
   }
@@ -126,7 +127,7 @@ export const deleteTags = async (tagId) => {
 }
 
 export const getTagwithPagination = async (query) => {
-  const { search, status, page = 1, limit = 10 } = query || {}
+  const { search, status, categoryName, page = 1, limit = 10 } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -138,13 +139,15 @@ export const getTagwithPagination = async (query) => {
   }
   const skip = (pageNumber - 1) * limitNumber
   const searchKeys = {
-    name: search,
+    categoryName: search,
   }
 
   const filter = {
     ...regexFilter(searchKeys),
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
+    ...(categoryName !== undefined && categoryName !== '' && { 'categoryName': categoryName }),
+
   }
 
   const allTag = await tag

@@ -25,12 +25,13 @@ export const filter = async (req, res) => {
   res.status(statusCodes?.ok).send(filter)
 }
 
-export const editTags = async (req, res, next) => {
-  const { tagId } = req.params.tagId
+export const editTags = async (req, res) => {
+  const { tagId } = req?.params || {}
 
-  const { name, startDate, endDate, note } = req.body
+  const { categoryName, name, startDate, endDate, note } = req.body
 
   const tagData = {
+    categoryName,
     name,
     startDate,
     endDate,
@@ -42,8 +43,8 @@ export const editTags = async (req, res, next) => {
 }
 
 export const deleteTags = async (req, res) => {
-  const tagId = req.params.tagId
-  const deleteTags = await tagService.deleteTags(tagId)
+  const { tagId } = req?.params || {};
+  const deleteTags = await tagService.deleteTags(tagId);
   res.status(statusCodes?.ok).send(deleteTags)
 }
 
