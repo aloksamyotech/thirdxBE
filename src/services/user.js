@@ -220,10 +220,11 @@ export const getUserwithPagination = async (query) => {
     campaigns,
     country,
     archive,
+    role,
     page = 1,
     limit = 10,
   } = query || {}
-  
+
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -251,23 +252,25 @@ export const getUserwithPagination = async (query) => {
     $or: searchConditions,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
-      ...(archive !== undefined && archive !== '' && { 'archive': archive }),
+    ...(archive !== undefined && archive !== '' && { 'archive': archive }),
     ...(district !== undefined && district !== '' && { 'contactInfo.district': district }),
     ...(gender !== undefined && gender !== '' && { 'personalInfo.gender': gender }),
     ...(nickName !== undefined && nickName !== '' && { 'personalInfo.nickName': nickName }),
     ...(uniqueId !== undefined && uniqueId !== '' && { 'uniqueId': uniqueId }),
     ...(campaigns !== undefined && campaigns !== '' && { 'otherInfo.campaigns': campaigns }),
     ...(country !== undefined && country !== '' && { 'contactInfo.country': country }),
+    ...(role !== undefined && role !== '' && { 'role': role }),
+
 
     ...(createdAt !== undefined &&
       createdAt !== '' && {
-        createdAt: {
-          $gte: new Date(createdAt),
-          $lt: new Date(
-            new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
-          ),
-        },
-      }),
+      createdAt: {
+        $gte: new Date(createdAt),
+        $lt: new Date(
+          new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
+        ),
+      },
+    }),
   }
 
   const allUser = await user
