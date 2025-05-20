@@ -46,7 +46,7 @@ export const deleteServices = async (serviceId) => {
 }
 
 export const searchServices = async (queryData) => {
-  const { name, isActive, type } = queryData;
+  const { name, isActive, type } = queryData
 
   const searchQuery = {}
   if (name) {
@@ -63,10 +63,8 @@ export const searchServices = async (queryData) => {
 
   const services = await Services.find(searchQuery)
 
-
-
   return {
-    services
+    services,
   }
 }
 
@@ -91,13 +89,13 @@ export const getServiceById = async (serviceId) => {
 }
 
 export const getServiceswithPagination = async (query) => {
-  const { search, status, page = 1, limit = 10 } = query || {}
+  const { search, status, serviceType, page = 1, limit = 10 } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
     pageNumber = 1
   }
- 
+
   if (limitNumber < 1) {
     limitNumber = 10
   }
@@ -111,19 +109,20 @@ export const getServiceswithPagination = async (query) => {
       [key]: value,
     })
   )
- 
+
   const filter = {
     $or: searchConditions,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
+    ...(serviceType !== undefined &&
+      serviceType !== '' && { serviceType: serviceType }),
   }
- 
-  
+
   const allService = await Services.find(filter)
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
- 
+
   const total = await Services.countDocuments(filter)
   return {
     data: allService,
@@ -137,48 +136,45 @@ export const getServiceswithPagination = async (query) => {
 }
 
 export const editServices = async (serviceId, serviceData) => {
- 
   if (!serviceId) {
     throw new CustomError(
       statusCodes?.badRequest,
-     Message.invalidServiceId,
+      Message.invalidServiceId,
       errorCodes?.bad_request
-    );
+    )
   }
 
-
-
-
-  const existingService = await Services.findById(serviceId);
+  const existingService = await Services.findById(serviceId)
 
   if (!existingService) {
     throw new CustomError(
       statusCodes?.notFound,
-      Message?.notFound ,
+      Message?.notFound,
       errorCodes?.not_found
-    );
+    )
   }
 
   const updatedService = await Services.findByIdAndUpdate(
     serviceId,
     { $set: serviceData },
     { new: true }
-  );
+  )
 
   if (!updatedService) {
     throw new CustomError(
       statusCodes?.badRequest,
       Message?.serviceNotUpdated || 'Service update failed',
       errorCodes?.bad_request
-    );
+    )
   }
 
-  return { updatedService };
-};
-
+  return { updatedService }
+}
 
 export const getAllServices = async () => {
-  return await Services.find({ isDeleted: false }).sort({
-    createdAt: -1,
-  });
+  return await Services.find({ isDeleted: false })
+    .sort({
+      createdAt: -1,
+    })
+    .populate('serviceType', 'name')
 }
