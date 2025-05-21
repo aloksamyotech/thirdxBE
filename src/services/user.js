@@ -238,6 +238,7 @@ export const getUserwithPagination = async (query) => {
   const searchKeys = {
     'personalInfo.firstName': search,
     'personalInfo.lastName': search,
+    'companyInformatiom.companyName': search,
     role: search,
     subRole: search,
   }
