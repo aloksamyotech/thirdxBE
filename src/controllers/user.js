@@ -85,3 +85,11 @@ export const getUserwithPagination = async (req, res) => {
   const searchData = await userService.getUserwithPagination(req?.query)
   res.status(statusCodes?.ok).send(searchData)
 }
+
+export const unArchiveUser = async (req, res) => {
+  const { userId } = req?.params || {}
+
+  const deleteUser = await userService.unArchiveUser(userId)
+  res.status(statusCodes?.ok).send(deleteUser)
+}
+
