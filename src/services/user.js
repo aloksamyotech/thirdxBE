@@ -250,28 +250,31 @@ export const getUserwithPagination = async (query) => {
 
   const filter = {
     $or: searchConditions,
-     isDeleted: false,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
-    ...(archive !== undefined && archive !== '' && { 'archive': archive }),
-    ...(district !== undefined && district !== '' && { 'contactInfo.district': district }),
-    ...(gender !== undefined && gender !== '' && { 'personalInfo.gender': gender }),
-    ...(nickName !== undefined && nickName !== '' && { 'personalInfo.nickName': nickName }),
-    ...(uniqueId !== undefined && uniqueId !== '' && { 'uniqueId': uniqueId }),
-    ...(campaigns !== undefined && campaigns !== '' && { 'otherInfo.campaigns': campaigns }),
-    ...(country !== undefined && country !== '' && { 'contactInfo.country': country }),
-    ...(role !== undefined && role !== '' && { 'role': role }),
-
+    ...(archive !== undefined && archive !== '' && { archive: archive }),
+    ...(district !== undefined &&
+      district !== '' && { 'contactInfo.district': district }),
+    ...(gender !== undefined &&
+      gender !== '' && { 'personalInfo.gender': gender }),
+    ...(nickName !== undefined &&
+      nickName !== '' && { 'personalInfo.nickName': nickName }),
+    ...(uniqueId !== undefined && uniqueId !== '' && { uniqueId: uniqueId }),
+    ...(campaigns !== undefined &&
+      campaigns !== '' && { 'otherInfo.campaigns': campaigns }),
+    ...(country !== undefined &&
+      country !== '' && { 'contactInfo.country': country }),
+    ...(role !== undefined && role !== '' && { role: role }),
 
     ...(createdAt !== undefined &&
       createdAt !== '' && {
-      createdAt: {
-        $gte: new Date(createdAt),
-        $lt: new Date(
-          new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
-        ),
-      },
-    }),
+        createdAt: {
+          $gte: new Date(createdAt),
+          $lt: new Date(
+            new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
+          ),
+        },
+      }),
   }
 
   const allUser = await user
@@ -279,6 +282,7 @@ export const getUserwithPagination = async (query) => {
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
+    .notDeleted()
 
   const total = await user.countDocuments(filter)
   return {
@@ -294,6 +298,6 @@ export const getUserwithPagination = async (query) => {
 
 
 export const isExistUser = async (userId) => {
-  const exists = await user.exists({ _id: userId });
-  return Boolean(exists);
+  const exists = await user.exists({ _id: userId })
+  return Boolean(exists)
 }
