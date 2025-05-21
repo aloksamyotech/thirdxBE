@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import { v4 as uuidv4 } from 'uuid'
+import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 const UserSchema = new mongoose.Schema(
   {
     uniqueId: {
@@ -95,12 +96,13 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: ['donar_individual', 'donar_company', 'donar_group'],
     },
-    isActive: { type: Boolean, required: true, default: true },
-    isDeleted: { type: Boolean, default: false },
     archive: { type: Boolean, default: false },
   },
   { timestamps: true }
 )
+
+UserSchema.plugin(commonFieldsPlugin)
+
 const user = mongoose.model('user', UserSchema)
 
 export default user
