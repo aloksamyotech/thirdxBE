@@ -13,6 +13,7 @@ import {
   getAllUsers,
   getUserwithPagination,
   archiveUser,
+  unArchiveUser
 } from '../controllers/user.js'
 import { upload } from '../core/helpers/multer.js'
 
@@ -30,5 +31,6 @@ router.put('/deleteuser/:userId', asyncHandler(deleteUser))
 router.put('/editArchiveVolunteer/:userId', asyncHandler(editArchiveVolunteer))
 router.put('/archive/:userId', asyncHandler(archiveUser))
 router.get('/allwithpagination', asyncHandler(getUserwithPagination))
+router.put('/unArchive/:userId', asyncHandler(unArchiveUser));
 
 export default router
