@@ -250,6 +250,7 @@ export const getUserwithPagination = async (query) => {
 
   const filter = {
     $or: searchConditions,
+     isDeleted: false,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
     ...(archive !== undefined && archive !== '' && { 'archive': archive }),
