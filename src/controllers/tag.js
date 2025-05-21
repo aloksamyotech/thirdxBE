@@ -28,10 +28,10 @@ export const filter = async (req, res) => {
 export const editTags = async (req, res) => {
   const { tagId } = req?.params || {}
 
-  const { categoryName, name, startDate, endDate, note } = req.body
+  const { tagCategoryName, name, startDate, endDate, note } = req.body
 
   const tagData = {
-    categoryName,
+    tagCategoryName,
     name,
     startDate,
     endDate,
@@ -43,8 +43,8 @@ export const editTags = async (req, res) => {
 }
 
 export const deleteTags = async (req, res) => {
-  const { tagId } = req?.params || {};
-  const deleteTags = await tagService.deleteTags(tagId);
+  const { tagId } = req?.params || {}
+  const deleteTags = await tagService.deleteTags(tagId)
   res.status(statusCodes?.ok).send(deleteTags)
 }
 

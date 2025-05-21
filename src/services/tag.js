@@ -64,7 +64,6 @@ export const filter = async (name, status) => {
 }
 
 export const editTags = async (tagId, tagData) => {
-
   if (!tagId) {
     throw new CustomError(
       statusCodes?.badRequest,
@@ -139,15 +138,15 @@ export const getTagwithPagination = async (query) => {
   }
   const skip = (pageNumber - 1) * limitNumber
   const searchKeys = {
-    categoryName: search,
+    tagCategoryName: search,
   }
 
   const filter = {
     ...regexFilter(searchKeys),
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
-    ...(categoryName !== undefined && categoryName !== '' && { 'categoryName': categoryName }),
-
+    ...(categoryName !== undefined &&
+      categoryName !== '' && { tagCategoryName: categoryName }),
   }
 
   const allTag = await tag

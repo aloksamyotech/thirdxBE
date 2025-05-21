@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 const TagSchema = new mongoose.Schema({
-  categoryName: { type: String, required: true },
+  tagDescription: { type: String, required: true },
+  tagCategoryName: { type: String, required: true },
   name: { type: String, required: true },
   isActive: { type: Boolean, default: true },
   startDate: { type: Date },
