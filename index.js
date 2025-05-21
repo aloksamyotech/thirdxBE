@@ -9,6 +9,7 @@ import responseInterceptor from './src/utils/responseInterceptor.js'
 import passport from './src/core/config/passportConfig.js'
 import AllRoutes from './src/routes/routes.js'
 import path from 'path'
+import { seedConfigurations } from './src/core/common/script/configurations.js'
 // import { CheckCompanySubscriptionExpiry, ResetDailyLimit } from './src/utils/cronJob.js'
 
 const app = express()
@@ -43,6 +44,8 @@ app.use('/api/v1', AllRoutes)
 app.use(globalExceptionHandler)
 // ResetDailyLimit();
 // CheckCompanySubscriptionExpiry();
+
+seedConfigurations()
 app.listen(PORT, () => {
   logger.info(`Server is running at port ${PORT}`)
 })
