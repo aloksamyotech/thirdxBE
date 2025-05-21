@@ -9,6 +9,7 @@ import {
 import CustomError from '../utils/exception.js'
 import axios from 'axios'
 import { regexFilter } from '../core/common/common.js'
+import mongoose from 'mongoose'
 
 export const addUser = async (userData) => {
   const newUser = await user.create(userData)
@@ -221,6 +222,7 @@ export const getUserwithPagination = async (query) => {
     country,
     archive,
     role,
+    userId,
     page = 1,
     limit = 10,
   } = query || {}
@@ -265,6 +267,8 @@ export const getUserwithPagination = async (query) => {
     ...(country !== undefined &&
       country !== '' && { 'contactInfo.country': country }),
     ...(role !== undefined && role !== '' && { role: role }),
+    ...(userId !== undefined &&
+      userId !== '' && { caseId: new mongoose.Types.ObjectId(userId) }),
 
     ...(createdAt !== undefined &&
       createdAt !== '' && {
