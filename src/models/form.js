@@ -16,6 +16,7 @@ const FormSchema = new mongoose.Schema({
   title: String,
   template: String,
   fields: [FieldSchema],
+  publicId: { type: String, unique: true },
   createdAt: {
     type: Date,
     default: Date.now

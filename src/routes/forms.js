@@ -4,11 +4,12 @@ import {
     getFormById,
     getAllForms
 } from '../controllers/form.js';
+import { asyncHandler } from '../utils/asyncWrapper.js';
 
 const router = express.Router();
 
-router.post('/', addForm);
-router.get('/getallforms', getAllForms)
-router.get('/:formId', getFormById);
+router.post('/', asyncHandler(addForm));
+router.get('/getallforms', asyncHandler(getAllForms))
+router.get('/:formId', asyncHandler(getFormById));
 
 export default router;

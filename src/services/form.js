@@ -1,4 +1,6 @@
 import Form from '../models/form.js';
+import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
+import CustomError from '../utils/exception.js'
 
 export const addForm = async (fields) => {
     let setTitle
@@ -17,10 +19,14 @@ export const addForm = async (fields) => {
             }
         })
 
+    const formCount = await Form.countDocuments();
+    const publicId = `surveyform-${10000 + formCount + 1}`;
+
     const form = new Form({
         title: setTitle,
         template: 'default',
-        fields: formatfields
+        fields: formatfields,
+        publicId
     });
     await form.save();
 
@@ -28,8 +34,14 @@ export const addForm = async (fields) => {
 }
 
 export const getFormById = async (formId) => {
-    const form = await Form.findById({ _id: formId });
-    if (!form) return res.status(404).json({ error: 'Form not found' });
+    const form = await Form.findOne({ publicId: formId });
+    if (!form) {
+        throw new CustomError(
+            statusCodes?.notFound,
+            Message?.notFound,
+            errorCodes?.not_found
+        )
+    }
     return form
 }
 
