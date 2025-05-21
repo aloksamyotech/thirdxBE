@@ -10,6 +10,8 @@ import passport from './src/core/config/passportConfig.js'
 import AllRoutes from './src/routes/routes.js'
 import path from 'path'
 import { seedConfigurations } from './src/core/common/script/configurations.js'
+import { seedServices } from './src/core/common/script/services.js'
+import { seedUsers } from './src/core/common/script/users.js'
 // import { CheckCompanySubscriptionExpiry, ResetDailyLimit } from './src/utils/cronJob.js'
 
 const app = express()
@@ -45,7 +47,9 @@ app.use(globalExceptionHandler)
 // ResetDailyLimit();
 // CheckCompanySubscriptionExpiry();
 
-seedConfigurations()
+// seedConfigurations()
+// seedServices()
+// seedUsers()
 app.listen(PORT, () => {
   logger.info(`Server is running at port ${PORT}`)
 })
