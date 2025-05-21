@@ -111,7 +111,14 @@ export const deleteTransaction = async (id) => {
 }
 
 export const getTransactionwithPagination = async (query) => {
-  const { search, page = 1, limit = 10 } = query || {}
+  const {
+    search,
+    assignedTo,
+    createdAt,
+    campaign,
+    page = 1,
+    limit = 10,
+  } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -124,7 +131,7 @@ export const getTransactionwithPagination = async (query) => {
   const skip = (pageNumber - 1) * limitNumber
   const searchKeys = {
     assignedTo: search,
-    campaign: search,
+    // campaign: search,
   }
 
   const searchConditions = Object.entries(regexFilter(searchKeys)).map(
@@ -135,16 +142,29 @@ export const getTransactionwithPagination = async (query) => {
 
   const filter = {
     $or: searchConditions,
-  }
+    ...(assignedTo !== undefined &&
+      assignedTo !== '' && { assignedTo: assignedTo }),
+    ...(campaign !== undefined && campaign !== '' && { campaign: campaign }),
 
+    ...(createdAt !== undefined &&
+      createdAt !== '' && {
+        createdAt: {
+          $gte: new Date(createdAt),
+          $lt: new Date(
+            new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
+          ),
+        },
+      }),
+  }
 
   const allTransaction = await transaction
     .find(filter)
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
+    .populate('campaign')
 
-  const total = await transaction.countDocuments(regexFilter(searchKeys))
+  const total = await transaction.countDocuments(filter)
   return {
     data: allTransaction,
     meta: {

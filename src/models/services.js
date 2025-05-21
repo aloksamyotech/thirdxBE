@@ -27,7 +27,7 @@ const ServiceSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'configuration',
       required: true,
-    },  
+    },
     file: {
       type: String,
     },

@@ -33,6 +33,8 @@ export const Message = {
   inValid: 'Invalid Credentials',
   successfullyUpdate: 'Updated Successfully',
   alreadyExist: 'Already Exist',
+  userNotFound: 'User Not Found',
+  sessionNotFound: 'Sesion Not Found',
   userNotGet: 'Fetching Error User',
   slot_unavailable: 'Slot Not Available',
   notCreated: 'Not Created',
@@ -60,7 +62,8 @@ export const Message = {
   incorrrectPassword: 'Incorrect Password',
   inValidData: 'Invalid Data',
   duplicateData: 'Duplicate Visitor Data',
-  serviceNotUpdated:'Service could not be updated',
+  serviceNotUpdated: 'Service could not be updated',
+  TagIDRequired:'TagID Required'
 }
 
 export const errorCodes = Object.freeze({

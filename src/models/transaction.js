@@ -3,13 +3,15 @@ import mongoose from 'mongoose'
 const TransactionSchema = new mongoose.Schema(
   {
     assignedTo: { type: String },
-    campaign: { type: String },
+    campaign: {  type: mongoose.Schema.Types.ObjectId,
+            ref: "configuration",
+            required: true },
     amountPaid: { type: Number, required: true },
     paymentMethod: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "configuration",
-            required: true
-        },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'configuration',
+      required: true,
+    },
     processingCost: { type: Number, default: 0 },
     currency: {
       type: String,

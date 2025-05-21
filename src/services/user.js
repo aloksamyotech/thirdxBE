@@ -94,7 +94,7 @@ export const getUserById = async (userId) => {
       errorCodes?.user_not_found
     )
   }
- return userData
+  return userData
 }
 
 export const getAllUsDistricts = async () => {
@@ -181,7 +181,8 @@ export const deleteUser = async (userId) => {
   }
   return { statusUpdate }
 }
-export const editArchiveVolunteer = async (userId) => {
+
+export const archiveUser = async (userId) => {
   const checkExist = await user.findById({ _id: userId })
 
   if (!checkExist) {
@@ -193,7 +194,7 @@ export const editArchiveVolunteer = async (userId) => {
   }
   const statusUpdate = await user.findByIdAndUpdate(
     { _id: userId },
-    { isArchive: true },
+    { archive: true },
     { new: true }
   )
 
@@ -208,7 +209,22 @@ export const editArchiveVolunteer = async (userId) => {
 }
 
 export const getUserwithPagination = async (query) => {
-  const { search, status, page = 1, limit = 10 } = query || {}
+  const {
+    search,
+    status,
+    district,
+    createdAt,
+    gender,
+    nickName,
+    uniqueId,
+    campaigns,
+    country,
+    archive,
+    role,
+    page = 1,
+    limit = 10,
+  } = query || {}
+
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -236,6 +252,25 @@ export const getUserwithPagination = async (query) => {
     $or: searchConditions,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
+    ...(archive !== undefined && archive !== '' && { 'archive': archive }),
+    ...(district !== undefined && district !== '' && { 'contactInfo.district': district }),
+    ...(gender !== undefined && gender !== '' && { 'personalInfo.gender': gender }),
+    ...(nickName !== undefined && nickName !== '' && { 'personalInfo.nickName': nickName }),
+    ...(uniqueId !== undefined && uniqueId !== '' && { 'uniqueId': uniqueId }),
+    ...(campaigns !== undefined && campaigns !== '' && { 'otherInfo.campaigns': campaigns }),
+    ...(country !== undefined && country !== '' && { 'contactInfo.country': country }),
+    ...(role !== undefined && role !== '' && { 'role': role }),
+
+
+    ...(createdAt !== undefined &&
+      createdAt !== '' && {
+      createdAt: {
+        $gte: new Date(createdAt),
+        $lt: new Date(
+          new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
+        ),
+      },
+    }),
   }
 
   const allUser = await user
@@ -254,4 +289,10 @@ export const getUserwithPagination = async (query) => {
       totalPages: Math.ceil(total / limitNumber),
     },
   }
+}
+
+
+export const isExistUser = async (userId) => {
+  const exists = await user.exists({ _id: userId });
+  return Boolean(exists);
 }

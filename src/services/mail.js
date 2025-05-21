@@ -98,7 +98,7 @@ export const deleteMail = async (mailId) => {
 }
 
 export const getMailWithPagination = async (query) => {
-  const { search, page = 1, limit = 10 } = query || {}
+  const { search, name, page = 1, limit = 10 } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -113,13 +113,24 @@ export const getMailWithPagination = async (query) => {
     name: search,
   }
 
+  const searchConditions = Object.entries(regexFilter(searchKeys)).map(
+    ([key, value]) => ({
+      [key]: value,
+    })
+  )
+
+  const filter = {
+    $or: searchConditions,
+    ...(name !== undefined && name !== '' && { 'name': name }),
+  }
+
   const allMail = await mail
-    .find(regexFilter(searchKeys))
+    .find(filter)
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
 
-  const total = await mail.countDocuments(regexFilter(searchKeys))
+  const total = await mail.countDocuments(filter)
   return {
     data: allMail,
     meta: {
