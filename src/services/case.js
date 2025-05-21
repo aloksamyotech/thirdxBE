@@ -270,54 +270,61 @@ export const getAllCases = async () => {
 }
 
 export const getCasewithPagination = async (query) => {
-  const { search, status, serviceType, createdAt, page = 1, limit = 10 } = query || {}
+  const {
+    search,
+    status,
+    serviceId,
+    serviceType,
+    createdAt,
+    page = 1,
+    limit = 10,
+  } = query || {};
 
-  let pageNumber = Number(page)
-  let limitNumber = Number(limit)
+  let pageNumber = Number(page);
+  let limitNumber = Number(limit);
 
-  if (pageNumber < 1) pageNumber = 1
-  if (limitNumber < 1) limitNumber = 10
+  if (pageNumber < 1) pageNumber = 1;
+  if (limitNumber < 1) limitNumber = 10;
 
   const skip = (pageNumber - 1) * limitNumber;
 
-  const searchKeys = {
-    campaigns: search,
-    benificiary: search,
-  }
-  const searchConditions = Object.entries(regexFilter(searchKeys)).map(
-    ([key, value]) => ({
-      [key]: value,
-    })
-  )
-
   const filter = {
-    $or: searchConditions,
     ...(status !== undefined && status !== '' && { isActive: status === 'true' }),
-    ...(serviceType !== undefined && serviceType !== '' && { 'serviceType': serviceType }),
-
+    ...(serviceType !== undefined && serviceType !== '' && { serviceType }),
+    ...(serviceId !== undefined && serviceId !== '' && { serviceId }),
     ...(createdAt !== undefined && createdAt !== '' && {
       createdAt: {
         $gte: new Date(createdAt),
-        $lt: new Date(new Date(createdAt).setDate(new Date(createdAt).getDate() + 1))
-      }
+        $lt: new Date(new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)),
+      },
     }),
-  }
+  };
 
-  const allCase = await Case.find(filter)
-    .skip(skip)
-    .limit(limitNumber)
+  const allCases = await Case.find(filter)
     .sort({ createdAt: -1 })
     .populate('serviceUserId')
+    .populate('serviceId');
 
-  const total = await Case.countDocuments(filter)
+  const filteredCases = search
+    ? allCases.filter((c) => {
+        const firstName = c.serviceUserId?.personalInfo?.firstName?.toLowerCase() || '';
+        const lastName = c.serviceUserId?.personalInfo?.lastName?.toLowerCase() || '';
+        const searchLower = search.toLowerCase();
+        return (
+          firstName.includes(searchLower) || lastName.includes(searchLower)
+        );
+      })
+    : allCases;
+
+  const paginatedCases = filteredCases.slice(skip, skip + limitNumber);
 
   return {
-    data: allCase,
+    data: paginatedCases,
     meta: {
-      total,
+      total: filteredCases.length,
       page: pageNumber,
       limit: limitNumber,
-      totalPages: Math.ceil(total / limitNumber),
+      totalPages: Math.ceil(filteredCases.length / limitNumber),
     },
-  }
-}
+  };
+};
