@@ -24,6 +24,7 @@ router.use('/cases', caseRouter)
 router.use('/session', sessionRouter)
 router.use('/caseNote', caseNoteRouter)
 router.use('/forms', formsRouter)
-router.use('/responses', responsesRouter)router.use('/attendees', attendeesRouter)
+router.use('/responses', responsesRouter)
+router.use('/attendees', attendeesRouter)
 
 export default router
