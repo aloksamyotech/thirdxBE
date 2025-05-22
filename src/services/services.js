@@ -3,40 +3,9 @@
 import Services from '../models/services.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
+import { regexFilter } from '../core/common/common.js'
 
-export const addServices = async (req) => {
-  const {
-    name,
-    code,
-    isActive,
-    type,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-  } = req.body
-
-  const serviceData = {
-    name,
-    code,
-    isActive,
-    type,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-  }
-
-  if (req.file && req.file.filename) {
-    serviceData.file = `${req.file.filename}`
-  }
-
+export const addServices = async (serviceData) => {
   const newService = await Services.create(serviceData)
 
   if (!newService) {
@@ -49,8 +18,8 @@ export const addServices = async (req) => {
 
   return { newService }
 }
-export const deleteServices = async (req) => {
-  const serviceId = req.params.id
+
+export const deleteServices = async (serviceId) => {
   const serviceData = await Services.findById(serviceId)
 
   if (!serviceData) {
@@ -76,8 +45,8 @@ export const deleteServices = async (req) => {
   return { statusUpdate }
 }
 
-export const searchServices = async (req, res) => {
-  const { name, isActive, type } = req.query
+export const searchServices = async (queryData) => {
+  const { name, isActive, type } = queryData
 
   const searchQuery = {}
   if (name) {
@@ -94,16 +63,12 @@ export const searchServices = async (req, res) => {
 
   const services = await Services.find(searchQuery)
 
-
-
-  return{
-    services
+  return {
+    services,
   }
 }
 
-export const getServiceById = async (req) => {
-  const serviceId = req?.params.id
-
+export const getServiceById = async (serviceId) => {
   if (!serviceId) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -123,16 +88,93 @@ export const getServiceById = async (req) => {
   return { userData }
 }
 
-export const getAllServices = async () => {
-  const allService = await Services.find({ isDeleted: false }).sort({
-    createdAt: -1,
-  })
-  if (!allService) {
+export const getServiceswithPagination = async (query) => {
+  const { search, status, serviceType, page = 1, limit = 10 } = query || {}
+  let pageNumber = Number(page)
+  let limitNumber = Number(limit)
+  if (pageNumber < 1) {
+    pageNumber = 1
+  }
+
+  if (limitNumber < 1) {
+    limitNumber = 10
+  }
+  const skip = (pageNumber - 1) * limitNumber
+  const searchKeys = {
+    name: search,
+    code: search,
+  }
+  const searchConditions = Object.entries(regexFilter(searchKeys)).map(
+    ([key, value]) => ({
+      [key]: value,
+    })
+  )
+
+  const filter = {
+    $or: searchConditions,
+    ...(status !== undefined &&
+      status !== '' && { isActive: status === 'true' }),
+    ...(serviceType !== undefined &&
+      serviceType !== '' && { serviceType: serviceType }),
+  }
+
+  const allService = await Services.find(filter)
+    .skip(skip)
+    .limit(limitNumber)
+    .sort({ createdAt: -1 })
+    .populate('serviceType', 'name')
+
+  const total = await Services.countDocuments(filter)
+  return {
+    data: allService,
+    meta: {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
+    },
+  }
+}
+
+export const editServices = async (serviceId, serviceData) => {
+  if (!serviceId) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      Message.invalidServiceId,
+      errorCodes?.bad_request
+    )
+  }
+
+  const existingService = await Services.findById(serviceId)
+
+  if (!existingService) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
     )
   }
-  return { allService }
+
+  const updatedService = await Services.findByIdAndUpdate(
+    serviceId,
+    { $set: serviceData },
+    { new: true }
+  )
+
+  if (!updatedService) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      Message?.serviceNotUpdated || 'Service update failed',
+      errorCodes?.bad_request
+    )
+  }
+
+  return { updatedService }
+}
+
+export const getAllServices = async () => {
+  return await Services.find({ isDeleted: false })
+    .sort({
+      createdAt: -1,
+    })
 }

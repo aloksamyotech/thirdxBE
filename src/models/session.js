@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
- 
+
 const SessionSchema = new mongoose.Schema(
   {
     name: {
@@ -15,6 +15,10 @@ const SessionSchema = new mongoose.Schema(
       default: true,
     },
     isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    isArchive: {
       type: Boolean,
       default: false,
     },
@@ -42,21 +46,20 @@ const SessionSchema = new mongoose.Schema(
     fundraisingActivities: {
       type: String,
     },
-     time: {
+    time: {
       type: String,
     },
-    date:{
-      type: Date
+    date: {
+      type: Date,
     },
-     serviceId: {
+    serviceId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'services',
     },
   },
   { timestamps: true }
 )
- 
+
 const Session = mongoose.model('session', SessionSchema)
- 
-export default Session;
- 
+
+export default Session

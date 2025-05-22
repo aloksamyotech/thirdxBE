@@ -1,15 +1,10 @@
 import configuration from '../models/configuration.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
+import { regexFilter } from '../core/common/common.js'
 
-export const addConfiguration = async (req) => {
-  const { name, isActive, configurationType } = req?.body || {}
-
-  const newConfiguration = await configuration.create({
-    name,
-    isActive,
-    configurationType,
-  })
+export const addConfiguration = async (configData) => {
+  const newConfiguration = await configuration.create(configData)
   if (!newConfiguration) {
     return new CustomError(
       statusCodes?.badRequest,
@@ -20,40 +15,34 @@ export const addConfiguration = async (req) => {
   return { newConfiguration }
 }
 
-export const updateConfiguration = async (req) => {
-    const id = req?.params?.configId
-const {  name, isActive, configurationType } = req?.body || {};
-
-  if (!id) {
+export const updateConfiguration = async (configId, configData) => {
+  if (!configId) {
     return new CustomError(
       statusCodes?.badRequest,
       'Configuration ID is required',
       errorCodes?.bad_request
-    );
+    )
   }
-
   const updatedConfiguration = await configuration.findByIdAndUpdate(
-    id,
+    configId,
     {
-      name,
-      isActive,
-      configurationType,
+      $set: configData,
     },
     { new: true }
-  );
+  )
 
-const UpdatedFetch = await  updatedConfiguration.save()
+  const UpdatedFetch = await updatedConfiguration.save()
 
   if (!UpdatedFetch) {
     return new CustomError(
       statusCodes?.notFound,
       'Configuration not found or not updated',
       errorCodes?.not_found
-    );
+    )
   }
 
-  return { UpdatedFetch };
-};
+  return { UpdatedFetch }
+}
 
 export const getAllConfiguration = async () => {
   const allConfiguration = await configuration
@@ -69,9 +58,7 @@ export const getAllConfiguration = async () => {
   return { allConfiguration }
 }
 
-export const updateConfigurationStatus = async (req) => {
-  const { configId } = req?.params || {}
-  const { isActive } = req?.body || {}
+export const updateConfigurationStatus = async (configId, isActive) => {
   const checkExist = await configuration.findById(configId)
 
   if (!checkExist) {
@@ -97,8 +84,7 @@ export const updateConfigurationStatus = async (req) => {
   return { statusUpdate }
 }
 
-export const deleteConfiguration = async (req) => {
-  const { configId } = req?.params || {}
+export const deleteConfiguration = async (configId) => {
   const checkExist = await configuration.findById(configId)
 
   if (!checkExist) {
@@ -124,9 +110,7 @@ export const deleteConfiguration = async (req) => {
   return { statusUpdate }
 }
 
-export const searchConfigurationByName = async (req) => {
-  const { name } = req?.query || {}
-
+export const searchConfigurationByName = async (name) => {
   const searchConfig = await configuration.find({
     name: { $regex: name },
     isDeleted: false,
@@ -135,13 +119,11 @@ export const searchConfigurationByName = async (req) => {
   return searchConfig
 }
 
-export const filter = async (req) => {
-    const { type, status } = req?.query || {}
-
-    let filter = {}
-    if (type) filter.configurationType = type;
-    if (status) filter.isActive = status
-    filter.isDeleted = false
+export const filter = async (type, status) => {
+  let filter = {}
+  if (type) filter.configurationType = type
+  if (status) filter.isActive = status
+  filter.isDeleted = false
 
   const filterConfig = await configuration.find({
     configurationType: { $regex: type },
@@ -149,4 +131,54 @@ export const filter = async (req) => {
   })
 
   return filterConfig
+}
+
+export const getConfigurationWithPagination = async (query) => {
+  const { search, status, configurationType, page = 1, limit = 10 } = query || {}
+  let pageNumber = Number(page)
+  let limitNumber = Number(limit)
+  if (pageNumber < 1) {
+    pageNumber = 1
+  }
+
+  if (limitNumber < 1) {
+    limitNumber = 10
+  }
+  const skip = (pageNumber - 1) * limitNumber
+  const searchKeys = {
+    name: search,
+    configurationType: search,
+  }
+
+  const searchConditions = Object.entries(regexFilter(searchKeys)).map(
+    ([key, value]) => ({
+      [key]: value,
+    })
+  )
+
+  const filter = {
+    $or: searchConditions,
+    ...(status !== undefined &&
+      status !== '' && { isActive: status === 'true' }),
+      ...(configurationType !== undefined && configurationType !== '' && { 'configurationType': configurationType }),
+    
+  }
+
+  const allConfiguration = await configuration
+    .find(filter)
+    .skip(skip)
+    .limit(limitNumber)
+    .sort({ createdAt: -1 })
+    .notDeleted()
+
+  const total = await configuration.countDocuments(filter)
+  return {
+    data: allConfiguration,
+    meta: {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
+    },
+  }
 }

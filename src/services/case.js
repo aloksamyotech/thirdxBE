@@ -2,8 +2,9 @@ import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import Case from '../models/cases.js'
 import mongoose from 'mongoose'
+import { regexFilter } from '../core/common/common.js'
 
-export const addCase = async (req) => {
+export const addCase = async (caseData) => {
   const {
     serviceUserId,
     serviceId,
@@ -18,8 +19,8 @@ export const addCase = async (req) => {
     fundingInterest,
     fundraisingActivities,
     description,
-  } = req.body
-  const filePath = req?.file?.path
+    filePath,
+  } = caseData
 
   if (!serviceUserId || !serviceId || !serviceType || !serviceStatus) {
     throw new CustomError(
@@ -28,23 +29,6 @@ export const addCase = async (req) => {
       errorCodes.bad_request
     )
   }
-
-  const caseData = {
-    serviceUserId,
-    serviceId,
-    serviceType,
-    serviceStatus,
-    caseOpened,
-    caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-    description,
-  }
-  if (filePath) caseData.file = `${filePath}`
 
   const newCase = await Case.create(caseData)
 
@@ -59,8 +43,67 @@ export const addCase = async (req) => {
   return { newCase }
 }
 
-export const deleteCase = async (req) => {
-  const caseId = req.params.id
+export const editCase = async (caseId, caseData) => {
+  const {
+    serviceUserId,
+    serviceId,
+    serviceType,
+    serviceStatus,
+    caseOpened,
+    caseClosed,
+    benificiary,
+    campaigns,
+    engagement,
+    eventAttanded,
+    fundingInterest,
+    fundraisingActivities,
+    description,
+  } = caseData
+
+  if (!caseId) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      Message.notFound,
+      errorCodes?.bad_request
+    )
+  }
+
+  const existingCase = await Case.findById(caseId)
+
+  if (!existingCase) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+
+  if (!serviceUserId || !serviceId || !serviceType || !serviceStatus) {
+    throw new CustomError(
+      statusCodes.badRequest,
+      Message.missingRequiredFields,
+      errorCodes.bad_request
+    )
+  }
+
+  const updatedCase = await Case.findByIdAndUpdate(
+    caseId,
+    { $set: caseData },
+    { new: true }
+  )
+
+  if (!updatedCase) {
+    throw new CustomError(
+      statusCodes.internalServerError,
+      Message.notUpdated,
+      errorCodes.internal_error
+    )
+  }
+
+  return { updatedCase }
+}
+
+export const deleteCase = async (caseId) => {
   const caseData = await Case.findById(caseId)
 
   if (!caseData) {
@@ -125,12 +168,10 @@ export const searchCase = async (query) => {
     })
     .sort({ createdAt: -1 })
 
-  return cases;
+  return cases
 }
 
-export const getCaseById = async (req) => {
-  const caseId = req?.params?.id
-
+export const getCaseById = async (caseId) => {
   if (!caseId) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -227,3 +268,63 @@ export const getAllCases = async () => {
 
   return allService
 }
+
+export const getCasewithPagination = async (query) => {
+  const {
+    search,
+    status,
+    serviceId,
+    serviceType,
+    createdAt,
+    page = 1,
+    limit = 10,
+  } = query || {};
+
+  let pageNumber = Number(page);
+  let limitNumber = Number(limit);
+
+  if (pageNumber < 1) pageNumber = 1;
+  if (limitNumber < 1) limitNumber = 10;
+
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const filter = {
+    ...(status !== undefined && status !== '' && { isActive: status === 'true' }),
+    ...(serviceType !== undefined && serviceType !== '' && { serviceType }),
+    ...(serviceId !== undefined && serviceId !== '' && { serviceId }),
+    ...(createdAt !== undefined && createdAt !== '' && {
+      createdAt: {
+        $gte: new Date(createdAt),
+        $lt: new Date(new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)),
+      },
+    }),
+  };
+
+  const allCases = await Case.find(filter)
+    .sort({ createdAt: -1 })
+    .populate('serviceUserId')
+    .populate('serviceId');
+
+  const filteredCases = search
+    ? allCases.filter((c) => {
+        const firstName = c.serviceUserId?.personalInfo?.firstName?.toLowerCase() || '';
+        const lastName = c.serviceUserId?.personalInfo?.lastName?.toLowerCase() || '';
+        const searchLower = search.toLowerCase();
+        return (
+          firstName.includes(searchLower) || lastName.includes(searchLower)
+        );
+      })
+    : allCases;
+
+  const paginatedCases = filteredCases.slice(skip, skip + limitNumber);
+
+  return {
+    data: paginatedCases,
+    meta: {
+      total: filteredCases.length,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(filteredCases.length / limitNumber),
+    },
+  };
+};

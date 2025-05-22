@@ -8,6 +8,8 @@ import {
 } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import axios from 'axios'
+import { regexFilter } from '../core/common/common.js'
+import mongoose from 'mongoose'
 
 export const addUser = async (userData) => {
   const newUser = await user.create(userData)
@@ -21,10 +23,14 @@ export const addUser = async (userData) => {
   return { newUser }
 }
 
-export const getAllUser = async () => {
+export const getAllServiceUser = async () => {
   const allUser = await user
     .find({ isDeleted: false, role: checkRole.service_user })
     .sort({ createdAt: -1 })
+    .populate('contactPreferences.preferredMethod')
+    .populate('contactPreferences.contactPurposes')
+    .populate('contactPreferences.reason')
+    .populate('companyInformation.recruitmentCampaign');
   if (!allUser) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -39,6 +45,27 @@ export const getAllVolunteer = async () => {
   const allVolunteer = await user
     .find({ isDeleted: false, role: checkRole.volunteer })
     .sort({ createdAt: -1 })
+    .populate('contactPreferences.preferredMethod')
+    .populate('contactPreferences.contactPurposes')
+    .populate('contactPreferences.reason')
+    .populate('companyInformation.recruitmentCampaign');
+  if (!allVolunteer) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  return { allVolunteer }
+}
+export const getAllUsers = async () => {
+  const allVolunteer = await user
+    .find({ isDeleted: false, role: checkRole.user })
+    .sort({ createdAt: -1 })
+    .populate('contactPreferences.preferredMethod')
+    .populate('contactPreferences.contactPurposes')
+    .populate('contactPreferences.reason')
+    .populate('companyInformation.recruitmentCampaign');
   if (!allVolunteer) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -53,6 +80,11 @@ export const getAllDonor = async () => {
   const allDonor = await user
     .find({ isDeleted: false, role: checkRole.donor })
     .sort({ createdAt: -1 })
+    .populate('contactPreferences.preferredMethod')
+    .populate('contactPreferences.contactPurposes')
+    .populate('contactPreferences.reason')
+    .populate('companyInformation.recruitmentCampaign');
+
   if (!allDonor) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -73,6 +105,11 @@ export const getUserById = async (userId) => {
   }
 
   const userData = await user.findOne({ _id: userId, isDeleted: false })
+    .populate('contactPreferences.preferredMethod')
+    .populate('contactPreferences.contactPurposes')
+    .populate('contactPreferences.reason')
+    .populate('companyInformation.recruitmentCampaign');
+
   if (!userData) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -166,4 +203,155 @@ export const deleteUser = async (userId) => {
     )
   }
   return { statusUpdate }
+}
+
+export const archiveUser = async (userId) => {
+  const checkExist = await user.findById({ _id: userId })
+
+  if (!checkExist) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  const statusUpdate = await user.findByIdAndUpdate(
+    { _id: userId },
+    { archive: true },
+    { new: true }
+  )
+
+  if (!statusUpdate) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    )
+  }
+  return { statusUpdate }
+}
+
+export const unArchiveUser = async (userId) => {
+  const checkExist = await user.findById({ _id: userId })
+
+  if (!checkExist) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  const statusUpdate = await user.findByIdAndUpdate(
+    { _id: userId },
+    { archive: false },
+    { new: true }
+  )
+
+  if (!statusUpdate) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    )
+  }
+  return { statusUpdate }
+}
+
+export const getUserwithPagination = async (query) => {
+  const {
+    search,
+    status,
+    district,
+    createdAt,
+    gender,
+    nickName,
+    uniqueId,
+    campaigns,
+    country,
+    archive,
+    role,
+    userId,
+    name,
+    page = 1,
+    limit = 10,
+  } = query || {}
+
+  let pageNumber = Number(page)
+  let limitNumber = Number(limit)
+  if (pageNumber < 1) {
+    pageNumber = 1
+  }
+
+  if (limitNumber < 1) {
+    limitNumber = 10
+  }
+  const skip = (pageNumber - 1) * limitNumber
+  const searchKeys = {
+    'personalInfo.firstName': search,
+    'personalInfo.lastName': search,
+    'companyInformatiom.companyName': search,
+    role: search,
+    subRole: search,
+  }
+
+  const searchConditions = Object.entries(regexFilter(searchKeys)).map(
+    ([key, value]) => ({
+      [key]: value,
+    })
+  )
+
+  const filter = {
+    $or: searchConditions,
+    ...(status !== undefined &&
+      status !== '' && { isActive: status === 'true' }),
+    ...(archive !== undefined && archive !== '' && { archive: archive }),
+    ...(district !== undefined &&
+      district !== '' && { 'contactInfo.district': district }),
+    ...(gender !== undefined &&
+      gender !== '' && { 'personalInfo.gender': gender }),
+    ...(nickName !== undefined &&
+      nickName !== '' && { 'personalInfo.nickName': nickName }),
+    ...(uniqueId !== undefined && uniqueId !== '' && { uniqueId: uniqueId }),
+    ...(campaigns !== undefined &&
+      campaigns !== '' && { 'otherInfo.campaigns': campaigns }),
+    ...(country !== undefined &&
+      country !== '' && { 'contactInfo.country': country }),
+    ...(role !== undefined && role !== '' && { role: role }),
+    ...(userId !== undefined &&
+      userId !== '' && { caseId: new mongoose.Types.ObjectId(userId) }),
+    ...(name !== undefined && name !== '' && { _id: name }),
+
+    ...(createdAt !== undefined &&
+      createdAt !== '' && {
+        createdAt: {
+          $gte: new Date(createdAt),
+          $lt: new Date(
+            new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
+          ),
+        },
+      }),
+  }
+
+  const allUser = await user
+    .find(filter)
+    .skip(skip)
+    .limit(limitNumber)
+    .sort({ createdAt: -1 })
+    .notDeleted()
+
+  const total = await user.countDocuments(filter)
+  return {
+    data: allUser,
+    meta: {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
+    },
+  }
+}
+
+export const isExistUser = async (userId) => {
+  const exists = await user.exists({ _id: userId })
+  return Boolean(exists)
 }

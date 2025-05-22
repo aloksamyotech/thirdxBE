@@ -19,8 +19,13 @@ const ServiceSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    type: {
-      type: String,
+    isArchive: {
+      type: Boolean,
+      default: false,
+    },
+    serviceType: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'configuration',
       required: true,
     },
     file: {

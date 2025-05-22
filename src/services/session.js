@@ -1,46 +1,10 @@
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable no-undef */
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import Session from '../models/session.js'
 
-export const addSession = async (req) => {
-  const {
-    name,
-    country,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    time,
-    date,
-    fundraisingActivities,
-    serviceId,
-  } = req.body
- 
-  const sessionData = {
-    name,
-    country,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    time,
-    date,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-    serviceId,
-  }
- 
-  if (req.file && req.file.filename) {
-    sessionData.file = `${req.file.filename}`
-  }
- 
+export const addSession = async (sessionData) => {
   const newSession = await Session.create(sessionData)
- 
+
   if (!newSession) {
     throw new CustomError(
       statusCodes.badRequest,
@@ -48,13 +12,48 @@ export const addSession = async (req) => {
       errorCodes.bad_request
     )
   }
- 
+
   return { newSession }
 }
- 
-export const deleteSession = async (req) => {
-  const sessionId = req.params.id
-  const serssionData = await Session.findById(serviceId)
+
+export const editSession = async (id, sessionData) => {
+  if (!id) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      Message.notFound,
+      errorCodes?.bad_request
+    )
+  }
+
+  const existingSession = await Session.findById(id)
+
+  if (!existingSession) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+
+  const updateSession = await Session.findByIdAndUpdate(
+    id,
+    { $set: sessionData },
+    { new: true }
+  )
+
+  if (!updateSession) {
+    throw new CustomError(
+      statusCodes.badRequest,
+      Message.notCreated,
+      errorCodes.bad_request
+    )
+  }
+
+  return { updateSession }
+}
+
+export const deleteSession = async (sessionId) => {
+  const serssionData = await Session.findById(sessionId)
 
   if (!serssionData) {
     throw new CustomError(
@@ -79,9 +78,7 @@ export const deleteSession = async (req) => {
   return { statusUpdate }
 }
 
-export const searchSession = async (req, res) => {
-  const { name, isActive, type } = req.query
-
+export const searchSession = async (name, isActive, type) => {
   const searchQuery = {}
   if (name) {
     searchQuery.name = { $regex: name, $options: 'i' }
@@ -97,16 +94,12 @@ export const searchSession = async (req, res) => {
 
   const session = await Session.find(searchQuery)
 
-
-
   return {
-    session
+    session,
   }
 }
 
-export const getSessionById = async (req) => {
-  const serviceId = req?.params.id
-
+export const getSessionById = async (serviceId) => {
   if (!serviceId) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -115,7 +108,7 @@ export const getSessionById = async (req) => {
     )
   }
 
-  const userData = await Session.find({ serviceId, isDeleted: false });
+  const userData = await Session.find({ serviceId, isDeleted: false })
 
   if (!userData || userData.length === 0) {
     throw new CustomError(
@@ -139,4 +132,38 @@ export const getAllSession = async () => {
     )
   }
   return { allSession }
+}
+export const isExistSession = async (userId) => {
+  const exists = await Session.exists({ _id: userId });
+  return Boolean(exists);
+}
+
+export const getAllWithPagination = async (query) => {
+  const { page = 1, limit = 10 } = query || {}
+  let pageNumber = Number(page)
+  let limitNumber = Number(limit)
+  if (pageNumber < 1) {
+    pageNumber = 1
+  }
+
+  if (limitNumber < 1) {
+    limitNumber = 10
+  }
+  const skip = (pageNumber - 1) * limitNumber
+
+  const allSession = await Session.find()
+    .skip(skip)
+    .limit(limitNumber)
+    .sort({ createdAt: -1 })
+
+  const total = await Session.countDocuments()
+  return {
+    data: allSession,
+    meta: {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
+    },
+  }
 }
