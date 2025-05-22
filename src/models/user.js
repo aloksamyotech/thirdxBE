@@ -97,7 +97,11 @@ const UserSchema = new mongoose.Schema(
       mainContactName: { type: String },
       socialMediaLinks: { type: String },
       otherId: { type: String },
-      recruitmentCampaign: { type: String },
+      recruitmentCampaign: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'configuration',
+        required: true,
+      },
     },
     role: {
       type: String,
