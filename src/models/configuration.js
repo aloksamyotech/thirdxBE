@@ -1,4 +1,6 @@
 import mongoose from 'mongoose'
+import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
+
 const configurationSchema = new mongoose.Schema(
   {
     name: {
@@ -8,10 +10,6 @@ const configurationSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       required: true,
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
     },
     isArchive: {
       type: Boolean,
@@ -24,7 +22,7 @@ const configurationSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
-
+configurationSchema.plugin(commonFieldsPlugin)
 const configuration = mongoose.model('configuration', configurationSchema)
 
 export default configuration
