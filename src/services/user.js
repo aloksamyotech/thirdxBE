@@ -9,6 +9,7 @@ import {
 import CustomError from '../utils/exception.js'
 import axios from 'axios'
 import { regexFilter } from '../core/common/common.js'
+import mongoose from 'mongoose'
 
 export const addUser = async (userData) => {
   const newUser = await user.create(userData)
@@ -208,6 +209,32 @@ export const archiveUser = async (userId) => {
   return { statusUpdate }
 }
 
+export const unArchiveUser = async (userId) => {
+  const checkExist = await user.findById({ _id: userId })
+
+  if (!checkExist) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  const statusUpdate = await user.findByIdAndUpdate(
+    { _id: userId },
+    { archive: false },
+    { new: true }
+  )
+
+  if (!statusUpdate) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    )
+  }
+  return { statusUpdate }
+}
+
 export const getUserwithPagination = async (query) => {
   const {
     search,
@@ -221,6 +248,8 @@ export const getUserwithPagination = async (query) => {
     country,
     archive,
     role,
+    userId,
+    name,
     page = 1,
     limit = 10,
   } = query || {}
@@ -238,6 +267,7 @@ export const getUserwithPagination = async (query) => {
   const searchKeys = {
     'personalInfo.firstName': search,
     'personalInfo.lastName': search,
+    'companyInformatiom.companyName': search,
     role: search,
     subRole: search,
   }
@@ -252,25 +282,32 @@ export const getUserwithPagination = async (query) => {
     $or: searchConditions,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
-    ...(archive !== undefined && archive !== '' && { 'archive': archive }),
-    ...(district !== undefined && district !== '' && { 'contactInfo.district': district }),
-    ...(gender !== undefined && gender !== '' && { 'personalInfo.gender': gender }),
-    ...(nickName !== undefined && nickName !== '' && { 'personalInfo.nickName': nickName }),
-    ...(uniqueId !== undefined && uniqueId !== '' && { 'uniqueId': uniqueId }),
-    ...(campaigns !== undefined && campaigns !== '' && { 'otherInfo.campaigns': campaigns }),
-    ...(country !== undefined && country !== '' && { 'contactInfo.country': country }),
-    ...(role !== undefined && role !== '' && { 'role': role }),
-
+    ...(archive !== undefined && archive !== '' && { archive: archive }),
+    ...(district !== undefined &&
+      district !== '' && { 'contactInfo.district': district }),
+    ...(gender !== undefined &&
+      gender !== '' && { 'personalInfo.gender': gender }),
+    ...(nickName !== undefined &&
+      nickName !== '' && { 'personalInfo.nickName': nickName }),
+    ...(uniqueId !== undefined && uniqueId !== '' && { uniqueId: uniqueId }),
+    ...(campaigns !== undefined &&
+      campaigns !== '' && { 'otherInfo.campaigns': campaigns }),
+    ...(country !== undefined &&
+      country !== '' && { 'contactInfo.country': country }),
+    ...(role !== undefined && role !== '' && { role: role }),
+    ...(userId !== undefined &&
+      userId !== '' && { caseId: new mongoose.Types.ObjectId(userId) }),
+    ...(name !== undefined && name !== '' && { _id: name }),
 
     ...(createdAt !== undefined &&
       createdAt !== '' && {
-      createdAt: {
-        $gte: new Date(createdAt),
-        $lt: new Date(
-          new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
-        ),
-      },
-    }),
+        createdAt: {
+          $gte: new Date(createdAt),
+          $lt: new Date(
+            new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
+          ),
+        },
+      }),
   }
 
   const allUser = await user
@@ -278,6 +315,7 @@ export const getUserwithPagination = async (query) => {
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
+    .notDeleted()
 
   const total = await user.countDocuments(filter)
   return {
@@ -291,8 +329,7 @@ export const getUserwithPagination = async (query) => {
   }
 }
 
-
 export const isExistUser = async (userId) => {
-  const exists = await user.exists({ _id: userId });
-  return Boolean(exists);
+  const exists = await user.exists({ _id: userId })
+  return Boolean(exists)
 }
