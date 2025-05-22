@@ -24,7 +24,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: 16.16.205.158
-          username: ubuntu                 
+          username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
@@ -35,4 +35,21 @@ jobs:
             sudo git pull origin develop
             sudo git log -1
             sudo npm install
-            sudo pm2 restart 0
+             # PM2 app name (change this if needed)
+            PM2_APP_NAME="therdexBE_QA"
+
+            # Enable the PM2 app if it's disabled
+            if pm2 list | grep -q "$PM2_APP_NAME"; then
+              echo "Enabling PM2 app if it's disabled..."
+              sudo pm2 enable $PM2_APP_NAME
+            fi
+
+            # Restart the PM2 app
+            if pm2 list | grep -q "$PM2_APP_NAME"; then
+              echo "Restarting existing PM2 app..."
+              sudo pm2 restart $PM2_APP_NAME
+            else
+              echo "Starting PM2 app for the first time..."
+              sudo pm2 start npm --name "$PM2_APP_NAME" -- run start
+              sudo pm2 save  # optional: save PM2 state for reboot
+            fi
