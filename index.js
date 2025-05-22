@@ -18,6 +18,7 @@ import { seedMailingLists } from './src/core/common/script/mailingList.js'
 import { seedTags } from './src/core/common/script/tags.js'
 import { seedTransactions } from './src/core/common/script/transactions.js'
 import { seedSessions } from './src/core/common/script/session.js'
+import { seedTagCategories } from './src/core/common/script/tegCategory.js'
 
 const app = express()
 const PORT = (() => {
@@ -49,8 +50,8 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')))
 app.use('/api/v1', AllRoutes)
 app.use(globalExceptionHandler)
 
-// TagCategorySchema remaining
 // attendees remaining
+// TagCategories remaining facing issue
 
 // seedTags() - done
 // seedConfigurations() - done 
