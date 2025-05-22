@@ -28,7 +28,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /thiredx/thirdxBE
+            cd /thirdexDev/thirdxBE
             sudo git stash
             sudo git fetch --all
             sudo git checkout develop
