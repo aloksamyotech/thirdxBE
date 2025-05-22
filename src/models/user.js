@@ -100,7 +100,6 @@ const UserSchema = new mongoose.Schema(
       recruitmentCampaign: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'configuration',
-        required: true,
       },
     },
     role: {

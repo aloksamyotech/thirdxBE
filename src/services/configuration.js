@@ -169,6 +169,7 @@ export const getConfigurationWithPagination = async (query) => {
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
+    .nonDeleted()
 
   const total = await configuration.countDocuments(filter)
   return {
