@@ -249,6 +249,7 @@ export const getUserwithPagination = async (query) => {
     archive,
     role,
     userId,
+    name,
     page = 1,
     limit = 10,
   } = query || {}
@@ -296,6 +297,7 @@ export const getUserwithPagination = async (query) => {
     ...(role !== undefined && role !== '' && { role: role }),
     ...(userId !== undefined &&
       userId !== '' && { caseId: new mongoose.Types.ObjectId(userId) }),
+    ...(name !== undefined && name !== '' && { _id: name }),
 
     ...(createdAt !== undefined &&
       createdAt !== '' && {
@@ -326,7 +328,6 @@ export const getUserwithPagination = async (query) => {
     },
   }
 }
-
 
 export const isExistUser = async (userId) => {
   const exists = await user.exists({ _id: userId })
