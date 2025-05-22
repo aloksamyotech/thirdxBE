@@ -2,7 +2,11 @@ import mongoose from 'mongoose'
 const MailingListSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    tags: [String],
+    // tags: [String],
+    tags: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'tag',
+    },
     channelSettings: [String],
     purposeSettings: [String],
     includeArchived: { type: Boolean, default: false },
