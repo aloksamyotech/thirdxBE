@@ -12,7 +12,12 @@ import path from 'path'
 import { seedConfigurations } from './src/core/common/script/configurations.js'
 import { seedServices } from './src/core/common/script/services.js'
 import { seedUsers } from './src/core/common/script/users.js'
-// import { CheckCompanySubscriptionExpiry, ResetDailyLimit } from './src/utils/cronJob.js'
+import { seedCaseNotes } from './src/core/common/script/caseNotes.js'
+import { seedCases } from './src/core/common/script/cases.js'
+import { seedMailingLists } from './src/core/common/script/mailingList.js'
+import { seedTags } from './src/core/common/script/tags.js'
+import { seedTransactions } from './src/core/common/script/transactions.js'
+import { seedSessions } from './src/core/common/script/session.js'
 
 const app = express()
 const PORT = (() => {
@@ -38,18 +43,24 @@ connectDB()
     logger.error(`Database connection failed: ${err.message}`)
   })
 
-// user Route
 app.use(responseInterceptor)
 app.use(express.urlencoded({ extended: true }))
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')))
 app.use('/api/v1', AllRoutes)
 app.use(globalExceptionHandler)
-// ResetDailyLimit();
-// CheckCompanySubscriptionExpiry();
 
-// seedConfigurations()
-// seedServices()
+// TagCategorySchema remaining
+// attendees remaining
+
+// seedTags() - done
+// seedConfigurations() - done 
+// seedSessions() - done
+// seedMailingLists() - done
+// seedCaseNotes() - done
+// seedCases() - done
 // seedUsers()
+// seedServices()  - done
+// seedTransactions() - done 
 app.listen(PORT, () => {
   logger.info(`Server is running at port ${PORT}`)
 })

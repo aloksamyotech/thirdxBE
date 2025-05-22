@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import mail from '../../../models/mail';
+import mail from '../../../models/mail.js';
 
 
 const comparisonOperators = [
@@ -30,7 +30,7 @@ function generateRandomFilter() {
   };
 }
 
-export async function seedMailingLists(count = 5000) {
+export async function seedMailingLists(count = 100) {
   const mailingLists = [];
 
   for (let i = 0; i < count; i++) {

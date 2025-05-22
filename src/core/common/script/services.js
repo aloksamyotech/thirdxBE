@@ -4,7 +4,7 @@ import mongoose from 'mongoose'
 import Services from '../../../models/services.js'
 import configuration from '../../../models/configuration.js'
 
-export async function seedServices(count = 20) {
+export async function seedServices(count = 100) {
   const serviceTypeConfigs = await configuration.find(
     { configurationType: 'Campaign' },
     '_id'

@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker'
 import configuration from '../../../models/configuration.js'
 import CaseNote from '../../../models/caseNote.js'
 
-export async function seedCaseNotes(count = 1000) {
+export async function seedCaseNotes(count = 100) {
   const configurations = await configuration.find({}, '_id')
   const configurationIds = configurations.map((conf) => conf._id)
 

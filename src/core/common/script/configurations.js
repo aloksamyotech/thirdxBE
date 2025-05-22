@@ -1,14 +1,20 @@
 import { faker } from '@faker-js/faker'
 import configuration from '../../../models/configuration.js'
 
-export async function seedConfigurations(count = 1000) {
+export async function seedConfigurations(count = 50) {
   const configurations = []
 
   const configTypes = [
-    'Contact Type',
-    'Referral Type',
-    'Support Type',
-    'Notification Type',
+    'Contact Types',
+    'Referral Types',
+    'Contact Purpose',
+    'Campaign',
+    'Key Indicators',
+    'Payment Method',
+    'Archive Reason',
+    'Form Types',
+    'Reason',
+    'Service Types',
   ]
 
   for (let i = 0; i < count; i++) {

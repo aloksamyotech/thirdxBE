@@ -1,7 +1,11 @@
 import { faker } from '@faker-js/faker'
 import user from '../../../models/user.js'
-
-export async function seedUsers(count = 20) {
+function generateIndianPhoneNumber() {
+  const start = faker.helpers.arrayElement(['6', '7', '8', '9'])
+  const number = faker.string.numeric(9)
+  return `+91${start}${number}`
+}
+export async function seedUsers(count = 100) {
   const roles = ['service_user', 'volunteer', 'donor', 'user']
   const subRoles = ['donar_individual', 'donar_company', 'donar_group']
 
@@ -30,8 +34,8 @@ export async function seedUsers(count = 20) {
         dateOfBirth: faker.date.birthdate({ min: 18, max: 70, mode: 'age' }),
       },
       contactInfo: {
-        homePhone: faker.phone.number(),
-        phone: faker.phone.number(),
+        homePhone: generateIndianPhoneNumber(),
+        phone: generateIndianPhoneNumber(),
         email: faker.internet.email(),
         addressLine1: faker.location.streetAddress(),
         addressLine2: faker.location.secondaryAddress(),
@@ -69,8 +73,8 @@ export async function seedUsers(count = 20) {
           'Friend',
           'Spouse',
         ]),
-        homePhone: faker.phone.number(),
-        phone: faker.phone.number(),
+        homePhone: generateIndianPhoneNumber(),
+        phone: generateIndianPhoneNumber(),
         email: faker.internet.email(),
         addressLine1: faker.location.streetAddress(),
         addressLine2: faker.location.secondaryAddress(),
@@ -89,9 +93,9 @@ export async function seedUsers(count = 20) {
         dateOfConfirmation: faker.date.recent(),
         reason: faker.lorem.sentence(),
         email: faker.internet.email(),
-        phone: faker.phone.number(),
+        phone: generateIndianPhoneNumber(),
         contactMethods: {
-          telephone: faker.datatype.boolean(),
+          telephone: generateIndianPhoneNumber(),
           email: faker.datatype.boolean(),
           sms: faker.datatype.boolean(),
           whatsapp: faker.datatype.boolean(),
