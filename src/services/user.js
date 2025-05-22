@@ -27,6 +27,10 @@ export const getAllServiceUser = async () => {
   const allUser = await user
     .find({ isDeleted: false, role: checkRole.service_user })
     .sort({ createdAt: -1 })
+    .populate('contactPreferences.preferredMethod')
+    .populate('contactPreferences.contactPurposes')
+    .populate('contactPreferences.reason')
+    .populate('companyInformation.recruitmentCampaign');
   if (!allUser) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -41,6 +45,10 @@ export const getAllVolunteer = async () => {
   const allVolunteer = await user
     .find({ isDeleted: false, role: checkRole.volunteer })
     .sort({ createdAt: -1 })
+    .populate('contactPreferences.preferredMethod')
+    .populate('contactPreferences.contactPurposes')
+    .populate('contactPreferences.reason')
+    .populate('companyInformation.recruitmentCampaign');
   if (!allVolunteer) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -54,6 +62,10 @@ export const getAllUsers = async () => {
   const allVolunteer = await user
     .find({ isDeleted: false, role: checkRole.user })
     .sort({ createdAt: -1 })
+    .populate('contactPreferences.preferredMethod')
+    .populate('contactPreferences.contactPurposes')
+    .populate('contactPreferences.reason')
+    .populate('companyInformation.recruitmentCampaign');
   if (!allVolunteer) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -68,6 +80,11 @@ export const getAllDonor = async () => {
   const allDonor = await user
     .find({ isDeleted: false, role: checkRole.donor })
     .sort({ createdAt: -1 })
+    .populate('contactPreferences.preferredMethod')
+    .populate('contactPreferences.contactPurposes')
+    .populate('contactPreferences.reason')
+    .populate('companyInformation.recruitmentCampaign');
+
   if (!allDonor) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -88,6 +105,11 @@ export const getUserById = async (userId) => {
   }
 
   const userData = await user.findOne({ _id: userId, isDeleted: false })
+    .populate('contactPreferences.preferredMethod')
+    .populate('contactPreferences.contactPurposes')
+    .populate('contactPreferences.reason')
+    .populate('companyInformation.recruitmentCampaign');
+
   if (!userData) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -249,6 +271,7 @@ export const getUserwithPagination = async (query) => {
     archive,
     role,
     userId,
+    name,
     page = 1,
     limit = 10,
   } = query || {}
@@ -296,6 +319,7 @@ export const getUserwithPagination = async (query) => {
     ...(role !== undefined && role !== '' && { role: role }),
     ...(userId !== undefined &&
       userId !== '' && { caseId: new mongoose.Types.ObjectId(userId) }),
+    ...(name !== undefined && name !== '' && { _id: name }),
 
     ...(createdAt !== undefined &&
       createdAt !== '' && {
@@ -326,7 +350,6 @@ export const getUserwithPagination = async (query) => {
     },
   }
 }
-
 
 export const isExistUser = async (userId) => {
   const exists = await user.exists({ _id: userId })

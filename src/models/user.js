@@ -66,10 +66,22 @@ const UserSchema = new mongoose.Schema(
     },
 
     contactPreferences: {
-      preferredMethod: String,
-      contactPurposes: String,
+      preferredMethod: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'configuration',
+        required: true,
+      },
+      contactPurposes: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'configuration',
+        required: true,
+      },
       dateOfConfirmation: Date,
-      reason: String,
+      reason: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'configuration',
+        required: true,
+      },
       email: String,
       phone: String,
       contactMethods: {
@@ -85,7 +97,10 @@ const UserSchema = new mongoose.Schema(
       mainContactName: { type: String },
       socialMediaLinks: { type: String },
       otherId: { type: String },
-      recruitmentCampaign: { type: String },
+      recruitmentCampaign: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'configuration',
+      },
     },
     role: {
       type: String,
