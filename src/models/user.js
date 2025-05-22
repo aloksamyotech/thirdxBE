@@ -66,10 +66,22 @@ const UserSchema = new mongoose.Schema(
     },
 
     contactPreferences: {
-      preferredMethod: String,
-      contactPurposes: String,
+      preferredMethod: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'configuration',
+        required: true,
+      },
+      contactPurposes: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'configuration',
+        required: true,
+      },
       dateOfConfirmation: Date,
-      reason: String,
+      reason: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'configuration',
+        required: true,
+      },
       email: String,
       phone: String,
       contactMethods: {
