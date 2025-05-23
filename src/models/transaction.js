@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-
+import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 const TransactionSchema = new mongoose.Schema(
   {
     assignedTo: { type: String },
@@ -19,7 +19,7 @@ const TransactionSchema = new mongoose.Schema(
     },
     receiptNumber: { type: String },
     transactionId: { type: String, unique: true },
-    isDeleted: { type: Boolean, default: false },
+  
     isArchive: {
       type: Boolean,
       default: false,
@@ -28,6 +28,6 @@ const TransactionSchema = new mongoose.Schema(
 
   { timestamps: true }
 )
-
+TransactionSchema.plugin(commonFieldsPlugin)
 const transaction = mongoose.model('transaction', TransactionSchema)
 export default transaction

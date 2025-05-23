@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-
+import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 const SessionSchema = new mongoose.Schema(
   {
     name: {
@@ -10,14 +10,7 @@ const SessionSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
+   
     isArchive: {
       type: Boolean,
       default: false,
@@ -59,7 +52,7 @@ const SessionSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
-
+SessionSchema.plugin(commonFieldsPlugin)
 const Session = mongoose.model('session', SessionSchema)
 
 export default Session
