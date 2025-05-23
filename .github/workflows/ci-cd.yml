@@ -24,7 +24,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: 16.16.205.158
-          username: root
+          username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
