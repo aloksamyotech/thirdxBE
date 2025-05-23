@@ -103,7 +103,6 @@ export const getUserById = async (userId) => {
       errorCodes?.not_found
     )
   }
-
   const userData = await user.findOne({ _id: userId, isDeleted: false })
     .populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
