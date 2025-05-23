@@ -1,13 +1,13 @@
-name: Deploy to new-dev
+name: Deploy to develop
 
 on:
   push:
     branches:
-      - 'new-dev'
+      - 'develop'
 
 jobs:
   redeploy_backend:
-    name: Deploy Backend to new-dev
+    name: Deploy Backend to develop
     runs-on: ubuntu-latest
 
     steps:
