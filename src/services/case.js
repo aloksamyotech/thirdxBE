@@ -9,7 +9,6 @@ export const addCase = async (caseData) => {
     serviceUserId,
     serviceId,
     serviceType,
-    serviceStatus,
     caseOpened,
     caseClosed,
     benificiary,
@@ -20,35 +19,23 @@ export const addCase = async (caseData) => {
     fundraisingActivities,
     description,
     filePath,
-  } = caseData
+    isActive,
+  } = caseData;
 
-  if (!serviceUserId || !serviceId || !serviceType || !serviceStatus) {
+  if (!serviceUserId || !serviceId || !serviceType||!isActive) {
     throw new CustomError(
       statusCodes.badRequest,
       Message.missingRequiredFields,
       errorCodes.bad_request
-    )
+    );
   }
 
-  const newCase = await Case.create(caseData)
+  const activeStatus = isActive === 'true';
 
-  if (!newCase) {
-    throw new CustomError(
-      statusCodes.internalServerError,
-      Message.notCreated,
-      errorCodes.internal_error
-    )
-  }
-
-  return { newCase }
-}
-
-export const editCase = async (caseId, caseData) => {
-  const {
+  const newCase = await Case.create({
     serviceUserId,
     serviceId,
     serviceType,
-    serviceStatus,
     caseOpened,
     caseClosed,
     benificiary,
@@ -58,50 +45,99 @@ export const editCase = async (caseId, caseData) => {
     fundingInterest,
     fundraisingActivities,
     description,
-  } = caseData
+    filePath,
+    isActive: activeStatus,
+  });
+
+  if (!newCase) {
+    throw new CustomError(
+      statusCodes.internalServerError,
+      Message.notCreated,
+      errorCodes.internal_error
+    );
+  }
+
+  return { newCase };
+};
+
+export const editCase = async (caseId, caseData) => {
+  const {
+    serviceUserId,
+    serviceId,
+    serviceType,
+    caseOpened,
+    caseClosed,
+    benificiary,
+    campaigns,
+    engagement,
+    eventAttanded,
+    fundingInterest,
+    fundraisingActivities,
+    description,
+    filePath,
+    isActive,
+  } = caseData;
 
   if (!caseId) {
     throw new CustomError(
       statusCodes?.badRequest,
       Message.notFound,
       errorCodes?.bad_request
-    )
+    );
   }
 
-  const existingCase = await Case.findById(caseId)
+  const activeStatus = isActive === 'true' ? true : isActive === 'false' ? false : isActive;
 
+  if (!serviceUserId || !serviceId || !serviceType || typeof activeStatus === 'undefined') {
+    throw new CustomError(
+      statusCodes.badRequest,
+      Message.missingRequiredFields,
+      errorCodes.bad_request
+    );
+  }
+
+  const existingCase = await Case.findById(caseId);
   if (!existingCase) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
-    )
+    );
   }
 
-  if (!serviceUserId || !serviceId || !serviceType || !serviceStatus) {
-    throw new CustomError(
-      statusCodes.badRequest,
-      Message.missingRequiredFields,
-      errorCodes.bad_request
-    )
-  }
+  const updateData = {
+    serviceUserId,
+    serviceId,
+    serviceType,
+    caseOpened,
+    caseClosed,
+    benificiary,
+    campaigns,
+    engagement,
+    eventAttanded,
+    fundingInterest,
+    fundraisingActivities,
+    description,
+    filePath,
+    isActive: activeStatus,
+  };
 
   const updatedCase = await Case.findByIdAndUpdate(
     caseId,
-    { $set: caseData },
+    { $set: updateData },
     { new: true }
-  )
+  );
 
   if (!updatedCase) {
     throw new CustomError(
       statusCodes.internalServerError,
       Message.notUpdated,
       errorCodes.internal_error
-    )
+    );
   }
 
-  return { updatedCase }
-}
+  return { updatedCase };
+};
 
 export const deleteCase = async (caseId) => {
   const caseData = await Case.findById(caseId)

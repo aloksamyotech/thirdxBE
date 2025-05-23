@@ -6,11 +6,18 @@ export const addUser = async (req, res) => {
   const userData = req?.body || {}
   const filePath = req?.file?.path
 
+
+
+
   if (filePath) {
-    const normalizedPath = '/' + filePath.replace(/\\/g, '/')
+    const normalizedPath = filePath.replace(/\\/g, '/')
     userData.otherInfo = {}
     userData.otherInfo.file = normalizedPath
   }
+
+
+
+   
   const addUser = await userService.addUser(userData)
   res.status(statusCodes?.ok).send(addUser)
 }
@@ -50,6 +57,8 @@ export const editUser = async (req, res) => {
   const { userId } = req.params
   const userData = req?.body || {}
   const filePath = req?.file?.path
+
+
 
   if (filePath) {
     if (!userData.otherInfo) {

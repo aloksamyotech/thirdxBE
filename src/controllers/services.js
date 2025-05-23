@@ -31,7 +31,7 @@ export const addServices = async (req, res) => {
   }
 
   if (req.file && req.file.filename) {
-    serviceData.file = `/uploads/${req.file.filename}`
+    serviceData.file = `uploads/${req.file.filename}`
   }
   const addServices = await services.addServices(serviceData)
   res.status(statusCodes?.ok).send(addServices)

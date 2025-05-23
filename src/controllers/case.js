@@ -6,7 +6,6 @@ export const addCase = async (req, res) => {
     serviceUserId,
     serviceId,
     serviceType,
-    serviceStatus,
     caseOpened,
     caseClosed,
     benificiary,
@@ -16,13 +15,13 @@ export const addCase = async (req, res) => {
     fundingInterest,
     fundraisingActivities,
     description,
+    isActive,
   } = req.body
 
   const caseData = {
     serviceUserId,
     serviceId,
     serviceType,
-    serviceStatus,
     caseOpened,
     caseClosed,
     benificiary,
@@ -32,6 +31,7 @@ export const addCase = async (req, res) => {
     fundingInterest,
     fundraisingActivities,
     description,
+    isActive,
   }
 
   const filePath = req?.file?.path?.replace(/\\/g, '/')
@@ -77,7 +77,6 @@ export const editCase = async (req, res) => {
     serviceUserId,
     serviceId,
     serviceType,
-    serviceStatus,
     caseOpened,
     caseClosed,
     benificiary,
@@ -87,6 +86,7 @@ export const editCase = async (req, res) => {
     fundingInterest,
     fundraisingActivities,
     description,
+     isActive,
   } = req.body
 
   const filePath = req?.file?.path
@@ -95,7 +95,6 @@ export const editCase = async (req, res) => {
     serviceUserId,
     serviceId,
     serviceType,
-    serviceStatus,
     caseOpened,
     caseClosed,
     benificiary,
@@ -105,6 +104,7 @@ export const editCase = async (req, res) => {
     fundingInterest,
     fundraisingActivities,
     description,
+     isActive,
   }
   if (filePath) caseData.file = `${filePath}`
 
