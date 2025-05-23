@@ -19,7 +19,6 @@ const caseSchema = new mongoose.Schema(
       required: true,
     },
     serviceType: { type: String, required: true },
-    serviceStatus: { type: String, required: true },
     caseOpened: { type: Date },
     caseClosed: { type: Date },
     benificiary: {
