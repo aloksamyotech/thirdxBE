@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-keys */
 import 'dotenv/config'
 import process from 'node:process'
 
@@ -28,6 +29,7 @@ export const statusCodes = {
 
 export const Message = {
   notFound: 'Not Found',
+  userAlreadyInSession: 'User already exists in this session',
   caseNotFound: 'Case Not Found',
   registerSuccessfully: 'Successfully Registered',
   inValid: 'Invalid Credentials',

@@ -6,32 +6,45 @@ import { isExistSession } from "./session.js"
 import { isExistUser } from "./user.js"
 
 export const addAttendee = async (attendeesData) => {
-    const checkUserExistance = await isExistUser(attendeesData?.userId)
+    const checkUserExistance = await isExistUser(attendeesData?.userId);
     if (!checkUserExistance) {
         throw new CustomError(
             statusCodes?.badRequest,
             Message?.userNotFound,
             errorCodes?.bad_request
-        )
+        );
     }
-    const chstSessionExistance = await isExistSession(attendeesData?.sessionId)
-    if (!chstSessionExistance) {
+
+    const checkSessionExistance = await isExistSession(attendeesData?.sessionId);
+    if (!checkSessionExistance) {
         throw new CustomError(
             statusCodes?.badRequest,
             Message?.sessionNotFound,
             errorCodes?.bad_request
-        )
+        );
+    }
+
+    const existingAttendance = await Attendees.findOne({
+        attendee: attendeesData?.userId,
+        session: attendeesData?.sessionId,
+    });
+
+    if (existingAttendance) {
+        throw new CustomError(
+            statusCodes?.conflict,
+            Message?.userAlreadyInSession,
+            errorCodes?.conflict
+        );
     }
 
     const attendeesPayload = {
         attendee: attendeesData?.userId,
         session: attendeesData?.sessionId,
-    }
+    };
 
-    const attendeesSchema = new Attendees(attendeesPayload)
-    return await attendeesSchema.save()
-}
-
+    const attendeesSchema = new Attendees(attendeesPayload);
+    return await attendeesSchema.save();
+};
 
 export const getAllAttendees = async () => {
     return await Attendees.find()
