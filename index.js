@@ -15,7 +15,7 @@ const app = express()
 const PORT = (() => {
   const env = process.env.ENV
 
-  return env === 'development' ? 7200 : 4545
+  return env === 'development' ? 7201 : 4545
 })()
 
 app.use(express.json())
