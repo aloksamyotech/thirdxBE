@@ -34,7 +34,7 @@ connectDB()
   .catch((err) => {
     logger.error(`Database connection failed: ${err.message}`)
   })
-console.log('this is for qa successfully')
+
 // user Route
 app.use(responseInterceptor)
 app.use(express.urlencoded({ extended: true }))
