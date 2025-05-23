@@ -17,7 +17,7 @@ const PORT = (() => {
 
   return env === 'development' ? 7200 : 4545
 })()
-console.log('aws cicd is working on dev update')
+console.log('aws cicd is working on dev update successfully ')
 
 app.use(express.json())
 app.use(corsConfig)
