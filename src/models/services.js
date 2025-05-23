@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-
+import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 const ServiceSchema = new mongoose.Schema(
   {
     name: {
@@ -10,15 +10,7 @@ const ServiceSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    isActive: {
-      type: Boolean,
-      required: true,
-      default: true,
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
+   
     isArchive: {
       type: Boolean,
       default: false,
@@ -55,7 +47,7 @@ const ServiceSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
-
+ServiceSchema.plugin(commonFieldsPlugin)
 const Services = mongoose.model('services', ServiceSchema)
 
 export default Services
