@@ -21,6 +21,7 @@ const UserSchema = new mongoose.Schema(
       gender: String,
       ethnicity: String,
       dateOfBirth: Date,
+      profileImage:String
     },
 
     contactInfo: {
