@@ -18,7 +18,7 @@ export const addCase = async (caseData) => {
     fundingInterest,
     fundraisingActivities,
     description,
-    filePath,
+    file,
     isActive,
   } = caseData;
 
@@ -45,7 +45,7 @@ export const addCase = async (caseData) => {
     fundingInterest,
     fundraisingActivities,
     description,
-    filePath,
+    file,
     isActive: activeStatus,
   });
 
