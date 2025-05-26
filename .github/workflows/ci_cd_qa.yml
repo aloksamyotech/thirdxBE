@@ -1,13 +1,13 @@
-name: Deploy to development
+name: Deploy to qa
 
 on:
   push:
     branches:
-      - 'development'
+      - 'qa'
 
 jobs:
   redeploy_backend:
-    name: Deploy Backend to development
+    name: Deploy Backend to qa
     runs-on: ubuntu-latest
 
     steps:
@@ -31,8 +31,8 @@ jobs:
             cd /thirdexDev/thirdxBE
             sudo git stash
             sudo git fetch --all
-            sudo git checkout development
-            sudo git pull origin development
+            sudo git checkout qa
+            sudo git pull origin qa
             sudo git log -1
             sudo npm install
             pm2 restart thirdexBE_Dev

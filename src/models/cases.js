@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 import { v4 as uuidv4 } from 'uuid'
+import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
+
 
 const caseSchema = new mongoose.Schema(
   {
@@ -19,7 +21,6 @@ const caseSchema = new mongoose.Schema(
       required: true,
     },
     serviceType: { type: String, required: true },
-    serviceStatus: { type: String, required: true },
     caseOpened: { type: Date },
     caseClosed: { type: Date },
     benificiary: {
@@ -40,18 +41,12 @@ const caseSchema = new mongoose.Schema(
     fundraisingActivities: {
       type: String,
     },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
+   
     isArchive: {
       type: Boolean,
       default: false,
     },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
+   
     file: {
       type: String,
     },
@@ -59,6 +54,6 @@ const caseSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
-
+caseSchema.plugin(commonFieldsPlugin)
 const Case = mongoose.model('Case', caseSchema)
 export default Case

@@ -1,13 +1,12 @@
 /* eslint-disable no-undef */
 import mongoose from 'mongoose'
+import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 
 const TagCategorySchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     tagsCanBeAppliedTo: [String],
-    isActive: { type: Boolean, default: true },
     tags: [TagSchema],
-    isDeleted: { type: Boolean, default: false },
     isArchive: {
       type: Boolean,
       default: false,
@@ -15,6 +14,6 @@ const TagCategorySchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
-
+TagCategorySchema.plugin(commonFieldsPlugin)
 const tagCategory = mongoose.model('tagCategory', TagCategorySchema)
 export default tagCategory

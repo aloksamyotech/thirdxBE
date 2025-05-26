@@ -27,6 +27,12 @@ export const getAllServiceUser = async () => {
   const allUser = await user
     .find({ isDeleted: false, role: checkRole.service_user })
     .sort({ createdAt: -1 })
+    .populate('otherInfo.benificiary')
+    .populate('otherInfo.campaigns')
+    .populate('otherInfo.engagement')
+    .populate('otherInfo.eventAttanded')
+    .populate('otherInfo.fundingInterest')
+    .populate('otherInfo.fundraisingActivities')
     .populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
@@ -103,7 +109,6 @@ export const getUserById = async (userId) => {
       errorCodes?.not_found
     )
   }
-
   const userData = await user.findOne({ _id: userId, isDeleted: false })
     .populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
