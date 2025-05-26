@@ -35,4 +35,4 @@ jobs:
             sudo git pull origin qa
             sudo git log -1
             sudo npm install
-            pm2 restart thirdexBE_Dev
+            pm2 restart thirdexQA
