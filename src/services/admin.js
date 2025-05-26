@@ -31,7 +31,7 @@ export const adminLogin = async (adminData) => {
   if (!findAdmin) {
     return new CustomError(
       statusCodes?.notFound,
-      Message?.emailAlreadyRegistered,
+      Message?.emailNotRegistered,
       errorCodes?.user_exists
     )
   }
