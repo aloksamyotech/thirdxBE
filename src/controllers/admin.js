@@ -11,3 +11,13 @@ export const signUpAdmin = async (req, res) => {
   const createAdmin = await adminService.signUpAdmin(adminData)
   res.status(statusCodes?.ok).send(createAdmin)
 }
+
+export const loginAdmin = async (req, res) => {
+  const { email, password } = req?.body
+  const adminData = {
+    email,
+    password,
+  }
+  const loginAdmin = await adminService.adminLogin(adminData)
+  res.status(statusCodes?.ok).send(loginAdmin)
+}
