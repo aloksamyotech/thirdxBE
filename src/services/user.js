@@ -51,10 +51,16 @@ export const getAllVolunteer = async () => {
   const allVolunteer = await user
     .find({ isDeleted: false, role: checkRole.volunteer })
     .sort({ createdAt: -1 })
+    .populate('otherInfo.benificiary')
+    .populate('otherInfo.campaigns')
+    .populate('otherInfo.engagement')
+    .populate('otherInfo.eventAttanded')
+    .populate('otherInfo.fundingInterest')
+    .populate('otherInfo.fundraisingActivities')
     .populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
-    .populate('companyInformation.recruitmentCampaign');
+    .populate('companyInformation.recruitmentCampaign')
   if (!allVolunteer) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -68,10 +74,16 @@ export const getAllUsers = async () => {
   const allVolunteer = await user
     .find({ isDeleted: false, role: checkRole.user })
     .sort({ createdAt: -1 })
+    .populate('otherInfo.benificiary')
+    .populate('otherInfo.campaigns')
+    .populate('otherInfo.engagement')
+    .populate('otherInfo.eventAttanded')
+    .populate('otherInfo.fundingInterest')
+    .populate('otherInfo.fundraisingActivities')
     .populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
-    .populate('companyInformation.recruitmentCampaign');
+    .populate('companyInformation.recruitmentCampaign')
   if (!allVolunteer) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -86,10 +98,16 @@ export const getAllDonor = async () => {
   const allDonor = await user
     .find({ isDeleted: false, role: checkRole.donor })
     .sort({ createdAt: -1 })
+    .populate('otherInfo.benificiary')
+    .populate('otherInfo.campaigns')
+    .populate('otherInfo.engagement')
+    .populate('otherInfo.eventAttanded')
+    .populate('otherInfo.fundingInterest')
+    .populate('otherInfo.fundraisingActivities')
     .populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
-    .populate('companyInformation.recruitmentCampaign');
+    .populate('companyInformation.recruitmentCampaign')
 
   if (!allDonor) {
     throw new CustomError(
@@ -109,11 +127,18 @@ export const getUserById = async (userId) => {
       errorCodes?.not_found
     )
   }
-  const userData = await user.findOne({ _id: userId, isDeleted: false })
+  const userData = await user
+    .findOne({ _id: userId, isDeleted: false })
+    .populate('otherInfo.benificiary')
+    .populate('otherInfo.campaigns')
+    .populate('otherInfo.engagement')
+    .populate('otherInfo.eventAttanded')
+    .populate('otherInfo.fundingInterest')
+    .populate('otherInfo.fundraisingActivities')
     .populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
-    .populate('companyInformation.recruitmentCampaign');
+    .populate('companyInformation.recruitmentCampaign')
 
   if (!userData) {
     throw new CustomError(
