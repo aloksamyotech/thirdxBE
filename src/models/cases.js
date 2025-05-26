@@ -23,25 +23,43 @@ const caseSchema = new mongoose.Schema(
     serviceType: { type: String, required: true },
     caseOpened: { type: Date },
     caseClosed: { type: Date },
-    benificiary: {
-      type: String,
-    },
-    campaigns: {
-      type: String,
-    },
-    engagement: {
-      type: String,
-    },
-    eventAttanded: {
-      type: String,
-    },
-    fundingInterest: {
-      type: String,
-    },
-    fundraisingActivities: {
-      type: String,
-    },
-   
+    benificiary: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag',
+      },
+    ],
+    campaigns: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag',
+      },
+    ],
+    engagement: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag',
+      },
+    ],
+    eventAttanded: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag',
+      },
+    ],
+    fundingInterest: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag',
+      },
+    ],
+    fundraisingActivities: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag',
+      },
+    ],
+
     isArchive: {
       type: Boolean,
       default: false,
