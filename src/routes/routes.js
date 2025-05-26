@@ -7,11 +7,13 @@ import tagRouter from './tag.js'
 import transactionRouter from './transaction.js'
 import caseRouter from './case.js'
 import sessionRouter from './session.js'
-import caseNoteRouter from './caseNote.js';
+import caseNoteRouter from './caseNote.js'
 import attendeesRouter from './attendees.js'
+import admin from './admin.js'
 
 const router = express.Router()
 
+router.use('/admin', admin)
 router.use('/config', configRouter)
 router.use('/user', userRouter)
 router.use('/services', serviceRouter)
@@ -21,6 +23,6 @@ router.use('/transaction', transactionRouter)
 router.use('/cases', caseRouter)
 router.use('/session', sessionRouter)
 router.use('/caseNote', caseNoteRouter)
-router.use('/attendees',attendeesRouter) 
+router.use('/attendees', attendeesRouter)
 
 export default router
