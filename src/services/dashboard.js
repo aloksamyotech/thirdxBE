@@ -5,6 +5,7 @@ import { regexFilter } from '../core/common/common.js'
 import Session from '../models/session.js';
 import user from '../models/user.js';
 import Case from '../models/cases.js';
+import task from '../models/task.js';
 
 
 export const getAllDonationTotal = async () => {
@@ -58,3 +59,99 @@ export const getAllOpenCased = async () => {
 
 
 
+
+export const createTask = async (data) => {
+       const  { details,assignedTo, dueDate, isCompleted, notification } = data;
+
+ if(!assignedTo){
+     throw new CustomError(
+         statusCodes.badRequest,
+         Message.missingRequiredFields,
+         errorCodes.invalid_input
+     )
+ }
+  const newTask = new task({
+     details,       
+    assignedTo,
+    dueDate,
+    isCompleted,
+    notification,
+  });
+
+  const Task =  await newTask.save();
+  return Task;
+};
+
+export const editTask = async (taskId, taskData) => {
+  const updateObj = { ...taskData };
+
+  const updatedTask = await task.findByIdAndUpdate(
+    taskId,
+    { $set: updateObj },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (!updatedTask) {
+    throw new CustomError(
+      statusCodes.notFound,
+      Message.notFound,
+      errorCodes.not_found
+    );
+  }
+
+  return updatedTask;
+};
+
+
+export const getTaskById = async (taskId) => {
+  if (!taskId) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+
+  const taskData = await task.findOne({
+    _id: taskId,
+    isDeleted: false,
+  })
+  if (!taskData) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.userNotGet,
+      errorCodes?.user_not_found
+    )
+  }
+  return { taskData }
+}
+
+
+export const deleteCaseNote = async (caseNoteId) => {
+  const Id = await task.findById(caseNoteId)
+
+  if (!Id) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  const taskUpdate = await task.findByIdAndUpdate(
+    Id,
+    { isDeleted: true },
+    { new: true }
+  )
+
+  if (!taskUpdate) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    )
+  }
+  return { taskUpdate }
+}
