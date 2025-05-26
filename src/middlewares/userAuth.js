@@ -10,9 +10,9 @@ import 'dotenv/config'
 import process from 'node:process'
 
 export const userAuth = (req, res, next) => {
-  const { authorization } = req?.headers || {}
+  const authorization = req?.headers['authorization']
   const token = authorization && authorization.split(' ')[1]
-  const verfifyToken = process.env?.ACCESS_TOKEN_SECRET
+  const verfifyToken = process.env?.JWT_SECRET
 
   if (!token) {
     throw new CustomError(
@@ -29,7 +29,7 @@ export const userAuth = (req, res, next) => {
         errorCodes?.invalid_authentication
       )
     }
-    req.user = user?.payload //attach decoded user data in req
+    req.user = user?.payload 
     next()
   })
 }
