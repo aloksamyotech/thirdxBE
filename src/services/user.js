@@ -36,7 +36,7 @@ export const getAllServiceUser = async () => {
     .populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
-    .populate('companyInformation.recruitmentCampaign');
+    .populate('companyInformation.recruitmentCampaign')
   if (!allUser) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -368,6 +368,12 @@ export const getUserwithPagination = async (query) => {
     .limit(limitNumber)
     .sort({ createdAt: -1 })
     .notDeleted()
+    .populate('otherInfo.benificiary')
+    .populate('otherInfo.campaigns')
+    .populate('otherInfo.engagement')
+    .populate('otherInfo.eventAttanded')
+    .populate('otherInfo.fundingInterest')
+    .populate('otherInfo.fundraisingActivities')
 
   const total = await user.countDocuments(filter)
   return {
