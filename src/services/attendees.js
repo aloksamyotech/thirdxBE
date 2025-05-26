@@ -133,7 +133,7 @@ export const getAttendeeBySession = async ({ params, query }) => {
         .populate("session")
         .skip(skip)
         .limit(limitNumber)
-        .sort({ createdAt: -1 })
+        .sort({ _id: -1 })
         .notDeleted();
 
     const total = await Attendees.countDocuments(filter);
