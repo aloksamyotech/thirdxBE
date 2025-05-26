@@ -27,6 +27,12 @@ export const getAllServiceUser = async () => {
   const allUser = await user
     .find({ isDeleted: false, role: checkRole.service_user })
     .sort({ createdAt: -1 })
+    .populate('otherInfo.benificiary')
+    .populate('otherInfo.campaigns')
+    .populate('otherInfo.engagement')
+    .populate('otherInfo.eventAttanded')
+    .populate('otherInfo.fundingInterest')
+    .populate('otherInfo.fundraisingActivities')
     .populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
