@@ -52,6 +52,7 @@ export const Message = {
   emailNotFound: 'Invalid Email Address',
   missingRequiredFields: 'Missing required fields',
   emailAlreadyRegistered: 'Email Already Registered',
+  emailNotRegistered: 'Email Not Registered',
   phoneNumberAlreadyRegistered: 'Phone Number Already Registered',
   userIdNotFound: 'User Id Not Found',
   userNotFound: 'User Not Found',
