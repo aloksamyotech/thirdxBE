@@ -37,16 +37,45 @@ const UserSchema = new mongoose.Schema(
       firstLanguage: String,
       otherId: String,
     },
-
     otherInfo: {
       file: String,
       description: String,
-      benificiary: String,
-      campaigns: String,
-      engagement: String,
-      eventAttanded: String,
-      fundingInterest: String,
-      fundraisingActivities: String,
+      benificiary: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'tag',
+        },
+      ],
+      campaigns: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'tag',
+        },
+      ],
+      engagement: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'tag',
+        },
+      ],
+      eventAttanded: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'tag',
+        },
+      ],
+      fundingInterest: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'tag',
+        },
+      ],
+      fundraisingActivities: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'tag',
+        },
+      ],
       restrictAccess: Boolean,
     },
 
