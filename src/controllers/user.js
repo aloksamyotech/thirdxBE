@@ -1,5 +1,5 @@
 import * as userService from '../services/user.js'
-import { statusCodes } from '../core/common/constant.js'
+import { Message, statusCodes } from '../core/common/constant.js'
 import user from '../models/user.js'
 import fs from 'fs';
 import path from 'path';
@@ -64,7 +64,7 @@ export const editUser = async (req, res) => {
  
   if (!existingUser) {
     return res.status(statusCodes?.notFound).send({
-      message: 'User not found',
+      message: Message.userNotFound,
     })
   }
  
