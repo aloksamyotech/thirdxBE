@@ -6,7 +6,7 @@ import Session from '../models/session.js';
 import user from '../models/user.js';
 import Case from '../models/cases.js';
 import task from '../models/task.js';
-
+import path from 'path';
 
 export const getAllDonationTotal = async () => {
 
@@ -130,8 +130,8 @@ export const getTaskById = async (taskId) => {
 }
 
 
-export const deleteCaseNote = async (caseNoteId) => {
-  const Id = await task.findById(caseNoteId)
+export const deletetask = async (taskId) => {
+  const Id = await task.findById(taskId)
 
   if (!Id) {
     throw new CustomError(
@@ -155,3 +155,48 @@ export const deleteCaseNote = async (caseNoteId) => {
   }
   return { taskUpdate }
 }
+
+
+export const getAllTask = async () => {
+  const allTask = await task.find({ isDeleted: false }).sort({
+    createdAt: -1,
+  })
+  if (!allTask) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  return { allTask }
+}
+
+export const getAllMediaAttachments = async (limit = 10) => {
+  const usersWithFiles = await user.find({
+    $or: [
+      { 'personalInfo.profileImage': { $ne: null } },
+      { 'otherInfo.file': { $ne: null } },
+    ]
+  })
+    .sort({ updatedAt: -1 })
+    .limit(limit)
+    .select('personalInfo.profileImage otherInfo.file updatedAt personalInfo.firstName personalInfo.lastName')
+    .lean();
+
+  const mediaList = usersWithFiles.map(user => {
+    const filePath = user.personalInfo?.profileImage || user.otherInfo?.file;
+    const fileName = filePath ? path.basename(filePath) : null;
+    const fileExtension = filePath ? path.extname(filePath) : null;
+
+    return {
+      name: `${user.personalInfo?.firstName || ''} ${user.personalInfo?.lastName || ''}`.trim(),
+      file: filePath,
+      fileName,
+      fileExtension,
+      date: new Date(user.updatedAt).toLocaleDateString(),
+      time: new Date(user.updatedAt).toLocaleTimeString(),
+    };
+  });
+
+  return mediaList;
+};

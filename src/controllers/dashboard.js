@@ -63,3 +63,15 @@ export const deleteTask = async (req, res) => {
   const deletedServices = await dashboardService.deleteTask(taskId)
   res.status(statusCodes?.ok).send(deletedServices);
 }
+
+
+export const getAllTask = async (req, res) => {
+  const getAllTasks = await dashboardService.getAllTask()
+  res.status(statusCodes?.ok).send(getAllTasks);
+}
+
+
+export const getAllMedia = async (req, res) => {
+  const getAllMedias = await dashboardService.getAllMediaAttachments()
+  res.status(statusCodes?.ok).send(getAllMedias);
+}
