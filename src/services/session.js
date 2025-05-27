@@ -121,9 +121,11 @@ export const getSessionById = async (serviceId) => {
 }
 
 export const getAllSession = async () => {
-  const allSession = await Session.find({ isDeleted: false }).sort({
-    createdAt: -1,
-  })
+  const allSession = await Session.find({ isDeleted: false })
+    .populate('serviceId')
+    .sort({
+      createdAt: -1,
+    })
   if (!allSession) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -134,8 +136,8 @@ export const getAllSession = async () => {
   return { allSession }
 }
 export const isExistSession = async (userId) => {
-  const exists = await Session.exists({ _id: userId });
-  return Boolean(exists);
+  const exists = await Session.exists({ _id: userId })
+  return Boolean(exists)
 }
 
 export const getAllWithPagination = async (query) => {
