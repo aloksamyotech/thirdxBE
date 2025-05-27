@@ -339,7 +339,13 @@ export const getCasewithPagination = async (query) => {
   const allCases = await Case.find(filter)
     .sort({ createdAt: -1 })
     .populate('serviceUserId')
-    .populate('serviceId');
+    .populate('serviceId')
+    .populate('benificiary')
+    .populate('campaigns')
+    .populate('engagement')
+    .populate('eventAttanded')
+    .populate('fundingInterest')
+    .populate('fundraisingActivities')
 
   const filteredCases = search
     ? allCases.filter((c) => {
