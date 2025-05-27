@@ -11,22 +11,6 @@ import caseNoteRouter from './caseNote.js'
 import attendeesRouter from './attendees.js'
 import dashboardRoute from './dashboard.js'
 import admin from './admin.js'
-<<<<<<< Updated upstream
-const router = express.Router()
-
-router.use('/admin', admin)
-router.use('/config', configRouter)
-router.use('/user', userRouter)
-router.use('/services', serviceRouter)
-router.use('/mail', mailRouter)
-router.use('/tag', tagRouter)
-router.use('/transaction', transactionRouter)
-router.use('/cases', caseRouter)
-router.use('/session', sessionRouter)
-router.use('/caseNote', caseNoteRouter)
-router.use('/dashboard',dashboardRoute)
-router.use('/attendees', attendeesRouter)
-=======
 import { userAuth } from '../middlewares/userAuth.js'
 import { asyncHandler } from '../utils/asyncWrapper.js'
 
@@ -35,6 +19,7 @@ const router = express.Router()
 router.use('/admin', admin)
 router.use('/config', asyncHandler(userAuth), configRouter)
 router.use('/user', asyncHandler(userAuth), userRouter)
+router.use('/dashboard', asyncHandler(userAuth), dashboardRoute)
 router.use('/services', asyncHandler(userAuth), serviceRouter)
 router.use('/mail', asyncHandler(userAuth), mailRouter)
 router.use('/tag', asyncHandler(userAuth), tagRouter)
@@ -43,6 +28,5 @@ router.use('/cases', asyncHandler(userAuth), caseRouter)
 router.use('/session', asyncHandler(userAuth), sessionRouter)
 router.use('/caseNote', asyncHandler(userAuth), caseNoteRouter)
 router.use('/attendees', asyncHandler(userAuth), attendeesRouter)
->>>>>>> Stashed changes
 
 export default router
