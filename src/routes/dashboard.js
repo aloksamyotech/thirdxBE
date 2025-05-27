@@ -8,7 +8,8 @@ getAllOpenCased,
 addTask,
 editTask,
 getTaskById,
-deleteTask
+deleteTask,
+getAllTask
 } from '../controllers/dashboard.js'
 
 const router = Router()
@@ -23,6 +24,7 @@ router.post('/createTask', asyncHandler(addTask));
 router.put('/editTask/:id', asyncHandler(editTask))
 router.get('/getTaskById/:id', asyncHandler(getTaskById))
 router.patch('/delete/:id', asyncHandler(deleteTask))
+router.get('/getAllTask', asyncHandler(getAllTask))
 
 
 

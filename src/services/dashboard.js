@@ -130,8 +130,8 @@ export const getTaskById = async (taskId) => {
 }
 
 
-export const deleteCaseNote = async (caseNoteId) => {
-  const Id = await task.findById(caseNoteId)
+export const deletetask = async (taskId) => {
+  const Id = await task.findById(taskId)
 
   if (!Id) {
     throw new CustomError(
@@ -154,4 +154,19 @@ export const deleteCaseNote = async (caseNoteId) => {
     )
   }
   return { taskUpdate }
+}
+
+
+export const getAllTask = async () => {
+  const allTask = await task.find({ isDeleted: false }).sort({
+    createdAt: -1,
+  })
+  if (!allTask) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    )
+  }
+  return { allTask }
 }
