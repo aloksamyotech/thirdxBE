@@ -13,7 +13,6 @@ export const addUser = async (req, res) => {
 
   if (filePath) {
     const normalizedPath = filePath.replace(/\\/g, '/')
-    userData.otherInfo = {}
     userData.otherInfo.file = normalizedPath
   }
 

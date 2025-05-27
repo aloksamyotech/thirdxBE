@@ -374,6 +374,11 @@ export const getUserwithPagination = async (query) => {
     .populate('otherInfo.eventAttanded')
     .populate('otherInfo.fundingInterest')
     .populate('otherInfo.fundraisingActivities')
+    .populate('contactPreferences.preferredMethod')
+    .populate('contactPreferences.contactPurposes')
+    .populate('contactPreferences.reason')
+    .populate('companyInformation.recruitmentCampaign')
+
 
   const total = await user.countDocuments(filter)
   return {
