@@ -11,3 +11,9 @@ export const getAllResponse = async (req, res) => {
     const getAllResponse = await responseService.getAllResponse()
     res.status(200).send(getAllResponse)
 }
+
+export const getResponseById = async (req, res) => {
+    const { id } = req?.params
+    const getResponseById = await responseService.getResponseById(id)
+    res.status(200).send(getResponseById)
+}

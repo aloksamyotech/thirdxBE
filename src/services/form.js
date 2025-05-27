@@ -15,7 +15,8 @@ export const addForm = async (fields) => {
                 label: f.label || '',
                 type: f.type || '',
                 required: f.required || false,
-                values: f.values
+                values: f.values,
+                validation: f.validation || ''
             }
         })
 

@@ -28,3 +28,16 @@ export const getAllResponse = async () => {
         .populate('formId')
     return getAllResponse
 }
+
+export const getResponseById = async (id) => {
+
+    const response = await Response.findById(id).populate('formId');
+    if (!response) {
+        throw new CustomError(
+            statusCodes?.notFound,
+            Message?.notFound,
+            errorCodes?.not_found
+        )
+    }
+    return response
+}

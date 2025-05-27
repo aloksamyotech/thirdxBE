@@ -9,6 +9,7 @@ const FieldSchema = new mongoose.Schema({
     label: String,
     value: String
   }],
+  validation: String,
   required: Boolean
 });
 
