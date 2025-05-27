@@ -8,6 +8,8 @@ import transactionRouter from './transaction.js'
 import caseRouter from './case.js'
 import sessionRouter from './session.js'
 import caseNoteRouter from './caseNote.js'
+import formsRouter from './forms.js'
+import responsesRouter from './responses.js'
 import attendeesRouter from './attendees.js'
 import dashboardRoute from './dashboard.js'
 import admin from './admin.js'
@@ -28,5 +30,7 @@ router.use('/cases', asyncHandler(userAuth), caseRouter)
 router.use('/session', asyncHandler(userAuth), sessionRouter)
 router.use('/caseNote', asyncHandler(userAuth), caseNoteRouter)
 router.use('/attendees', asyncHandler(userAuth), attendeesRouter)
+router.use('/forms', formsRouter)
+router.use('/responses', responsesRouter)
 
 export default router
