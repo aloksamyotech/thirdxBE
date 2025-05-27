@@ -9,7 +9,8 @@ addTask,
 editTask,
 getTaskById,
 deleteTask,
-getAllTask
+getAllTask,
+getAllMedia
 } from '../controllers/dashboard.js'
 
 const router = Router()
@@ -25,6 +26,8 @@ router.put('/editTask/:id', asyncHandler(editTask))
 router.get('/getTaskById/:id', asyncHandler(getTaskById))
 router.patch('/delete/:id', asyncHandler(deleteTask))
 router.get('/getAllTask', asyncHandler(getAllTask))
+
+router.get('/allMedia', asyncHandler(getAllMedia));
 
 
 
