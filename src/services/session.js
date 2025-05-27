@@ -139,7 +139,7 @@ export const isExistSession = async (userId) => {
 }
 
 export const getAllWithPagination = async (query) => {
-  const { page = 1, limit = 10 } = query || {}
+  const { country, name, date, time, page = 1, limit = 10 } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -150,13 +150,25 @@ export const getAllWithPagination = async (query) => {
     limitNumber = 10
   }
   const skip = (pageNumber - 1) * limitNumber
+  const filter = {
+    ...(country !== undefined && country !== '' && { country }),
+    ...(name !== undefined && name !== '' && { name }),
+    ...(date !== undefined &&
+      date !== '' && {
+        date: {
+          $gte: new Date(date),
+          $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
+        },
+      }),
+    ...(time !== undefined && time !== '' && { time }),
+  }
 
-  const allSession = await Session.find()
+  const allSession = await Session.find(filter)
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
 
-  const total = await Session.countDocuments()
+  const total = await Session.countDocuments(filter)
   return {
     data: allSession,
     meta: {

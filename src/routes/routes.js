@@ -7,10 +7,14 @@ import tagRouter from './tag.js'
 import transactionRouter from './transaction.js'
 import caseRouter from './case.js'
 import sessionRouter from './session.js'
-import caseNoteRouter from './caseNote.js';
+import caseNoteRouter from './caseNote.js'
 import formsRouter from './forms.js'
 import responsesRouter from './responses.js'
 import attendeesRouter from './attendees.js'
+import dashboardRoute from './dashboard.js'
+import admin from './admin.js'
+import { userAuth } from '../middlewares/userAuth.js'
+import { asyncHandler } from '../utils/asyncWrapper.js'
 
 const router = express.Router()
 
@@ -23,8 +27,6 @@ router.use('/transaction', transactionRouter)
 router.use('/cases', caseRouter)
 router.use('/session', sessionRouter)
 router.use('/caseNote', caseNoteRouter)
-router.use('/forms', formsRouter)
-router.use('/responses', responsesRouter)
 router.use('/attendees', attendeesRouter)
 
 export default router

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 
 const caseNoteSchema = new mongoose.Schema({
   caseId: {
@@ -32,20 +33,13 @@ const caseNoteSchema = new mongoose.Schema({
   file: {
     type: String,
   },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
+ 
   isArchive: {
     type: Boolean,
     default: false,
   },
 })
-
+caseNoteSchema.plugin(commonFieldsPlugin)
 const CaseNote = mongoose.model('CaseNote', caseNoteSchema)
 
 export default CaseNote
