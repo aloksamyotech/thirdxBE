@@ -15,7 +15,11 @@ export const signUpAdmin = async (adminData) => {
   }
   const hashedPass = await hashPassword(adminData?.password)
   const createAdmin = await Admin.create({ ...adminData, password: hashedPass })
-
+  if (createAdmin) {
+    createAdmin.createdBy = createAdmin._id
+    createAdmin.updatedBy = createAdmin._id
+    await createAdmin.save()
+  }
   if (!createAdmin) {
     return new CustomError(
       statusCodes?.badRequest,
@@ -25,7 +29,6 @@ export const signUpAdmin = async (adminData) => {
   }
   return { createAdmin }
 }
-
 export const adminLogin = async (adminData) => {
   const findAdmin = await Admin.findOne({ email: adminData?.email })
   if (!findAdmin) {
@@ -52,4 +55,34 @@ export const adminLogin = async (adminData) => {
   )
 
   return { token }
+}
+export const editAdmin = async (adminData) => {
+  const { id, ...fieldsToUpdate } = adminData
+  try {
+    const updatedAdmin = await Admin.findByIdAndUpdate(
+      id,
+      { $set: fieldsToUpdate },
+      { new: true }
+    )
+
+    if (!updatedAdmin) {
+      return { error: Message.notFound }
+    }
+
+    return { updatedAdmin }
+  } catch (error) {
+    return { error: error.message }
+  }
+}
+export const getAdminById = async (id) => {
+  try {
+    const findAdmin = await Admin.findById(id)
+    if (!findAdmin) {
+      return { error: Message.notFound }
+    }
+
+    return { findAdmin }
+  } catch (error) {
+    return { error: error.message }
+  }
 }

@@ -8,6 +8,21 @@ import user from '../models/user.js'
 import Case from '../models/cases.js'
 import Session from '../models/session.js'
 
+const monthNames = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
+
 export const getUserServiceReport = async () => {
   const monthlyResult = await user.aggregate([
     {
@@ -35,21 +50,6 @@ export const getUserServiceReport = async () => {
   ])
 
   const totalUser = await user.countDocuments({ archive: false })
-
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ]
 
   const formatted = {}
   for (let i = 0; i < 12; i++) {
@@ -93,21 +93,6 @@ export const getCaseContactReport = async () => {
     },
   ])
 
-  const monthNames = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ]
-
   const formattedData = monthNames.map((month, index) => {
     const monthData = data.find((item) => item._id === index + 1)
     return {
@@ -147,21 +132,6 @@ export const getSessionContactReport = async () => {
     },
   ])
 
-  const monthNames = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ]
-
   const formattedData = monthNames.map((month, index) => {
     const monthData = data.find((item) => item._id === index + 1)
     return {
@@ -200,21 +170,6 @@ export const getDonorReport = async () => {
   ])
 
   const totalUser = await user.countDocuments({ archive: false })
-
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ]
 
   const formatted = {}
   for (let i = 0; i < 12; i++) {
