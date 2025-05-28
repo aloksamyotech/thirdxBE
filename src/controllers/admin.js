@@ -60,3 +60,14 @@ export const getAdminById = async (req, res) => {
   const getAdminData = await adminService.getAdminById(id)
   res.status(statusCodes?.ok).send(getAdminData)
 }
+export const changePassword = async (req, res) => {
+  const { password, newPassword } = req?.body
+  const { id } = req?.params
+  const adminData = {
+    id,
+    password,
+    newPassword,
+  }
+  const changePass = await adminService.changePassword(adminData)
+  res.status(statusCodes?.ok).send(changePass)
+}
