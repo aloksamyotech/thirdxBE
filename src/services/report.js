@@ -7,21 +7,7 @@ import { isExistUser } from './user.js'
 import user from '../models/user.js'
 import Case from '../models/cases.js'
 import Session from '../models/session.js'
-
-const monthNames = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-]
+import { monthNames } from '../core/common/constant.js'
 
 export const getUserServiceReport = async () => {
   const monthlyResult = await user.aggregate([
