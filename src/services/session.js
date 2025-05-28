@@ -109,7 +109,7 @@ export const getSessionById = async (serviceId) => {
   }
 
   const userData = await Session.find({ serviceId, isDeleted: false })
-
+  .populate('serviceId')
   if (!userData || userData.length === 0) {
     throw new CustomError(
       statusCodes?.notFound,
