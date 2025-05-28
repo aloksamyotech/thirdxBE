@@ -2,8 +2,9 @@ import mongoose from 'mongoose'
 import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 const SessionSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
+    serviceuser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'user',
       required: true,
     },
     country: {

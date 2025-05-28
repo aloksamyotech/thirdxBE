@@ -3,7 +3,7 @@ import { statusCodes } from '../core/common/constant.js'
 
 export const addSession = async (req, res) => {
   const {
-    name,
+    serviceuser,
     country,
     description,
     benificiary,
@@ -18,7 +18,7 @@ export const addSession = async (req, res) => {
   } = req.body
 
   const sessionData = {
-    name,
+    serviceuser,
     country,
     description,
     benificiary,
