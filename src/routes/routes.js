@@ -13,6 +13,7 @@ import responsesRouter from './responses.js'
 import attendeesRouter from './attendees.js'
 import dashboardRoute from './dashboard.js'
 import admin from './admin.js'
+import reportRouter from './report.js'
 import { userAuth } from '../middlewares/userAuth.js'
 import { asyncHandler } from '../utils/asyncWrapper.js'
 
@@ -32,5 +33,6 @@ router.use('/caseNote', asyncHandler(userAuth), caseNoteRouter)
 router.use('/attendees', asyncHandler(userAuth), attendeesRouter)
 router.use('/forms', formsRouter)
 router.use('/responses', responsesRouter)
+router.use('/report', reportRouter)
 
 export default router
