@@ -29,6 +29,7 @@ export const addCase = async (caseData) => {
       errorCodes.bad_request
     );
   }
+ const uniqueId = await generateCustomId();
 
   const activeStatus = isActive === 'true';
 
@@ -47,6 +48,7 @@ export const addCase = async (caseData) => {
     description,
     file,
     isActive: activeStatus,
+    uniqueId
   });
 
   if (!newCase) {

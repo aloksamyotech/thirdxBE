@@ -1,14 +1,9 @@
 import mongoose from 'mongoose'
 import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
-import { generateCustomId } from '../utils/generateCustomId.js'
-
-
 const caseSchema = new mongoose.Schema(
   {
     uniqueId: {
       type: String,
-      unique: true,
-      default: generateCustomId(),
     },
     serviceUserId: {
       type: mongoose.Schema.Types.ObjectId,

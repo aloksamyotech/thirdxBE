@@ -1,12 +1,9 @@
 import mongoose from 'mongoose'
 import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
-import { generateCustomId } from '../utils/generateCustomId.js'
 const UserSchema = new mongoose.Schema(
   {
     uniqueId: {
-      type: String,
-      unique: true,
-      default: generateCustomId(),
+      type: String,  
     },
     personalInfo: {
       title: String,
