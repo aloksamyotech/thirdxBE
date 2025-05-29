@@ -20,6 +20,7 @@ export const loginAdmin = async (req, res) => {
   res.status(statusCodes?.ok).send(loginAdmin)
 }
 export const editAdmin = async (req, res) => {
+  const file = req?.file?.path
   const { id } = req?.user
   const {
     firstName,
@@ -51,6 +52,7 @@ export const editAdmin = async (req, res) => {
     currency,
     userName,
     id,
+    file
   }
   const updateAdmin = await adminService.editAdmin(adminData)
   res.status(statusCodes?.ok).send(updateAdmin)
