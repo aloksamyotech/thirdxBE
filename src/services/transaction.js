@@ -2,7 +2,7 @@ import transaction from '../models/transaction.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import { regexFilter } from '../core/common/common.js'
-
+import mongoose from 'mongoose'
 export const addTransaction = async (data) => {
   const newTransaction = await transaction.create(data)
   if (!newTransaction) {
@@ -17,6 +17,7 @@ export const addTransaction = async (data) => {
 
 export const getAllTransaction = async () => {
   const allTransaction = await transaction.find().sort({ createdAt: -1 })
+  .populate('donorId')
   if (!allTransaction) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -113,7 +114,7 @@ export const deleteTransaction = async (id) => {
 export const getTransactionwithPagination = async (query) => {
   const {
     search,
-    assignedTo,
+    donorId,
     createdAt,
     campaign,
     page = 1,
@@ -130,8 +131,7 @@ export const getTransactionwithPagination = async (query) => {
   }
   const skip = (pageNumber - 1) * limitNumber
   const searchKeys = {
-    assignedTo: search,
-    // campaign: search,
+    donorId: search,
   }
 
   const searchConditions = Object.entries(regexFilter(searchKeys)).map(
@@ -142,8 +142,9 @@ export const getTransactionwithPagination = async (query) => {
 
   const filter = {
     $or: searchConditions,
-    ...(assignedTo !== undefined &&
-      assignedTo !== '' && { assignedTo: assignedTo }),
+    ...(donorId !== undefined &&
+       donorId !== '' && { donorId: new mongoose.Types.ObjectId(donorId) }),
+
     ...(campaign !== undefined && campaign !== '' && { campaign: campaign }),
 
     ...(createdAt !== undefined &&
@@ -163,6 +164,7 @@ export const getTransactionwithPagination = async (query) => {
     .limit(limitNumber)
     .sort({ createdAt: -1 })
     .populate('campaign')
+    .populate('donorId')
 
   const total = await transaction.countDocuments(filter)
   return {
