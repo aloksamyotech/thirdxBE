@@ -20,7 +20,7 @@ export const loginAdmin = async (req, res) => {
   res.status(statusCodes?.ok).send(loginAdmin)
 }
 export const editAdmin = async (req, res) => {
-  const { id } = req?.params
+  const { id } = req?.user
   const {
     firstName,
     lastName,
@@ -56,7 +56,7 @@ export const editAdmin = async (req, res) => {
   res.status(statusCodes?.ok).send(updateAdmin)
 }
 export const getAdminById = async (req, res) => {
-  const { id } = req?.params
+  const { id } = req?.user
   const getAdminData = await adminService.getAdminById(id)
   res.status(statusCodes?.ok).send(getAdminData)
 }
