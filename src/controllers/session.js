@@ -107,3 +107,13 @@ export const getAllWithPagination = async (req, res) => {
   const searchData = await session.getAllWithPagination(req?.query)
   res.status(statusCodes?.ok).send(searchData)
 }
+export const archiveSession = async (req, res) => {
+  const { sessionId } = req?.params || {}
+  const archiveSession = await session.archiveSession(sessionId)
+  res.status(statusCodes?.ok).send(archiveSession)
+}
+export const unArchiveSession = async (req, res) => {
+  const { sessionId } = req?.params || {}
+  const unArchiveSession = await session.unArchiveSession(sessionId)
+  res.status(statusCodes?.ok).send(unArchiveSession)
+}
