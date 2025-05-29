@@ -1,12 +1,12 @@
 import mongoose from 'mongoose'
-import { v4 as uuidv4 } from 'uuid'
 import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
+import { generateCustomId } from '../utils/generateCustomId.js'
 const UserSchema = new mongoose.Schema(
   {
     uniqueId: {
       type: String,
       unique: true,
-      default: uuidv4,
+      default: generateCustomId(),
     },
     personalInfo: {
       title: String,
@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema(
       gender: String,
       ethnicity: String,
       dateOfBirth: Date,
-      profileImage:String
+      profileImage: String,
     },
 
     contactInfo: {
