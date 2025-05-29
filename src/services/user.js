@@ -25,7 +25,7 @@ export const addUser = async (userData) => {
 
 export const getAllServiceUser = async () => {
   const allUser = await user
-    .find({ isDeleted: false, role: checkRole.service_user })
+    .find({ isDeleted: false,isActive:true, role: checkRole.service_user })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
