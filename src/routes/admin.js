@@ -13,6 +13,6 @@ const router = Router()
 
 router.post('/', asyncHandler(signUpAdmin))
 router.post('/login', asyncHandler(loginAdmin))
-router.put('/editadmin', asyncHandler(userAuth), upload.single('file'), asyncHandler(editAdmin))
-router.get('/getadmin', asyncHandler(userAuth), asyncHandler(getAdminById))
+router.put('/', asyncHandler(userAuth), upload.single('file'), asyncHandler(editAdmin))
+router.get('/', asyncHandler(userAuth), asyncHandler(getAdminById))
 export default router
