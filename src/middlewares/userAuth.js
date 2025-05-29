@@ -29,7 +29,7 @@ export const userAuth = (req, res, next) => {
         errorCodes?.invalid_authentication
       )
     }
-    req.user = user?.payload 
+    req.user = user
     next()
   })
 }

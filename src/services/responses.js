@@ -41,3 +41,9 @@ export const getResponseById = async (id) => {
     }
     return response
 }
+
+export const updateResponseStatus = async (id, status) => {
+
+    const updateResponse = await Response.findByIdAndUpdate(id, { status })
+    return updateResponse
+}

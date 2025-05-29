@@ -6,6 +6,10 @@ const ResponseSchema = new mongoose.Schema({
         ref: 'Form'
     },
     data: {},
+    status: {
+        type: String,
+        default: 'PENDING'
+    },
     submittedAt: {
         type: Date,
         default: Date.now

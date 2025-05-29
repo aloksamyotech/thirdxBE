@@ -7,11 +7,11 @@ import {
   loginAdmin,
   signUpAdmin,
 } from '../controllers/admin.js'
+import { userAuth } from '../middlewares/userAuth.js'
 const router = Router()
 
 router.post('/', asyncHandler(signUpAdmin))
 router.post('/login', asyncHandler(loginAdmin))
-router.put('/:id', asyncHandler(editAdmin))
-router.get('/:id', asyncHandler(getAdminById))
-router.post('/changepass/:id', asyncHandler(changePassword))
+router.put('/updateUserById', asyncHandler(userAuth), asyncHandler(editAdmin))
+router.get('/getUserById', asyncHandler(userAuth), asyncHandler(getAdminById))
 export default router
