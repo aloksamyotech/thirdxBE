@@ -10,8 +10,9 @@ import CustomError from '../utils/exception.js'
 import axios from 'axios'
 import { regexFilter } from '../core/common/common.js'
 import mongoose from 'mongoose'
-
+import generateCustomId from "../utils/generateCustomId.js"
 export const addUser = async (userData) => {
+  userData.uniqueId = await generateCustomId();
   const newUser = await user.create(userData)
   if (!newUser) {
     return new CustomError(
