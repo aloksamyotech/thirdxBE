@@ -18,7 +18,6 @@ import { seedMailingLists } from './src/core/common/script/mailingList.js'
 import { seedTags } from './src/core/common/script/tags.js'
 import { seedTransactions } from './src/core/common/script/transactions.js'
 import { seedSessions } from './src/core/common/script/session.js'
-import { seedTagCategories } from './src/core/common/script/tegCategory.js'
 
 const app = express()
 const PORT = (() => {
@@ -54,14 +53,14 @@ app.use(globalExceptionHandler)
 // TagCategories remaining facing issue
 
 // seedTags() - done
-// seedConfigurations() - done 
+// seedConfigurations() - done
 // seedSessions() - done
 // seedMailingLists() - done
 // seedCaseNotes() - done
-// seedCases() - done
+// seedCases()
 // seedUsers()
-// seedServices()  - done
-// seedTransactions() - done 
+// seedServices()
+// seedTransactions() - done
 app.listen(PORT, () => {
   logger.info(`Server is running at port ${PORT}`)
 })

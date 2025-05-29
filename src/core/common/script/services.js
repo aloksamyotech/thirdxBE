@@ -4,7 +4,11 @@ import mongoose from 'mongoose'
 import Services from '../../../models/services.js'
 import configuration from '../../../models/configuration.js'
 
+// If you have a tag model, uncomment this line and fetch tag IDs below
+// import Tag from '../../../models/tag.js'
+
 export async function seedServices(count = 100) {
+  // Fetch available service types from configuration
   const serviceTypeConfigs = await configuration.find(
     { configurationType: 'Campaign' },
     '_id'
@@ -17,6 +21,9 @@ export async function seedServices(count = 100) {
     return
   }
 
+  // Optional: Fetch tag IDs if you have any in the DB
+  // const tagIds = (await Tag.find({}, '_id')).map(tag => tag._id)
+
   const services = []
 
   for (let i = 0; i < count; i++) {
@@ -25,18 +32,20 @@ export async function seedServices(count = 100) {
     services.push({
       name: faker.company.name(),
       code: `SRV-${faker.string.alphanumeric({ length: 6, casing: 'upper' })}`,
-      isActive: faker.datatype.boolean(),
+      isActive: true,
       isDeleted: false,
       isArchive: false,
       serviceType: serviceType._id,
-      file: faker.datatype.boolean() ? faker.system.filePath() : undefined,
+      file: "https://dev.thirdex.application-dev.site/static/media/UserProfile.d74dc426a664c501269f.png",
       description: faker.lorem.sentence(),
-      benificiary: faker.person.fullName(),
-      campaigns: faker.company.catchPhrase(),
-      engagement: faker.word.verb(),
-      eventAttanded: faker.word.words({ min: 2, max: 4 }),
-      fundingInterest: faker.company.buzzPhrase(),
-      fundraisingActivities: faker.word.words(3),
+
+      // Assign empty arrays; or use tagIds if you want to populate them
+      benificiary: [],
+      campaigns: [],
+      engagement: [],
+      eventAttanded: [],
+      fundingInterest: [],
+      fundraisingActivities: [],
     })
   }
 
