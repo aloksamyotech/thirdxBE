@@ -47,6 +47,7 @@ const adminSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  file: String
 },
   {
     timestamps: true
