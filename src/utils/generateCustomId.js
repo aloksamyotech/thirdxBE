@@ -1,5 +1,5 @@
-import Case from "../models/cases";
-import User from "../models/user";
+import Case from "../models/cases.js";
+import User from "../models/user.js";
 
 export const generateCustomId = async () => {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
