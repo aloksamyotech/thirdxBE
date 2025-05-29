@@ -143,7 +143,7 @@ export const isExistSession = async (userId) => {
 }
 
 export const getAllWithPagination = async (query) => {
-  const { country, name, date, time, page = 1, limit = 10,serviceId } = query || {}
+  const { country, name, date, time, page = 1, limit = 10,serviceId ,serviceuser} = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -155,6 +155,7 @@ export const getAllWithPagination = async (query) => {
   }
   const skip = (pageNumber - 1) * limitNumber
   const filter = {
+    ...(serviceuser !== undefined && serviceuser !== '' && { serviceuser }),
     ...(serviceId && { serviceId }),
     ...(country !== undefined && country !== '' && { country }),
     ...(name !== undefined && name !== '' && { name }),
@@ -172,8 +173,13 @@ export const getAllWithPagination = async (query) => {
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
-    .populate('serviceId')
     .populate('serviceuser')
+     .populate({
+      path: 'serviceId',
+      populate: {
+        path: 'serviceType'
+      },
+    })
 
   const total = await Session.countDocuments(filter)
   return {
