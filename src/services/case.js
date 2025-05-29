@@ -9,7 +9,62 @@ export const addCase = async (caseData) => {
     serviceUserId,
     serviceId,
     serviceType,
-    serviceStatus,
+    caseOpened,
+    caseClosed,
+    benificiary,
+    campaigns,
+    engagement,
+    eventAttanded,
+    fundingInterest,
+    fundraisingActivities,
+    description,
+    file,
+    isActive,
+  } = caseData;
+
+  if (!serviceUserId || !serviceId || !serviceType||!isActive) {
+    throw new CustomError(
+      statusCodes.badRequest,
+      Message.missingRequiredFields,
+      errorCodes.bad_request
+    );
+  }
+
+  const activeStatus = isActive === 'true';
+
+  const newCase = await Case.create({
+    serviceUserId,
+    serviceId,
+    serviceType,
+    caseOpened,
+    caseClosed,
+    benificiary,
+    campaigns,
+    engagement,
+    eventAttanded,
+    fundingInterest,
+    fundraisingActivities,
+    description,
+    file,
+    isActive: activeStatus,
+  });
+
+  if (!newCase) {
+    throw new CustomError(
+      statusCodes.internalServerError,
+      Message.notCreated,
+      errorCodes.internal_error
+    );
+  }
+
+  return { newCase };
+};
+
+export const editCase = async (caseId, caseData) => {
+  const {
+    serviceUserId,
+    serviceId,
+    serviceType,
     caseOpened,
     caseClosed,
     benificiary,
@@ -20,35 +75,40 @@ export const addCase = async (caseData) => {
     fundraisingActivities,
     description,
     filePath,
-  } = caseData
+    isActive,
+  } = caseData;
 
-  if (!serviceUserId || !serviceId || !serviceType || !serviceStatus) {
+  if (!caseId) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      Message.notFound,
+      errorCodes?.bad_request
+    );
+  }
+
+  const activeStatus = isActive === 'true' ? true : isActive === 'false' ? false : isActive;
+
+  if (!serviceUserId || !serviceId || !serviceType || typeof activeStatus === 'undefined') {
     throw new CustomError(
       statusCodes.badRequest,
       Message.missingRequiredFields,
       errorCodes.bad_request
-    )
+    );
   }
 
-  const newCase = await Case.create(caseData)
-
-  if (!newCase) {
+  const existingCase = await Case.findById(caseId);
+  if (!existingCase) {
     throw new CustomError(
-      statusCodes.internalServerError,
-      Message.notCreated,
-      errorCodes.internal_error
-    )
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    );
   }
 
-  return { newCase }
-}
-
-export const editCase = async (caseId, caseData) => {
-  const {
+  const updateData = {
     serviceUserId,
     serviceId,
     serviceType,
-    serviceStatus,
     caseOpened,
     caseClosed,
     benificiary,
@@ -58,50 +118,26 @@ export const editCase = async (caseId, caseData) => {
     fundingInterest,
     fundraisingActivities,
     description,
-  } = caseData
-
-  if (!caseId) {
-    throw new CustomError(
-      statusCodes?.badRequest,
-      Message.notFound,
-      errorCodes?.bad_request
-    )
-  }
-
-  const existingCase = await Case.findById(caseId)
-
-  if (!existingCase) {
-    throw new CustomError(
-      statusCodes?.notFound,
-      Message?.notFound,
-      errorCodes?.not_found
-    )
-  }
-
-  if (!serviceUserId || !serviceId || !serviceType || !serviceStatus) {
-    throw new CustomError(
-      statusCodes.badRequest,
-      Message.missingRequiredFields,
-      errorCodes.bad_request
-    )
-  }
+    filePath,
+    isActive: activeStatus,
+  };
 
   const updatedCase = await Case.findByIdAndUpdate(
     caseId,
-    { $set: caseData },
+    { $set: updateData },
     { new: true }
-  )
+  );
 
   if (!updatedCase) {
     throw new CustomError(
       statusCodes.internalServerError,
       Message.notUpdated,
       errorCodes.internal_error
-    )
+    );
   }
 
-  return { updatedCase }
-}
+  return { updatedCase };
+};
 
 export const deleteCase = async (caseId) => {
   const caseData = await Case.findById(caseId)
@@ -303,7 +339,13 @@ export const getCasewithPagination = async (query) => {
   const allCases = await Case.find(filter)
     .sort({ createdAt: -1 })
     .populate('serviceUserId')
-    .populate('serviceId');
+    .populate('serviceId')
+    .populate('benificiary')
+    .populate('campaigns')
+    .populate('engagement')
+    .populate('eventAttanded')
+    .populate('fundingInterest')
+    .populate('fundraisingActivities')
 
   const filteredCases = search
     ? allCases.filter((c) => {

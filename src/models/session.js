@@ -1,23 +1,17 @@
 import mongoose from 'mongoose'
-
+import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 const SessionSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
+    serviceuser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'user',
       required: true,
     },
     country: {
       type: String,
       required: true,
     },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
+   
     isArchive: {
       type: Boolean,
       default: false,
@@ -28,24 +22,42 @@ const SessionSchema = new mongoose.Schema(
     description: {
       type: String,
     },
-    benificiary: {
-      type: String,
-    },
-    campaigns: {
-      type: String,
-    },
-    engagement: {
-      type: String,
-    },
-    eventAttanded: {
-      type: String,
-    },
-    fundingInterest: {
-      type: String,
-    },
-    fundraisingActivities: {
-      type: String,
-    },
+    benificiary: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag',
+      },
+    ],
+    campaigns: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag',
+      },
+    ],
+    engagement: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag',
+      },
+    ],
+    eventAttanded: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag',
+      },
+    ],
+    fundingInterest: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag',
+      },
+    ],
+    fundraisingActivities: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag',
+      },
+    ],
     time: {
       type: String,
     },
@@ -59,7 +71,7 @@ const SessionSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
-
+SessionSchema.plugin(commonFieldsPlugin)
 const Session = mongoose.model('session', SessionSchema)
 
 export default Session

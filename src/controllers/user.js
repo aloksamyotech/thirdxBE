@@ -1,16 +1,24 @@
 import * as userService from '../services/user.js'
-import { statusCodes } from '../core/common/constant.js'
+import { Message, statusCodes } from '../core/common/constant.js'
 import user from '../models/user.js'
+import fs from 'fs';
+import path from 'path';
 
 export const addUser = async (req, res) => {
   const userData = req?.body || {}
   const filePath = req?.file?.path
 
+
+
+
   if (filePath) {
-    const normalizedPath = '/' + filePath.replace(/\\/g, '/')
-    userData.otherInfo = {}
+    const normalizedPath = filePath.replace(/\\/g, '/')
     userData.otherInfo.file = normalizedPath
   }
+
+
+
+   
   const addUser = await userService.addUser(userData)
   res.status(statusCodes?.ok).send(addUser)
 }
@@ -50,17 +58,32 @@ export const editUser = async (req, res) => {
   const { userId } = req.params
   const userData = req?.body || {}
   const filePath = req?.file?.path
-
+ 
+  const existingUser = await user.findById(userId)
+ 
+  if (!existingUser) {
+    return res.status(statusCodes?.notFound).send({
+      message: Message.userNotFound,
+    })
+  }
+ 
   if (filePath) {
-    if (!userData.otherInfo) {
-      userData.otherInfo = {}
+    const oldImagePath = existingUser?.otherInfo?.file
+ 
+    if (oldImagePath && fs.existsSync(path.join(process.cwd(), oldImagePath))) {
+      fs.unlinkSync(path.join(process.cwd(), oldImagePath))
     }
-    userData.otherInfo.file = `uploads/${filePath}`
+ 
+    if (!userData.otherInfo) userData.otherInfo = {}
+    userData.otherInfo.file = `${filePath}`
+  } else {
+    if (!userData.otherInfo) userData.otherInfo = {}
+    userData.otherInfo.file = existingUser?.otherInfo?.file
   }
   userData.userId = userId
-
-  const addUser = await userService.editUser(userData)
-  res.status(statusCodes?.ok).send(addUser)
+ 
+  const result = await userService.editUser(userData)
+  return res.status(statusCodes?.ok).send(result)
 }
 
 export const deleteUser = async (req, res) => {

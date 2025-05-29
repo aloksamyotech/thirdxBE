@@ -94,7 +94,7 @@ export const getAllCaseNote = async () => {
 }
 
 export const getAllWithPagination = async (query) => {
-  const { search, caseId, page = 1, limit = 10 } = query || {}
+  const { search, caseId, page = 1, limit = 10, date } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -112,8 +112,13 @@ export const getAllWithPagination = async (query) => {
 
   const filter = {
     ...regexFilter(searchKeys),
-    ...(caseId !== undefined &&
-      caseId !== '' && { caseId: new mongoose.Types.ObjectId(caseId) }),
+    ...(caseId !== undefined && caseId !== '' && { caseId: new mongoose.Types.ObjectId(caseId) }),
+    ...(date !== undefined && date !== '' && {
+      date: {
+        $gte: new Date(date),
+        $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
+      },
+    }),
   }
 
   const allCaseNote = await CaseNote.find(filter)

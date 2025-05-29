@@ -109,7 +109,8 @@ export const getSessionById = async (serviceId) => {
   }
 
   const userData = await Session.find({ serviceId, isDeleted: false })
-
+  .populate('serviceId')
+  .populate('serviceuser')
   if (!userData || userData.length === 0) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -121,9 +122,12 @@ export const getSessionById = async (serviceId) => {
 }
 
 export const getAllSession = async () => {
-  const allSession = await Session.find({ isDeleted: false }).sort({
-    createdAt: -1,
-  })
+  const allSession = await Session.find({ isDeleted: false })
+    .populate('serviceId')
+    .populate('serviceuser')
+    .sort({
+      createdAt: -1,
+    })
   if (!allSession) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -134,12 +138,12 @@ export const getAllSession = async () => {
   return { allSession }
 }
 export const isExistSession = async (userId) => {
-  const exists = await Session.exists({ _id: userId });
-  return Boolean(exists);
+  const exists = await Session.exists({ _id: userId })
+  return Boolean(exists)
 }
 
 export const getAllWithPagination = async (query) => {
-  const { page = 1, limit = 10 } = query || {}
+  const { country, name, date, time, page = 1, limit = 10,serviceId ,serviceuser} = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -150,13 +154,34 @@ export const getAllWithPagination = async (query) => {
     limitNumber = 10
   }
   const skip = (pageNumber - 1) * limitNumber
+  const filter = {
+    ...(serviceuser !== undefined && serviceuser !== '' && { serviceuser }),
+    ...(serviceId && { serviceId }),
+    ...(country !== undefined && country !== '' && { country }),
+    ...(name !== undefined && name !== '' && { name }),
+    ...(date !== undefined &&
+      date !== '' && {
+        date: {
+          $gte: new Date(date),
+          $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
+        },
+      }),
+    ...(time !== undefined && time !== '' && { time }),
+  }
 
-  const allSession = await Session.find()
+  const allSession = await Session.find(filter)
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
+    .populate('serviceuser')
+     .populate({
+      path: 'serviceId',
+      populate: {
+        path: 'serviceType'
+      },
+    })
 
-  const total = await Session.countDocuments()
+  const total = await Session.countDocuments(filter)
   return {
     data: allSession,
     meta: {

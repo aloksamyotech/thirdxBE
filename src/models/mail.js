@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 const MailingListSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -50,6 +51,6 @@ const MailingListSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
-
+MailingListSchema.plugin(commonFieldsPlugin)
 const mail = mongoose.model('mail', MailingListSchema)
 export default mail

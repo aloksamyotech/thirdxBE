@@ -1,11 +1,16 @@
 import mongoose from 'mongoose'
-
+import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 const TransactionSchema = new mongoose.Schema(
   {
-    assignedTo: { type: String },
-    campaign: {  type: mongoose.Schema.Types.ObjectId,
-            ref: "configuration",
-            required: true },
+    donorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'user',
+    },
+    campaign: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'configuration',
+      required: true,
+    },
     amountPaid: { type: Number, required: true },
     paymentMethod: {
       type: mongoose.Schema.Types.ObjectId,
@@ -19,7 +24,7 @@ const TransactionSchema = new mongoose.Schema(
     },
     receiptNumber: { type: String },
     transactionId: { type: String, unique: true },
-    isDeleted: { type: Boolean, default: false },
+
     isArchive: {
       type: Boolean,
       default: false,
@@ -28,6 +33,6 @@ const TransactionSchema = new mongoose.Schema(
 
   { timestamps: true }
 )
-
+TransactionSchema.plugin(commonFieldsPlugin)
 const transaction = mongoose.model('transaction', TransactionSchema)
 export default transaction
