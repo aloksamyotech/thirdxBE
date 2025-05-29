@@ -3,7 +3,7 @@ import CustomError from '../utils/exception.js'
 import Case from '../models/cases.js'
 import mongoose from 'mongoose'
 import { regexFilter } from '../core/common/common.js'
-
+import {generateCustomId} from "../utils/generateCustomId.js"
 export const addCase = async (caseData) => {
   const {
     serviceUserId,
