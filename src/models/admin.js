@@ -47,7 +47,10 @@ const adminSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-})
+},
+  {
+    timestamps: true
+  })
 adminSchema.plugin(commonFieldsPlugin)
 const Admin = mongoose.model('admin', adminSchema)
 export default Admin

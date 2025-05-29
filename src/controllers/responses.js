@@ -17,3 +17,10 @@ export const getResponseById = async (req, res) => {
     const getResponseById = await responseService.getResponseById(id)
     res.status(200).send(getResponseById)
 }
+
+export const updateResponseStatus = async (req, res) => {
+    const { id } = req?.params
+    const { status } = req?.body
+    const updateResponseStatus = await responseService.updateResponseStatus(id, status)
+    res.status(200).send(updateResponseStatus)
+}
