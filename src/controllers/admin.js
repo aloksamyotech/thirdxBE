@@ -1,7 +1,6 @@
 import { statusCodes } from '../core/common/constant.js'
 import * as adminService from '../services/admin.js'
 
-
 export const signUpAdmin = async (req, res) => {
   const { email, userName, password } = req?.body
   const adminData = {
@@ -54,7 +53,7 @@ export const editAdmin = async (req, res) => {
     currency,
     userName,
     id,
-    file
+    file,
   }
   const updateAdmin = await adminService.editAdmin(adminData)
   res.status(statusCodes?.ok).send(updateAdmin)
@@ -64,6 +63,13 @@ export const getAdminById = async (req, res) => {
   const getAdminData = await adminService.getAdminById(id)
   res.status(statusCodes?.ok).send(getAdminData)
 }
+
+export const getAllAdmins = async (req, res) => {
+  const { id } = req?.user
+  const getAdminData = await adminService.getAllAdmins(id)
+  res.status(statusCodes?.ok).send(getAdminData)
+}
+
 export const changePassword = async (req, res) => {
   const { password, newPassword } = req?.body
   const { id } = req?.user
@@ -77,7 +83,7 @@ export const changePassword = async (req, res) => {
 }
 
 export const googleSignin = async (req, res) => {
-  const { access_token } = req.body;
-  const response = await adminService.googleAuth(access_token);
+  const { access_token } = req.body
+  const response = await adminService.googleAuth(access_token)
   res.status(statusCodes?.ok).send(response)
 }

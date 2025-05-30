@@ -4,7 +4,7 @@ export const commonFieldsPlugin = (schema, options = {}) => {
   schema.add({
     isActive: { type: Boolean, default: true },
     isDeleted: { type: Boolean, default: false },
-    createdBy: { type: ObjectId, default: null },
+    createdBy: { type: ObjectId, ref: 'admin', default: null },
     updatedBy: { type: ObjectId, default: null },
   })
 
