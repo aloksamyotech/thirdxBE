@@ -66,7 +66,9 @@ export const Message = {
   inValidData: 'Invalid Data',
   duplicateData: 'Duplicate Visitor Data',
   serviceNotUpdated: 'Service could not be updated',
-  TagIDRequired:'TagID Required'
+  TagIDRequired: 'TagID Required',
+  AccessTokenRequired: 'access_token is required!',
+  invalidGoogleToken:'Invalid google access token!'
 }
 
 export const errorCodes = Object.freeze({
