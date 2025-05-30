@@ -323,6 +323,7 @@ export const getUserwithPagination = async (query) => {
     'companyInformatiom.companyName': search,
     role: search,
     subRole: search,
+    uniqueId:search
   }
 
   const searchConditions = Object.entries(regexFilter(searchKeys)).map(
