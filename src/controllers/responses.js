@@ -8,7 +8,8 @@ export const saveResponse = async (req, res, next) => {
 }
 
 export const getAllResponse = async (req, res) => {
-    const getAllResponse = await responseService.getAllResponse()
+    const query = req?.query || {}
+    const getAllResponse = await responseService.getAllResponse(query)
     res.status(200).send(getAllResponse)
 }
 

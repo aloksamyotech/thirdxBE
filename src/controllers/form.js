@@ -13,7 +13,7 @@ export const getFormById = async (req, res, next) => {
 }
 
 export const getAllForms = async (req, res, next) => {
-
-    const getAllForms = await formService.getAllForms()
+    const query = req?.query || {}
+    const getAllForms = await formService.getAllForms(query)
     res.status(200).send(getAllForms)
 }

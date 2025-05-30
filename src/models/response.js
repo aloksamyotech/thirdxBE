@@ -5,6 +5,7 @@ const ResponseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Form'
     },
+    title: String,
     data: {},
     status: {
         type: String,
