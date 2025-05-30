@@ -3,7 +3,7 @@ import CustomError from '../utils/exception.js'
 import Case from '../models/cases.js'
 import mongoose from 'mongoose'
 import { regexFilter } from '../core/common/common.js'
-
+import {generateCustomId} from "../utils/generateCustomId.js"
 export const addCase = async (caseData) => {
   const {
     serviceUserId,
@@ -29,6 +29,7 @@ export const addCase = async (caseData) => {
       errorCodes.bad_request
     );
   }
+ const uniqueId = await generateCustomId();
 
   const activeStatus = isActive === 'true';
 
@@ -47,6 +48,7 @@ export const addCase = async (caseData) => {
     description,
     file,
     isActive: activeStatus,
+    uniqueId
   });
 
   if (!newCase) {

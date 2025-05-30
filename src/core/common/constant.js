@@ -175,3 +175,18 @@ export const urls = {
 export const externalAPI = {
   district: `https://api.census.gov/data/2020/dec/pl?get=NAME&for=place:*&in=state:*`,
 }
+
+export const monthNames = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
