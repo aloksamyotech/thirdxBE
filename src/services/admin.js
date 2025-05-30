@@ -56,7 +56,7 @@ export const adminLogin = async (adminData) => {
     )
   }
   const token = jwt.sign(
-    { id: findAdmin?._id, email: findAdmin?.email },
+    { id: findAdmin?._id, email: findAdmin?.email, name: findAdmin?.userName },
     process.env.JWT_SECRET
   )
 
@@ -89,6 +89,20 @@ export const getAdminById = async (id) => {
     )
   }
   return { findAdmin }
+}
+
+export const getAllAdmins = async () => {
+  const allAdmins = await Admin.find()
+
+  if (!allAdmins || allAdmins.length === 0) {
+    return new CustomError(
+      statusCodes.notFound,
+      Message.notFound,
+      errorCodes.not_found
+    )
+  }
+
+  return { allAdmins }
 }
 
 export const changePassword = async (adminData) => {
@@ -127,7 +141,7 @@ export const googleAuth = async (access_token) => {
     )
   }
 
-  const userInfo = await verifyGoogleToken(access_token);
+  const userInfo = await verifyGoogleToken(access_token)
 
   if (!userInfo) {
     return new CustomError(
@@ -137,23 +151,24 @@ export const googleAuth = async (access_token) => {
     )
   }
 
-  const AdminData = await Admin.findOne({ email: userInfo?.email });
+  const AdminData = await Admin.findOne({ email: userInfo?.email })
 
-  let token = null;
+  let token = null
 
   if (AdminData) {
-
     if (!AdminData.googleId) {
-      await Admin.updateOne({ email: userInfo?.email }, {
-        googleId: userInfo?.sub
-      })
+      await Admin.updateOne(
+        { email: userInfo?.email },
+        {
+          googleId: userInfo?.sub,
+        }
+      )
     }
 
     token = jwt.sign(
       { id: AdminData?._id, email: AdminData?.email },
       process.env.JWT_SECRET
     )
-
   } else {
     const newAdmin = {
       firstName: userInfo?.given_name,
@@ -161,7 +176,7 @@ export const googleAuth = async (access_token) => {
       email: userInfo?.email,
       userName: userInfo?.name,
       file: userInfo?.picture,
-      googleId: userInfo?.sub
+      googleId: userInfo?.sub,
     }
 
     const createAdmin = await Admin.create(newAdmin)

@@ -5,10 +5,18 @@ import { regexFilter } from '../core/common/common.js'
 import mongoose from 'mongoose'
 
 export const createCaseNote = async (caseNoteData) => {
-  const { caseId, date, configurationId, subject, note, filePath, time } =
-    caseNoteData
+  const {
+    caseId,
+    date,
+    configurationId,
+    subject,
+    note,
+    filePath,
+    time,
+    createdBy,
+  } = caseNoteData
 
-  if (!caseId || !date || !configurationId || !subject) {
+  if (!caseId || !date || !configurationId || !subject || !createdBy) {
     throw new CustomError(
       statusCodes.badRequest,
       Message.missingRequiredFields,
@@ -24,6 +32,7 @@ export const createCaseNote = async (caseNoteData) => {
     note: note || '',
     file: filePath || '',
     time,
+    createdBy,
   })
 
   return newCaseNote
@@ -94,7 +103,7 @@ export const getAllCaseNote = async () => {
 }
 
 export const getAllWithPagination = async (query) => {
-  const { search, caseId, page = 1, limit = 10, date } = query || {}
+  const { search, caseId, page = 1, limit = 10, date, createdBy } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -112,13 +121,19 @@ export const getAllWithPagination = async (query) => {
 
   const filter = {
     ...regexFilter(searchKeys),
-    ...(caseId !== undefined && caseId !== '' && { caseId: new mongoose.Types.ObjectId(caseId) }),
-    ...(date !== undefined && date !== '' && {
-      date: {
-        $gte: new Date(date),
-        $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
-      },
-    }),
+    ...(caseId !== undefined &&
+      caseId !== '' && { caseId: new mongoose.Types.ObjectId(caseId) }),
+    ...(createdBy !== undefined &&
+      createdBy !== '' && {
+        createdBy: new mongoose.Types.ObjectId(createdBy),
+      }),
+    ...(date !== undefined &&
+      date !== '' && {
+        date: {
+          $gte: new Date(date),
+          $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
+        },
+      }),
   }
 
   const allCaseNote = await CaseNote.find(filter)
@@ -126,6 +141,7 @@ export const getAllWithPagination = async (query) => {
     .limit(limitNumber)
     .sort({ createdAt: -1 })
     .populate('configurationId')
+    .populate('createdBy')
 
   const total = await CaseNote.countDocuments(filter)
   return {
