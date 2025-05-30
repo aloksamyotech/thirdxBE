@@ -15,7 +15,7 @@ export const signUpAdmin = async (adminData) => {
   }
   const hashedPass = await hashPassword(adminData?.password)
   const createAdmin = await Admin.create({ ...adminData, password: hashedPass })
-   if (createAdmin) {
+  if (createAdmin) {
     createAdmin.createdBy = createAdmin._id
     createAdmin.updatedBy = createAdmin._id
     await createAdmin.save()

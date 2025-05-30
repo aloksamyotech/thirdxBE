@@ -64,7 +64,7 @@ export const getAdminById = async (req, res) => {
 }
 export const changePassword = async (req, res) => {
   const { password, newPassword } = req?.body
-  const { id } = req?.params
+  const { id } = req?.user
   const adminData = {
     id,
     password,

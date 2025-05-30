@@ -15,4 +15,5 @@ router.post('/', asyncHandler(signUpAdmin))
 router.post('/login', asyncHandler(loginAdmin))
 router.put('/', asyncHandler(userAuth), upload.single('file'), asyncHandler(editAdmin))
 router.get('/', asyncHandler(userAuth), asyncHandler(getAdminById))
+router.patch('/change-password', asyncHandler(userAuth), asyncHandler(changePassword))
 export default router
