@@ -1,5 +1,7 @@
 import { statusCodes } from '../core/common/constant.js'
 import * as adminService from '../services/admin.js'
+
+
 export const signUpAdmin = async (req, res) => {
   const { email, userName, password } = req?.body
   const adminData = {
@@ -72,4 +74,10 @@ export const changePassword = async (req, res) => {
   }
   const changePass = await adminService.changePassword(adminData)
   res.status(statusCodes?.ok).send(changePass)
+}
+
+export const googleSignin = async (req, res) => {
+  const { access_token } = req.body;
+  const response = await adminService.googleAuth(access_token);
+  res.status(statusCodes?.ok).send(response)
 }

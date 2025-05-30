@@ -4,6 +4,7 @@ import {
   changePassword,
   editAdmin,
   getAdminById,
+  googleSignin,
   loginAdmin,
   signUpAdmin,
 } from '../controllers/admin.js'
@@ -13,6 +14,7 @@ const router = Router()
 
 router.post('/', asyncHandler(signUpAdmin))
 router.post('/login', asyncHandler(loginAdmin))
+router.post('/google-auth', asyncHandler(googleSignin))
 router.put('/', asyncHandler(userAuth), upload.single('file'), asyncHandler(editAdmin))
 router.get('/', asyncHandler(userAuth), asyncHandler(getAdminById))
 router.patch('/change-password', asyncHandler(userAuth), asyncHandler(changePassword))

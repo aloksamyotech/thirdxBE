@@ -1,4 +1,5 @@
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
+import { verifyGoogleToken } from '../core/helpers/googleAuth.js'
 import Admin from '../models/admin.js'
 import CustomError from '../utils/exception.js'
 import { comparePassword, hashPassword } from '../utils/password.js'
@@ -115,4 +116,66 @@ export const changePassword = async (adminData) => {
   findAdmin.updatedBy = adminData?.id
   await findAdmin.save()
   return { findAdmin }
+}
+
+export const googleAuth = async (access_token) => {
+  if (!access_token) {
+    return new CustomError(
+      statusCodes.notFound,
+      Message.AccessTokenRequired,
+      errorCodes.bad_request
+    )
+  }
+
+  const userInfo = await verifyGoogleToken(access_token);
+
+  if (!userInfo) {
+    return new CustomError(
+      statusCodes.badRequest,
+      Message.invalidGoogleToken,
+      errorCodes.access_forbidden
+    )
+  }
+
+  const AdminData = await Admin.findOne({ email: userInfo?.email });
+
+  let token = null;
+
+  if (AdminData) {
+
+    if (!AdminData.googleId) {
+      await Admin.updateOne({ email: userInfo?.email }, {
+        googleId: userInfo?.sub
+      })
+    }
+
+    token = jwt.sign(
+      { id: AdminData?._id, email: AdminData?.email },
+      process.env.JWT_SECRET
+    )
+
+  } else {
+    const newAdmin = {
+      firstName: userInfo?.given_name,
+      lastName: userInfo?.family_name,
+      email: userInfo?.email,
+      userName: userInfo?.name,
+      file: userInfo?.picture,
+      googleId: userInfo?.sub
+    }
+
+    const createAdmin = await Admin.create(newAdmin)
+    if (createAdmin) {
+      createAdmin.createdBy = createAdmin._id
+      createAdmin.updatedBy = createAdmin._id
+      await createAdmin.save()
+    }
+
+    token = jwt.sign(
+      { id: createAdmin?._id, email: createAdmin?.email },
+      process.env.JWT_SECRET
+    )
+  }
+
+  return { token }
 }

@@ -45,9 +45,12 @@ const adminSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    // required: true,
   },
-  file: String
+  file: String,
+  googleId: {
+    type: String
+  }
 },
   {
     timestamps: true
