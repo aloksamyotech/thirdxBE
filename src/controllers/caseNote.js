@@ -16,7 +16,7 @@ export const addCaseNote = async (req, res) => {
     note,
     time,
     filePath,
-    createdBy, // ✅ add this line
+    createdBy,
   }
 
   const addCases = await casesNote.createCaseNote(caseNoteData)

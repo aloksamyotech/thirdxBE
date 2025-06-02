@@ -94,7 +94,7 @@ export const getAdminById = async (id) => {
 export const getAllAdmins = async () => {
   const allAdmins = await Admin.find()
 
-  if (!allAdmins || allAdmins.length === 0) {
+  if (!allAdmins) {
     return new CustomError(
       statusCodes.notFound,
       Message.notFound,

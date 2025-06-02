@@ -65,8 +65,7 @@ export const getAdminById = async (req, res) => {
 }
 
 export const getAllAdmins = async (req, res) => {
-  const { id } = req?.user
-  const getAdminData = await adminService.getAllAdmins(id)
+  const getAdminData = await adminService.getAllAdmins()
   res.status(statusCodes?.ok).send(getAdminData)
 }
 
