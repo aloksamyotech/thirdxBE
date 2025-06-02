@@ -32,6 +32,7 @@ export const Message = {
   userAlreadyInSession: 'User already exists in this session',
   caseNotFound: 'Case Not Found',
   registerSuccessfully: 'Successfully Registered',
+  InvalidOrExpired: 'Invalid or expired OTP',
   inValid: 'Invalid Credentials',
   successfullyUpdate: 'Updated Successfully',
   alreadyExist: 'Already Exist',

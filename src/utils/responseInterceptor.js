@@ -10,7 +10,6 @@ const responseInterceptor = (req, res, next) => {
         error: data?.errorCode || data?.message || 'Unknown Error',
         timestamp: new Date().toISOString(),
       }
-      console.log('formattedResponse', formattedResponse)
       oldSend.call(res, formattedResponse)
     } else {
       const formattedResponse = {

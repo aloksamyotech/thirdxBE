@@ -8,6 +8,9 @@ import {
   loginAdmin,
   signUpAdmin,
   getAllAdmins,
+  forgotPassword,
+  verifyOtp,
+  resetPassword,
 } from '../controllers/admin.js'
 import { userAuth } from '../middlewares/userAuth.js'
 import { upload } from '../core/helpers/multer.js'
@@ -29,4 +32,7 @@ router.patch(
   asyncHandler(changePassword)
 )
 router.get('/getAllAdmin', asyncHandler(userAuth), asyncHandler(getAllAdmins))
+router.post('/forgot-password', asyncHandler(forgotPassword))
+router.post('/verify-otp', asyncHandler(verifyOtp))
+router.post('/reset-password', asyncHandler(resetPassword))
 export default router

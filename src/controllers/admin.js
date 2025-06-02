@@ -86,3 +86,24 @@ export const googleSignin = async (req, res) => {
   const response = await adminService.googleAuth(access_token)
   res.status(statusCodes?.ok).send(response)
 }
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body
+  const response = await adminService.forgotPassword(email)
+  res.status(statusCodes?.ok).send(response)
+}
+
+export const verifyOtp = async (req, res) => {
+  const { email, otp } = req.body
+  const response = await adminService.verifyOtp(email, otp)
+  res.status(statusCodes?.ok).send(response)
+}
+export const resetPassword = async (req, res) => {
+  const { token, newPassword, confirmNewPass } = req.body
+  const adminData = {
+    token,
+    newPassword,
+    confirmNewPass,
+  }
+  const response = await adminService.resetPassword(adminData)
+  res.status(statusCodes?.ok).send(response)
+}

@@ -4,6 +4,8 @@ import Admin from '../models/admin.js'
 import CustomError from '../utils/exception.js'
 import { comparePassword, hashPassword } from '../utils/password.js'
 import jwt from 'jsonwebtoken'
+import crypto from 'crypto'
+import { sendOTP } from '../utils/mailer.js'
 
 export const signUpAdmin = async (adminData) => {
   const findAdmin = await Admin.findOne({ email: adminData?.email })
@@ -193,4 +195,63 @@ export const googleAuth = async (access_token) => {
   }
 
   return { token }
+}
+
+export const forgotPassword = async (email) => {
+  const admin = await Admin.findOne({ email })
+  if (!admin) {
+    return new CustomError(
+      statusCodes.notFound,
+      Message.emailNotRegistered,
+      errorCodes.user_not_found
+    )
+  }
+  const otp = crypto.randomInt(100000, 999999).toString()
+  const otpExpires = new Date(Date.now() + 10 * 60 * 1000)
+  admin.otp = otp
+  admin.otpExpires = otpExpires
+  await admin.save()
+  await sendOTP(email, otp)
+  return { otp }
+}
+
+export const verifyOtp = async (email, otp) => {
+  const admin = await Admin.findOne({ email })
+  if (!admin) {
+    return new CustomError(
+      statusCodes.notFound,
+      Message.emailNotRegistered,
+      errorCodes.user_not_found
+    )
+  }
+
+  const now = new Date()
+  if (admin?.otp !== otp || admin?.otpExpires < now)
+    return new CustomError(
+      statusCodes.badRequest,
+      Message.InvalidOrExpired,
+      errorCodes.not_found
+    )
+
+  const token = jwt.sign({ email }, process.env.JWT_SECRET)
+  return { email, token }
+}
+
+export const resetPassword = async (adminData) => {
+  const decoded = jwt.verify(adminData?.token, process.env.JWT_SECRET)
+  const email = decoded.email
+  const admin = await Admin.findOne({ email })
+  if (!admin) {
+    return new CustomError(
+      statusCodes.notFound,
+      Message.emailNotRegistered,
+      errorCodes.user_not_found
+    )
+  }
+  const hashedPassword = await hashPassword(adminData?.newPassword, 10)
+  admin.password = hashedPassword
+  admin.otp = null
+  admin.otpExpires = null
+  await admin.save()
+  return { admin }
 }
