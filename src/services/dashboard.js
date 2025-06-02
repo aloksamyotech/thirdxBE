@@ -161,6 +161,7 @@ export const getAllTask = async () => {
   const allTask = await task.find({ isDeleted: false }).sort({
     createdAt: -1,
   })
+  .populate('assignedTo')
   if (!allTask) {
     throw new CustomError(
       statusCodes?.notFound,
