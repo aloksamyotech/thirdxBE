@@ -3,7 +3,8 @@ import { statusCodes } from '../core/common/constant.js'
 import { regexFilter } from '../core/common/common.js'
 
 export const addCaseNote = async (req, res) => {
-  const { caseId, date, configurationId, subject, time, note } = req.body
+  const { caseId, date, configurationId, subject, time, note, createdBy } =
+    req.body
 
   const filePath = req?.file?.path
 
@@ -15,9 +16,11 @@ export const addCaseNote = async (req, res) => {
     note,
     time,
     filePath,
+    createdBy,
   }
+
   const addCases = await casesNote.createCaseNote(caseNoteData)
-  res.status(statusCodes?.ok).send(addCases)
+  res.status(statusCodes.ok).send(addCases)
 }
 
 export const deleteCaseNote = async (req, res) => {
