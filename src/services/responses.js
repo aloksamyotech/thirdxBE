@@ -24,13 +24,25 @@ export const saveResponse = async (formId, body) => {
 
 export const getAllResponse = async (query) => {
 
-    const { page = 1, limit = 10, search } = query || {}
+    const { page = 1, limit = 10, search, date } = query || {}
     const skip = (page - 1) * limit;
     const searchQuery = search ? {
         title: { $regex: search, $options: 'i' }
     } : {};
+
+    const filter = {
+        ...searchQuery,
+        ...(date !== undefined &&
+            date !== '' && {
+            submittedAt: {
+                $gte: new Date(date),
+                $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
+            },
+        })
+    }
+
     const getAllResponse = await Response
-        .find(searchQuery)
+        .find(filter)
         .skip(skip)
         .limit(limit)
         .sort({ createdAt: -1 })
