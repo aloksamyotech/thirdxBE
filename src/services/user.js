@@ -306,8 +306,8 @@ export const getUserwithPagination = async (query) => {
     page = 1,
     limit = 10,
   } = query || {}
-
-  let pageNumber = Number(page)
+ 
+   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
     pageNumber = 1
@@ -344,8 +344,9 @@ export const getUserwithPagination = async (query) => {
     ...(nickName !== undefined &&
       nickName !== '' && { 'personalInfo.nickName': nickName }),
     ...(uniqueId !== undefined && uniqueId !== '' && { uniqueId: uniqueId }),
-    ...(campaigns !== undefined &&
-      campaigns !== '' && { 'otherInfo.campaigns': campaigns }),
+    
+      ...(campaigns !== undefined &&
+      campaigns !== '' && { 'companyInformation.recruitmentCampaign': campaigns }),
     ...(country !== undefined &&
       country !== '' && { 'contactInfo.country': country }),
     ...(role !== undefined && role !== '' && { role: role }),
