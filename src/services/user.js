@@ -10,9 +10,9 @@ import CustomError from '../utils/exception.js'
 import axios from 'axios'
 import { regexFilter } from '../core/common/common.js'
 import mongoose from 'mongoose'
-import {generateCustomId} from "../utils/generateCustomId.js"
+import { generateCustomId } from '../utils/generateCustomId.js'
 export const addUser = async (userData) => {
-  userData.uniqueId = await generateCustomId();
+  userData.uniqueId = await generateCustomId()
   const newUser = await user.create(userData)
   if (!newUser) {
     return new CustomError(
@@ -26,7 +26,7 @@ export const addUser = async (userData) => {
 
 export const getAllServiceUser = async () => {
   const allUser = await user
-    .find({ isDeleted: false,isActive:true, role: checkRole.service_user })
+    .find({ isDeleted: false, isActive: true, role: checkRole.service_user })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
@@ -303,11 +303,12 @@ export const getUserwithPagination = async (query) => {
     role,
     userId,
     name,
+    dateOfBirth,
     page = 1,
     limit = 10,
   } = query || {}
- 
-   let pageNumber = Number(page)
+
+  let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
     pageNumber = 1
@@ -323,7 +324,7 @@ export const getUserwithPagination = async (query) => {
     'companyInformatiom.companyName': search,
     role: search,
     subRole: search,
-    uniqueId:search
+    uniqueId: search,
   }
 
   const searchConditions = Object.entries(regexFilter(searchKeys)).map(
@@ -343,10 +344,11 @@ export const getUserwithPagination = async (query) => {
       gender !== '' && { 'personalInfo.gender': gender }),
     ...(nickName !== undefined &&
       nickName !== '' && { 'personalInfo.nickName': nickName }),
-    ...(uniqueId !== undefined && uniqueId !== '' && { uniqueId: uniqueId }),
-    
-      ...(campaigns !== undefined &&
-      campaigns !== '' && { 'companyInformation.recruitmentCampaign': campaigns }),
+
+    ...(campaigns !== undefined &&
+      campaigns !== '' && {
+        'companyInformation.recruitmentCampaign': campaigns,
+      }),
     ...(country !== undefined &&
       country !== '' && { 'contactInfo.country': country }),
     ...(role !== undefined && role !== '' && { role: role }),
@@ -361,6 +363,14 @@ export const getUserwithPagination = async (query) => {
           $lt: new Date(
             new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
           ),
+        },
+      }),
+    ...(uniqueId !== undefined && uniqueId !== '' && { _id: uniqueId }),
+    ...(dateOfBirth !== undefined &&
+      dateOfBirth !== '' && {
+        'personalInfo.dateOfBirth': {
+          $gte: new Date(new Date(dateOfBirth).setHours(0, 0, 0, 0)),
+          $lt: new Date(new Date(dateOfBirth).setHours(23, 59, 59, 999)),
         },
       }),
   }
@@ -381,7 +391,6 @@ export const getUserwithPagination = async (query) => {
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
     .populate('companyInformation.recruitmentCampaign')
-
 
   const total = await user.countDocuments(filter)
   return {

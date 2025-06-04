@@ -115,10 +115,13 @@ export const deleteTransaction = async (id) => {
 
 export const getTransactionwithPagination = async (query) => {
   const {
+    status,
     search,
     donorId,
     createdAt,
     campaign,
+    name,
+    uniqueId,
     page = 1,
     limit = 10,
   } = query || {}
@@ -157,6 +160,11 @@ export const getTransactionwithPagination = async (query) => {
           ),
         },
       }),
+
+    ...(name !== undefined && name !== '' && { donorId: name }),
+    ...(status !== undefined &&
+      status !== '' && { isActive: status === 'true' }),
+    ...(uniqueId !== undefined && uniqueId !== '' && { donorId: uniqueId }),
   }
 
   const allTransaction = await transaction
