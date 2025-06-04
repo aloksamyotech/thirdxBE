@@ -32,6 +32,7 @@ export const Message = {
   userAlreadyInSession: 'User already exists in this session',
   caseNotFound: 'Case Not Found',
   registerSuccessfully: 'Successfully Registered',
+  InvalidOrExpired: 'Invalid or expired OTP',
   inValid: 'Invalid Credentials',
   successfullyUpdate: 'Updated Successfully',
   alreadyExist: 'Already Exist',
@@ -66,7 +67,9 @@ export const Message = {
   inValidData: 'Invalid Data',
   duplicateData: 'Duplicate Visitor Data',
   serviceNotUpdated: 'Service could not be updated',
-  TagIDRequired:'TagID Required'
+  TagIDRequired: 'TagID Required',
+  AccessTokenRequired: 'access_token is required!',
+  invalidGoogleToken:'Invalid google access token!'
 }
 
 export const errorCodes = Object.freeze({

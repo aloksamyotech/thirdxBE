@@ -16,8 +16,10 @@ export const addTransaction = async (data) => {
 }
 
 export const getAllTransaction = async () => {
-  const allTransaction = await transaction.find().sort({ createdAt: -1 })
-  .populate('donorId')
+  const allTransaction = await transaction
+    .find()
+    .sort({ createdAt: -1 })
+    .populate('donorId')
   if (!allTransaction) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -141,9 +143,8 @@ export const getTransactionwithPagination = async (query) => {
   )
 
   const filter = {
-    $or: searchConditions,
     ...(donorId !== undefined &&
-       donorId !== '' && { donorId: new mongoose.Types.ObjectId(donorId) }),
+      donorId !== '' && { donorId: new mongoose.Types.ObjectId(donorId) }),
 
     ...(campaign !== undefined && campaign !== '' && { campaign: campaign }),
 
@@ -166,14 +167,33 @@ export const getTransactionwithPagination = async (query) => {
     .populate('campaign')
     .populate('donorId')
 
-  const total = await transaction.countDocuments(filter)
+  const filteredTransactions = search
+    ? allTransaction.filter((c) => {
+        const firstName =
+          c.donorId?.personalInfo?.firstName?.toLowerCase() || ''
+        const lastName = c.donorId?.personalInfo?.lastName?.toLowerCase() || ''
+        const companyName =
+          c.donorId?.companyInformation?.companyName?.toLowerCase() || ''
+        const searchLower = search.toLowerCase()
+        return (
+          firstName.includes(searchLower) ||
+          lastName.includes(searchLower) ||
+          companyName.includes(searchLower)
+        )
+      })
+    : allTransaction
+
+  const paginatedTransactions = filteredTransactions.slice(
+    skip,
+    skip + limitNumber
+  )
   return {
-    data: allTransaction,
+    data: paginatedTransactions,
     meta: {
-      total,
+      total: filteredTransactions.length,
       page: pageNumber,
       limit: limitNumber,
-      totalPages: Math.ceil(total / limitNumber),
+      totalPages: Math.ceil(filteredTransactions.length / limitNumber),
     },
   }
 }

@@ -4,8 +4,13 @@ import {
   changePassword,
   editAdmin,
   getAdminById,
+  googleSignin,
   loginAdmin,
   signUpAdmin,
+  getAllAdmins,
+  forgotPassword,
+  verifyOtp,
+  resetPassword,
 } from '../controllers/admin.js'
 import { userAuth } from '../middlewares/userAuth.js'
 import { upload } from '../core/helpers/multer.js'
@@ -13,7 +18,21 @@ const router = Router()
 
 router.post('/', asyncHandler(signUpAdmin))
 router.post('/login', asyncHandler(loginAdmin))
-router.put('/', asyncHandler(userAuth), upload.single('file'), asyncHandler(editAdmin))
+router.post('/google-auth', asyncHandler(googleSignin))
+router.put(
+  '/',
+  asyncHandler(userAuth),
+  upload.single('file'),
+  asyncHandler(editAdmin)
+)
 router.get('/', asyncHandler(userAuth), asyncHandler(getAdminById))
-router.patch('/change-password', asyncHandler(userAuth), asyncHandler(changePassword))
+router.patch(
+  '/change-password',
+  asyncHandler(userAuth),
+  asyncHandler(changePassword)
+)
+router.get('/getAllAdmin', asyncHandler(userAuth), asyncHandler(getAllAdmins))
+router.post('/forgot-password', asyncHandler(forgotPassword))
+router.post('/verify-otp', asyncHandler(verifyOtp))
+router.post('/reset-password', asyncHandler(resetPassword))
 export default router

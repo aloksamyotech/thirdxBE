@@ -60,7 +60,7 @@ export const getTaskById = async (req, res) => {
 
 export const deleteTask = async (req, res) => {
   const taskId = req.params.id
-  const deletedServices = await dashboardService.deleteTask(taskId)
+  const deletedServices = await dashboardService.deletetask(taskId)
   res.status(statusCodes?.ok).send(deletedServices);
 }
 

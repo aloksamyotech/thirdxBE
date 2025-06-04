@@ -15,18 +15,49 @@ export const saveResponse = async (formId, body) => {
     }
     const response = new Response({
         formId: form._id,
-        data: body
+        data: body,
+        title: form?.title
     });
     await response.save();
     return response
 }
 
-export const getAllResponse = async () => {
-    const getAllResponse = Response
-        .find()
+export const getAllResponse = async (query) => {
+
+    const { page = 1, limit = 10, search, date } = query || {}
+    const skip = (page - 1) * limit;
+    const searchQuery = search ? {
+        title: { $regex: search, $options: 'i' }
+    } : {};
+
+    const filter = {
+        ...searchQuery,
+        ...(date !== undefined &&
+            date !== '' && {
+            submittedAt: {
+                $gte: new Date(date),
+                $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
+            },
+        })
+    }
+
+    const getAllResponse = await Response
+        .find(filter)
+        .skip(skip)
+        .limit(limit)
         .sort({ createdAt: -1 })
         .populate('formId')
-    return getAllResponse
+
+    const total = await Response.countDocuments(searchQuery);
+
+    return {
+        data: getAllResponse,
+        meta: {
+            totalPages: Math.ceil(total / limit),
+            currentPage: page,
+            total
+        }
+    };
 }
 
 export const getResponseById = async (id) => {

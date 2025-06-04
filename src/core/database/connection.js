@@ -24,7 +24,6 @@ const connectDB = async () => {
       //       address: 'USA',
       //     })
       //     await userData.save()
-      //     console.log(`New Admin is Created`)
       //   }
       //   const checkPackage = await Subscription.findOne({
       //     title: 'Free Trial',
@@ -37,7 +36,6 @@ const connectDB = async () => {
       //       duration: 30,
       //     })
       //     await subscription.save()
-      //     console.log(`Free Trial Subscription Added`)
       //   }
       // }
     })()

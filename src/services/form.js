@@ -46,9 +46,27 @@ export const getFormById = async (formId) => {
     return form
 }
 
-export const getAllForms = async () => {
+export const getAllForms = async (query) => {
+
+    const { page = 1, limit = 10, search } = query || {}
+    const skip = (page - 1) * limit;
+    const searchQuery = search ? {
+        title: { $regex: search, $options: 'i' }
+    } : {};
+
     const form = await Form
-        .find()
+        .find(searchQuery)
+        .skip(skip)
+        .limit(limit)
         .sort({ createdAt: -1 });
-    return form
+
+    const total = await Form.countDocuments(searchQuery);
+    return {
+        data: form,
+        meta: {
+            totalPages: Math.ceil(total / limit),
+            currentPage: page,
+            total
+        }
+    };
 }

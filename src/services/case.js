@@ -314,6 +314,7 @@ export const getCasewithPagination = async (query) => {
     serviceId,
     serviceType,
     createdAt,
+    country,
     page = 1,
     limit = 10,
   } = query || {};
@@ -349,16 +350,31 @@ export const getCasewithPagination = async (query) => {
     .populate('fundingInterest')
     .populate('fundraisingActivities')
 
-  const filteredCases = search
-    ? allCases.filter((c) => {
-        const firstName = c.serviceUserId?.personalInfo?.firstName?.toLowerCase() || '';
-        const lastName = c.serviceUserId?.personalInfo?.lastName?.toLowerCase() || '';
-        const searchLower = search.toLowerCase();
-        return (
-          firstName.includes(searchLower) || lastName.includes(searchLower)
-        );
-      })
-    : allCases;
+  const filteredCases =
+    search || country
+      ? allCases.filter((c) => {
+          const firstName =
+            c.serviceUserId?.personalInfo?.firstName?.toLowerCase() || ''
+          const lastName =
+            c.serviceUserId?.personalInfo?.lastName?.toLowerCase() || ''
+          const countryName =
+            c.serviceUserId?.contactInfo?.country?.toLowerCase() || ''
+
+          const searchLower = search?.toLowerCase()
+          const countryLower = country?.toLowerCase()
+
+          const matchesSearch = search
+            ? firstName.includes(searchLower) || lastName.includes(searchLower)
+            : true
+
+          const matchesCountry = country
+            ? countryName.includes(countryLower)
+            : true
+
+          return matchesSearch && matchesCountry
+        })
+      : allCases
+
 
   const paginatedCases = filteredCases.slice(skip, skip + limitNumber);
 
