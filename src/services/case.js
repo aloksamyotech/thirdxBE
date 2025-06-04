@@ -3,7 +3,7 @@ import CustomError from '../utils/exception.js'
 import Case from '../models/cases.js'
 import mongoose from 'mongoose'
 import { regexFilter } from '../core/common/common.js'
-import {generateCustomId} from "../utils/generateCustomId.js"
+import { generateCustomId } from '../utils/generateCustomId.js'
 export const addCase = async (caseData) => {
   const {
     serviceUserId,
@@ -20,18 +20,18 @@ export const addCase = async (caseData) => {
     description,
     file,
     isActive,
-  } = caseData;
+  } = caseData
 
-  if (!serviceUserId || !serviceId || !serviceType||!isActive) {
+  if (!serviceUserId || !serviceId || !serviceType || !isActive) {
     throw new CustomError(
       statusCodes.badRequest,
       Message.missingRequiredFields,
       errorCodes.bad_request
-    );
+    )
   }
- const uniqueId = await generateCustomId();
+  const uniqueId = await generateCustomId()
 
-  const activeStatus = isActive === 'true';
+  const activeStatus = isActive === 'true'
 
   const newCase = await Case.create({
     serviceUserId,
@@ -48,19 +48,19 @@ export const addCase = async (caseData) => {
     description,
     file,
     isActive: activeStatus,
-    uniqueId
-  });
+    uniqueId,
+  })
 
   if (!newCase) {
     throw new CustomError(
       statusCodes.internalServerError,
       Message.notCreated,
       errorCodes.internal_error
-    );
+    )
   }
 
-  return { newCase };
-};
+  return { newCase }
+}
 
 export const editCase = async (caseId, caseData) => {
   const {
@@ -78,33 +78,39 @@ export const editCase = async (caseId, caseData) => {
     description,
     filePath,
     isActive,
-  } = caseData;
+  } = caseData
 
   if (!caseId) {
     throw new CustomError(
       statusCodes?.badRequest,
       Message.notFound,
       errorCodes?.bad_request
-    );
+    )
   }
 
-  const activeStatus = isActive === 'true' ? true : isActive === 'false' ? false : isActive;
+  const activeStatus =
+    isActive === 'true' ? true : isActive === 'false' ? false : isActive
 
-  if (!serviceUserId || !serviceId || !serviceType || typeof activeStatus === 'undefined') {
+  if (
+    !serviceUserId ||
+    !serviceId ||
+    !serviceType ||
+    typeof activeStatus === 'undefined'
+  ) {
     throw new CustomError(
       statusCodes.badRequest,
       Message.missingRequiredFields,
       errorCodes.bad_request
-    );
+    )
   }
 
-  const existingCase = await Case.findById(caseId);
+  const existingCase = await Case.findById(caseId)
   if (!existingCase) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
-    );
+    )
   }
 
   const updateData = {
@@ -122,24 +128,24 @@ export const editCase = async (caseId, caseData) => {
     description,
     filePath,
     isActive: activeStatus,
-  };
+  }
 
   const updatedCase = await Case.findByIdAndUpdate(
     caseId,
     { $set: updateData },
     { new: true }
-  );
+  )
 
   if (!updatedCase) {
     throw new CustomError(
       statusCodes.internalServerError,
       Message.notUpdated,
       errorCodes.internal_error
-    );
+    )
   }
 
-  return { updatedCase };
-};
+  return { updatedCase }
+}
 
 export const deleteCase = async (caseId) => {
   const caseData = await Case.findById(caseId)
@@ -311,33 +317,52 @@ export const getCasewithPagination = async (query) => {
   const {
     search,
     status,
+    uniqueId,
     serviceId,
     serviceType,
     createdAt,
     country,
+    name,
+    caseOpened,
     page = 1,
     limit = 10,
-  } = query || {};
+  } = query || {}
 
-  let pageNumber = Number(page);
-  let limitNumber = Number(limit);
+  let pageNumber = Number(page)
+  let limitNumber = Number(limit)
 
-  if (pageNumber < 1) pageNumber = 1;
-  if (limitNumber < 1) limitNumber = 10;
+  if (pageNumber < 1) pageNumber = 1
+  if (limitNumber < 1) limitNumber = 10
 
-  const skip = (pageNumber - 1) * limitNumber;
+  const skip = (pageNumber - 1) * limitNumber
 
   const filter = {
-    ...(status !== undefined && status !== '' && { isActive: status === 'true' }),
+    ...(status !== undefined &&
+      status !== '' && { isActive: status === 'true' }),
     ...(serviceType !== undefined && serviceType !== '' && { serviceType }),
     ...(serviceId !== undefined && serviceId !== '' && { serviceId }),
-    ...(createdAt !== undefined && createdAt !== '' && {
-      createdAt: {
-        $gte: new Date(createdAt),
-        $lt: new Date(new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)),
-      },
-    }),
-  };
+    ...(createdAt !== undefined &&
+      createdAt !== '' && {
+        createdAt: {
+          $gte: new Date(createdAt),
+          $lt: new Date(
+            new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
+          ),
+        },
+      }),
+    ...(name !== undefined && name !== '' && { serviceUserId: name }),
+    ...(uniqueId !== undefined &&
+      uniqueId !== '' && { serviceUserId: uniqueId }),
+    ...(caseOpened !== undefined &&
+      caseOpened !== '' && {
+        caseOpened: {
+          $gte: new Date(caseOpened),
+          $lt: new Date(
+            new Date(caseOpened).setDate(new Date(caseOpened).getDate() + 1)
+          ),
+        },
+      }),
+  }
 
   const allCases = await Case.find(filter)
     .sort({ createdAt: -1 })
@@ -375,8 +400,7 @@ export const getCasewithPagination = async (query) => {
         })
       : allCases
 
-
-  const paginatedCases = filteredCases.slice(skip, skip + limitNumber);
+  const paginatedCases = filteredCases.slice(skip, skip + limitNumber)
 
   return {
     data: paginatedCases,
@@ -386,5 +410,5 @@ export const getCasewithPagination = async (query) => {
       limit: limitNumber,
       totalPages: Math.ceil(filteredCases.length / limitNumber),
     },
-  };
-};
+  }
+}
