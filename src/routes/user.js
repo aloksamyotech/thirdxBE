@@ -13,13 +13,21 @@ import {
   getAllUsers,
   getUserwithPagination,
   archiveUser,
-  unArchiveUser
+  unArchiveUser,
 } from '../controllers/user.js'
 import { upload } from '../core/helpers/multer.js'
 
 const router = Router()
 
-router.post('/adduser', upload.single('file'), asyncHandler(addUser))
+router.post(
+  '/adduser',
+  upload.fields([
+    { name: 'file', maxCount: 1 },
+    { name: 'profileImage', maxCount: 1 },
+  ]),
+  asyncHandler(addUser)
+)
+
 router.get('/getallServiceUser', asyncHandler(getAllServiceUser))
 router.get('/getalluser', asyncHandler(getAllUsers))
 router.get('/getallvolunteer', asyncHandler(getAllVolunteer))
@@ -31,6 +39,6 @@ router.put('/deleteuser/:userId', asyncHandler(deleteUser))
 router.put('/editArchiveVolunteer/:userId', asyncHandler(editArchiveVolunteer))
 router.put('/archive/:userId', asyncHandler(archiveUser))
 router.get('/allwithpagination', asyncHandler(getUserwithPagination))
-router.put('/unArchive/:userId', asyncHandler(unArchiveUser));
+router.put('/unArchive/:userId', asyncHandler(unArchiveUser))
 
 export default router
