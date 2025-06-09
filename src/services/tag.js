@@ -139,10 +139,15 @@ export const getTagwithPagination = async (query) => {
   const skip = (pageNumber - 1) * limitNumber
   const searchKeys = {
     tagCategoryName: search,
+    name:search
   }
-
+const searchConditions = Object.entries(regexFilter(searchKeys)).map(
+    ([key, value]) => ({
+      [key]: value,
+    })
+  )
   const filter = {
-    ...regexFilter(searchKeys),
+     $or: searchConditions,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
     ...(categoryName !== undefined &&
