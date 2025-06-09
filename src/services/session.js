@@ -208,7 +208,7 @@ export const getAllWithPagination = async (query) => {
   }
 }
 
-export const archiveSession = async (sessionId) => {
+export const archiveSession = async (sessionId, archiveReason) => {
   const checkExist = await Session.findById({ _id: sessionId })
 
   if (!checkExist) {
@@ -220,7 +220,7 @@ export const archiveSession = async (sessionId) => {
   }
   const statusUpdate = await Session.findByIdAndUpdate(
     { _id: sessionId },
-    { isArchive: true },
+    { isArchive: true, archiveReason: archiveReason },
     { new: true }
   )
 
@@ -245,7 +245,7 @@ export const unArchiveSession = async (sessionId) => {
   }
   const statusUpdate = await Session.findByIdAndUpdate(
     { _id: sessionId },
-    { isArchive: false },
+    { isArchive: false, archiveReason: null },
     { new: true }
   )
 
