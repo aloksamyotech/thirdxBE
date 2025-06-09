@@ -109,7 +109,8 @@ export const getAllWithPagination = async (req, res) => {
 }
 export const archiveSession = async (req, res) => {
   const { sessionId } = req?.params || {}
-  const archiveSession = await session.archiveSession(sessionId)
+  const { archiveReason } = req.body
+  const archiveSession = await session.archiveSession(sessionId, archiveReason)
   res.status(statusCodes?.ok).send(archiveSession)
 }
 export const unArchiveSession = async (req, res) => {
