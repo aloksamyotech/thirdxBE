@@ -236,58 +236,61 @@ export const deleteUser = async (userId) => {
   return { statusUpdate }
 }
 
-export const archiveUser = async (userId) => {
-  const checkExist = await user.findById({ _id: userId })
+export const archiveUser = async (userId, archiveReason) => {  
+  const checkExist = await user.findById({ _id: userId });
 
   if (!checkExist) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
-    )
+    );
   }
   const statusUpdate = await user.findByIdAndUpdate(
     { _id: userId },
-    { archive: true },
+    { archive: true, archiveReason: archiveReason },
     { new: true }
-  )
+  );
 
   if (!statusUpdate) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.notUpdate,
       errorCodes?.not_found
-    )
+    );
   }
-  return { statusUpdate }
-}
 
+  return { statusUpdate };
+};
 export const unArchiveUser = async (userId) => {
-  const checkExist = await user.findById({ _id: userId })
+  const checkExist = await user.findById(userId);
 
   if (!checkExist) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
-    )
+    );
   }
   const statusUpdate = await user.findByIdAndUpdate(
-    { _id: userId },
-    { archive: false },
+    userId,
+    {
+      archive: false,
+      archiveReason: null
+    },
     { new: true }
-  )
+  );
 
   if (!statusUpdate) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.notUpdate,
       errorCodes?.not_found
-    )
+    );
   }
-  return { statusUpdate }
-}
 
+  return { statusUpdate };
+};
 export const getUserwithPagination = async (query) => {
   const {
     search,
