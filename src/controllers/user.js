@@ -99,7 +99,8 @@ export const deleteUser = async (req, res) => {
 
 export const archiveUser = async (req, res) => {
   const { userId } = req?.params || {}
-  const archiveUser = await userService.archiveUser(userId)
+  const { archiveReason } = req.body
+  const archiveUser = await userService.archiveUser(userId, archiveReason)
   res.status(statusCodes?.ok).send(archiveUser)
 }
 export const editArchiveVolunteer = async (req, res) => {
