@@ -3,7 +3,7 @@ import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 const UserSchema = new mongoose.Schema(
   {
     uniqueId: {
-      type: String,  
+      type: String,
     },
     personalInfo: {
       title: String,
@@ -139,6 +139,7 @@ const UserSchema = new mongoose.Schema(
       enum: ['donar_individual', 'donar_company', 'donar_group'],
     },
     archive: { type: Boolean, default: false },
+    archiveReason: { type: String },
   },
   { timestamps: true }
 )

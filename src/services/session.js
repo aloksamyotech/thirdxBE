@@ -109,8 +109,8 @@ export const getSessionById = async (serviceId) => {
   }
 
   const userData = await Session.find({ serviceId, isDeleted: false })
-  .populate('serviceId')
-  .populate('serviceuser')
+    .populate('serviceId')
+    .populate('serviceuser')
   if (!userData || userData.length === 0) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -143,7 +143,18 @@ export const isExistSession = async (userId) => {
 }
 
 export const getAllWithPagination = async (query) => {
-  const { country, name, date, time, page = 1, limit = 10,serviceId ,serviceuser} = query || {}
+  const {
+    status,
+    country,
+    name,
+    date,
+    time,
+    page = 1,
+    limit = 10,
+    serviceId,
+    serviceuser,
+    uniqueId,
+  } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -159,7 +170,7 @@ export const getAllWithPagination = async (query) => {
     ...(serviceuser !== undefined && serviceuser !== '' && { serviceuser }),
     ...(serviceId && { serviceId }),
     ...(country !== undefined && country !== '' && { country }),
-    ...(name !== undefined && name !== '' && { name }),
+    ...(name !== undefined && name !== '' && { serviceuser: name }),
     ...(date !== undefined &&
       date !== '' && {
         date: {
@@ -168,6 +179,9 @@ export const getAllWithPagination = async (query) => {
         },
       }),
     ...(time !== undefined && time !== '' && { time }),
+    ...(status !== undefined &&
+      status !== '' && { isActive: status === 'true' }),
+    ...(uniqueId !== undefined && uniqueId !== '' && { serviceuser: uniqueId }),
   }
 
   const allSession = await Session.find(filter)
@@ -175,10 +189,10 @@ export const getAllWithPagination = async (query) => {
     .limit(limitNumber)
     .sort({ createdAt: -1 })
     .populate('serviceuser')
-     .populate({
+    .populate({
       path: 'serviceId',
       populate: {
-        path: 'serviceType'
+        path: 'serviceType',
       },
     })
 
@@ -194,7 +208,7 @@ export const getAllWithPagination = async (query) => {
   }
 }
 
-export const archiveSession = async (sessionId) => {
+export const archiveSession = async (sessionId, archiveReason) => {
   const checkExist = await Session.findById({ _id: sessionId })
 
   if (!checkExist) {
@@ -206,7 +220,7 @@ export const archiveSession = async (sessionId) => {
   }
   const statusUpdate = await Session.findByIdAndUpdate(
     { _id: sessionId },
-    { isArchive: true },
+    { isArchive: true, archiveReason: archiveReason },
     { new: true }
   )
 
@@ -231,7 +245,7 @@ export const unArchiveSession = async (sessionId) => {
   }
   const statusUpdate = await Session.findByIdAndUpdate(
     { _id: sessionId },
-    { isArchive: false },
+    { isArchive: false, archiveReason: null },
     { new: true }
   )
 
@@ -244,4 +258,3 @@ export const unArchiveSession = async (sessionId) => {
   }
   return { statusUpdate }
 }
-
