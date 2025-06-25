@@ -15,7 +15,11 @@ const caseSchema = new mongoose.Schema(
       ref: 'services',
       required: true,
     },
-    serviceType: { type: String, required: true },
+    caseOwner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'user',
+      required: true,
+    },
     caseOpened: { type: Date },
     caseClosed: { type: Date },
     benificiary: [
@@ -59,11 +63,16 @@ const caseSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-   
+
     file: {
       type: String,
     },
     description: { type: String },
+    status: {
+      type: String,
+      enum: ['pending', 'close', 'open'],
+      required: true
+    }
   },
   { timestamps: true }
 )

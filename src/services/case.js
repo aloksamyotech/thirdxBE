@@ -8,7 +8,7 @@ export const addCase = async (caseData) => {
   const {
     serviceUserId,
     serviceId,
-    serviceType,
+    caseOwner,
     caseOpened,
     caseClosed,
     benificiary,
@@ -19,10 +19,10 @@ export const addCase = async (caseData) => {
     fundraisingActivities,
     description,
     file,
-    isActive,
+    status,
   } = caseData
 
-  if (!serviceUserId || !serviceId || !serviceType || !isActive) {
+  if (!serviceUserId || !serviceId || !caseOwner || !status) {
     throw new CustomError(
       statusCodes.badRequest,
       Message.missingRequiredFields,
@@ -31,12 +31,10 @@ export const addCase = async (caseData) => {
   }
   const uniqueId = await generateCustomId()
 
-  const activeStatus = isActive === 'true'
-
   const newCase = await Case.create({
     serviceUserId,
     serviceId,
-    serviceType,
+    caseOwner,
     caseOpened,
     caseClosed,
     benificiary,
@@ -47,7 +45,7 @@ export const addCase = async (caseData) => {
     fundraisingActivities,
     description,
     file,
-    isActive: activeStatus,
+    status,
     uniqueId,
   })
 
@@ -66,7 +64,7 @@ export const editCase = async (caseId, caseData) => {
   const {
     serviceUserId,
     serviceId,
-    serviceType,
+    caseOwner,
     caseOpened,
     caseClosed,
     benificiary,
@@ -77,7 +75,7 @@ export const editCase = async (caseId, caseData) => {
     fundraisingActivities,
     description,
     filePath,
-    isActive,
+    status,
   } = caseData
 
   if (!caseId) {
@@ -88,13 +86,11 @@ export const editCase = async (caseId, caseData) => {
     )
   }
 
-  const activeStatus =
-    isActive === 'true' ? true : isActive === 'false' ? false : isActive
 
   if (
     !serviceUserId ||
     !serviceId ||
-    !serviceType ||
+    !caseOwner ||
     typeof activeStatus === 'undefined'
   ) {
     throw new CustomError(
@@ -116,7 +112,7 @@ export const editCase = async (caseId, caseData) => {
   const updateData = {
     serviceUserId,
     serviceId,
-    serviceType,
+    caseOwner,
     caseOpened,
     caseClosed,
     benificiary,
@@ -127,7 +123,7 @@ export const editCase = async (caseId, caseData) => {
     fundraisingActivities,
     description,
     filePath,
-    isActive: activeStatus,
+    status
   }
 
   const updatedCase = await Case.findByIdAndUpdate(
@@ -174,7 +170,7 @@ export const deleteCase = async (caseId) => {
 }
 
 export const searchCase = async (query) => {
-  const { serviceId, serviceStatus, serviceType, caseOpened } = query
+  const { serviceId, serviceStatus, caseOwner, caseOpened } = query
 
   const searchQuery = { isDeleted: false }
 
@@ -186,8 +182,8 @@ export const searchCase = async (query) => {
     searchQuery.serviceStatus = { $regex: serviceStatus, $options: 'i' }
   }
 
-  if (serviceType) {
-    searchQuery.serviceType = { $regex: serviceType, $options: 'i' }
+  if (caseOwner) {
+    searchQuery.caseOwner = { $regex: caseOwner, $options: 'i' }
   }
 
   if (caseOpened) {
@@ -232,6 +228,14 @@ export const getCaseById = async (caseId) => {
         localField: 'serviceId',
         foreignField: '_id',
         as: 'serviceDetails',
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'caseOwner',
+        foreignField: '_id',
+        as: 'caseOwnerDetails',
       },
     },
     {
@@ -319,7 +323,7 @@ export const getCasewithPagination = async (query) => {
     status,
     uniqueId,
     serviceId,
-    serviceType,
+    caseOwner,
     createdAt,
     country,
     name,
@@ -337,37 +341,37 @@ export const getCasewithPagination = async (query) => {
   const skip = (pageNumber - 1) * limitNumber
 
   const filter = {
-    ...(status !== undefined &&
-      status !== '' && { isActive: status === 'true' }),
-    ...(serviceType !== undefined && serviceType !== '' && { serviceType }),
+    ...(caseOwner !== undefined && caseOwner !== '' && { caseOwner }),
+    ...(status !== undefined && status !== '' && { status }),
     ...(serviceId !== undefined && serviceId !== '' && { serviceId }),
     ...(createdAt !== undefined &&
       createdAt !== '' && {
-        createdAt: {
-          $gte: new Date(createdAt),
-          $lt: new Date(
-            new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
-          ),
-        },
-      }),
+      createdAt: {
+        $gte: new Date(createdAt),
+        $lt: new Date(
+          new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
+        ),
+      },
+    }),
     ...(name !== undefined && name !== '' && { serviceUserId: name }),
     ...(uniqueId !== undefined &&
       uniqueId !== '' && { serviceUserId: uniqueId }),
     ...(caseOpened !== undefined &&
       caseOpened !== '' && {
-        caseOpened: {
-          $gte: new Date(caseOpened),
-          $lt: new Date(
-            new Date(caseOpened).setDate(new Date(caseOpened).getDate() + 1)
-          ),
-        },
-      }),
+      caseOpened: {
+        $gte: new Date(caseOpened),
+        $lt: new Date(
+          new Date(caseOpened).setDate(new Date(caseOpened).getDate() + 1)
+        ),
+      },
+    }),
   }
 
   const allCases = await Case.find(filter)
     .sort({ createdAt: -1 })
     .populate('serviceUserId')
     .populate('serviceId')
+    .populate('caseOwner')
     .populate('benificiary')
     .populate('campaigns')
     .populate('engagement')
@@ -378,26 +382,26 @@ export const getCasewithPagination = async (query) => {
   const filteredCases =
     search || country
       ? allCases.filter((c) => {
-          const firstName =
-            c.serviceUserId?.personalInfo?.firstName?.toLowerCase() || ''
-          const lastName =
-            c.serviceUserId?.personalInfo?.lastName?.toLowerCase() || ''
-          const countryName =
-            c.serviceUserId?.contactInfo?.country?.toLowerCase() || ''
+        const firstName =
+          c.serviceUserId?.personalInfo?.firstName?.toLowerCase() || ''
+        const lastName =
+          c.serviceUserId?.personalInfo?.lastName?.toLowerCase() || ''
+        const countryName =
+          c.serviceUserId?.contactInfo?.country?.toLowerCase() || ''
 
-          const searchLower = search?.toLowerCase()
-          const countryLower = country?.toLowerCase()
+        const searchLower = search?.toLowerCase()
+        const countryLower = country?.toLowerCase()
 
-          const matchesSearch = search
-            ? firstName.includes(searchLower) || lastName.includes(searchLower)
-            : true
+        const matchesSearch = search
+          ? firstName.includes(searchLower) || lastName.includes(searchLower)
+          : true
 
-          const matchesCountry = country
-            ? countryName.includes(countryLower)
-            : true
+        const matchesCountry = country
+          ? countryName.includes(countryLower)
+          : true
 
-          return matchesSearch && matchesCountry
-        })
+        return matchesSearch && matchesCountry
+      })
       : allCases
 
   const paginatedCases = filteredCases.slice(skip, skip + limitNumber)
@@ -410,5 +414,43 @@ export const getCasewithPagination = async (query) => {
       limit: limitNumber,
       totalPages: Math.ceil(filteredCases.length / limitNumber),
     },
+  }
+}
+
+const BATCH_SIZE = 10;
+
+export const updateCaseStatus = async () => {
+  let skip = 0;
+  let hasMore = true;
+
+  while (hasMore) {
+    const cases = await Case.find({ isDeleted: false }).skip(skip).limit(BATCH_SIZE).lean();
+
+    if (cases.length === 0) {
+      console.log("✅ All cases have been processed.");
+      break;
+    }
+
+    for (const item of cases) {
+      try {
+        const currentDate = new Date();
+        if (currentDate >= item.caseOpened && currentDate < item.caseClosed && item.status != 'open') {
+          await Case.findByIdAndUpdate(
+            item?._id,
+            { status: 'open' }
+          )
+        } else if (currentDate >= item.caseClosed && item.status != 'close') {
+          await Case.findByIdAndUpdate(
+            item?._id,
+            { status: 'close' }
+          )
+        }
+      } catch (error) {
+        console.error(`❌ Failed to update case status ${item._id}:`, error.message);
+      }
+    }
+
+    skip += BATCH_SIZE;
+    hasMore = cases.length === BATCH_SIZE;
   }
 }
