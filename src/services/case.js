@@ -19,10 +19,10 @@ export const addCase = async (caseData) => {
     fundraisingActivities,
     description,
     file,
-    isActive,
+    status,
   } = caseData
 
-  if (!serviceUserId || !serviceId || !caseOwner || !isActive) {
+  if (!serviceUserId || !serviceId || !caseOwner || !status) {
     throw new CustomError(
       statusCodes.badRequest,
       Message.missingRequiredFields,
@@ -30,8 +30,6 @@ export const addCase = async (caseData) => {
     )
   }
   const uniqueId = await generateCustomId()
-
-  const activeStatus = isActive === 'true'
 
   const newCase = await Case.create({
     serviceUserId,
@@ -47,7 +45,7 @@ export const addCase = async (caseData) => {
     fundraisingActivities,
     description,
     file,
-    isActive: activeStatus,
+    status,
     uniqueId,
   })
 
@@ -77,7 +75,7 @@ export const editCase = async (caseId, caseData) => {
     fundraisingActivities,
     description,
     filePath,
-    isActive,
+    status,
   } = caseData
 
   if (!caseId) {
@@ -88,8 +86,6 @@ export const editCase = async (caseId, caseData) => {
     )
   }
 
-  const activeStatus =
-    isActive === 'true' ? true : isActive === 'false' ? false : isActive
 
   if (
     !serviceUserId ||
@@ -127,7 +123,7 @@ export const editCase = async (caseId, caseData) => {
     fundraisingActivities,
     description,
     filePath,
-    isActive: activeStatus,
+    status
   }
 
   const updatedCase = await Case.findByIdAndUpdate(
@@ -345,9 +341,8 @@ export const getCasewithPagination = async (query) => {
   const skip = (pageNumber - 1) * limitNumber
 
   const filter = {
-    ...(status !== undefined &&
-      status !== '' && { isActive: status === 'true' }),
     ...(caseOwner !== undefined && caseOwner !== '' && { caseOwner }),
+    ...(status !== undefined && status !== '' && { status }),
     ...(serviceId !== undefined && serviceId !== '' && { serviceId }),
     ...(createdAt !== undefined &&
       createdAt !== '' && {
@@ -425,37 +420,37 @@ export const getCasewithPagination = async (query) => {
 const BATCH_SIZE = 10;
 
 export const updateCaseStatus = async () => {
-    let skip = 0;
-    let hasMore = true;
+  let skip = 0;
+  let hasMore = true;
 
-    while (hasMore) {
-      const cases = await Case.find({ isDeleted: false }).skip(skip).limit(BATCH_SIZE).lean();
+  while (hasMore) {
+    const cases = await Case.find({ isDeleted: false }).skip(skip).limit(BATCH_SIZE).lean();
 
-      if (cases.length === 0) {
-        console.log("✅ All cases have been processed.");
-        break;
-      }
-
-      for (const item of cases) {
-        try {
-          const currentDate = new Date();
-          if (currentDate >= item.caseOpened && currentDate < item.caseClosed && item.status != 'open') {
-            await Case.findByIdAndUpdate(
-              item?._id,
-              { status: 'open' }
-            )
-          } else if (currentDate >= item.caseClosed && item.status != 'close') {
-            await Case.findByIdAndUpdate(
-              item?._id,
-              { status: 'close' }
-            )
-          }
-        } catch (error) {
-          console.error(`❌ Failed to update case status ${item._id}:`, error.message);
-        }
-      }
-
-      skip += BATCH_SIZE;
-      hasMore = cases.length === BATCH_SIZE;
+    if (cases.length === 0) {
+      console.log("✅ All cases have been processed.");
+      break;
     }
+
+    for (const item of cases) {
+      try {
+        const currentDate = new Date();
+        if (currentDate >= item.caseOpened && currentDate < item.caseClosed && item.status != 'open') {
+          await Case.findByIdAndUpdate(
+            item?._id,
+            { status: 'open' }
+          )
+        } else if (currentDate >= item.caseClosed && item.status != 'close') {
+          await Case.findByIdAndUpdate(
+            item?._id,
+            { status: 'close' }
+          )
+        }
+      } catch (error) {
+        console.error(`❌ Failed to update case status ${item._id}:`, error.message);
+      }
+    }
+
+    skip += BATCH_SIZE;
+    hasMore = cases.length === BATCH_SIZE;
+  }
 }
