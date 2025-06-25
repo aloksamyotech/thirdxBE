@@ -5,7 +5,7 @@ export const addCase = async (req, res) => {
   const {
     serviceUserId,
     serviceId,
-    serviceType,
+    caseOwner,
     caseOpened,
     caseClosed,
     benificiary,
@@ -21,7 +21,7 @@ export const addCase = async (req, res) => {
   const caseData = {
     serviceUserId,
     serviceId,
-    serviceType,
+    caseOwner,
     caseOpened,
     caseClosed,
     benificiary,
@@ -49,11 +49,11 @@ export const deleteCase = async (req, res) => {
 }
 
 export const searchCase = async (req, res) => {
-  const { serviceId, serviceStatus, serviceType, caseOpened } = req.query
+  const { serviceId, serviceStatus, caseOwner, caseOpened } = req.query
   const query = {
     serviceId,
     serviceStatus,
-    serviceType,
+    caseOwner,
     caseOpened,
   }
   const searchData = await cases.searchCase(query)
@@ -76,7 +76,7 @@ export const editCase = async (req, res) => {
   const {
     serviceUserId,
     serviceId,
-    serviceType,
+    caseOwner,
     caseOpened,
     caseClosed,
     benificiary,
@@ -94,7 +94,7 @@ export const editCase = async (req, res) => {
   const caseData = {
     serviceUserId,
     serviceId,
-    serviceType,
+    caseOwner,
     caseOpened,
     caseClosed,
     benificiary,

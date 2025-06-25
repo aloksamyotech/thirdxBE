@@ -7,78 +7,66 @@ import user from '../models/user.js';
 import Case from '../models/cases.js';
 import task from '../models/task.js';
 import path from 'path';
+import { convertToReadableFormat } from '../utils/valueFormatter.js';
 
 export const getAllDonationTotal = async () => {
 
-    const result = await Transaction.aggregate([
-      { $match: { isDeleted: false } },
-      {
-        $group: {
-         _id: null,
-          totalAmountPaid: { $sum: '$amountPaid' },
-        },
+  const result = await Transaction.aggregate([
+    { $match: { isDeleted: false } },
+    {
+      $group: {
+        _id: null,
+        totalAmountPaid: { $sum: '$amountPaid' },
       },
-    ]);
-    const total = result[0]?.totalAmountPaid || 0;
-    return { totalDonation: total }
+    },
+  ]);
+  const total = convertToReadableFormat(result[0]?.totalAmountPaid || 0);
+  return { totalDonation: total }
 
 };
 
 export const getAllSessionDelivered = async () => {
 
-    const result = await Session.find({isDeleted:false})
-    const totalSession =  result.length;
-    return {totalSession}
-    
+  const result = await Session.find({ isDeleted: false })
+  const totalSession = convertToReadableFormat(result.length);
+  return { totalSession }
+
 };
 
 
 export const getAllActiveServiceUser = async () => {
-    const result = await user.find({role:"service_user", isDeleted: false})
-    const totalUser=  result.length;
-    return {totalUser}
+  const result = await user.find({ role: "service_user", isDeleted: false })
+  const totalUser = convertToReadableFormat(result.length);
+  return { totalUser }
 };
 
 
 export const getAllOpenCased = async () => {
-     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
-
-    const cases = await Case.find({
-      isArchive: false,
-      caseOpened: { $lte: today },
-      $or: [
-        { caseClosed: null },
-        { caseClosed: { $gte: today } }
-      ]
-    });
-
-    const totalcase = cases.length;
-    return {totalcase};
+  const cases = await Case.find({ isActive: true, isArchive: false });
+  const totalcase = convertToReadableFormat(cases.length);
+  return { totalcase };
 };
 
 
-
-
 export const createTask = async (data) => {
-       const  { details,assignedTo, dueDate, isCompleted, notification } = data;
+  const { details, assignedTo, dueDate, isCompleted, notification } = data;
 
- if(!assignedTo){
-     throw new CustomError(
-         statusCodes.badRequest,
-         Message.missingRequiredFields,
-         errorCodes.invalid_input
-     )
- }
+  if (!assignedTo) {
+    throw new CustomError(
+      statusCodes.badRequest,
+      Message.missingRequiredFields,
+      errorCodes.invalid_input
+    )
+  }
   const newTask = new task({
-     details,       
+    details,
     assignedTo,
     dueDate,
     isCompleted,
     notification,
   });
 
-  const Task =  await newTask.save();
+  const Task = await newTask.save();
   return Task;
 };
 
@@ -161,7 +149,7 @@ export const getAllTask = async () => {
   const allTask = await task.find({ isDeleted: false }).sort({
     createdAt: -1,
   })
-  .populate('assignedTo')
+    .populate('assignedTo')
   if (!allTask) {
     throw new CustomError(
       statusCodes?.notFound,
