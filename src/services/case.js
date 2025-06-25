@@ -8,7 +8,7 @@ export const addCase = async (caseData) => {
   const {
     serviceUserId,
     serviceId,
-    serviceType,
+    caseOwner,
     caseOpened,
     caseClosed,
     benificiary,
@@ -22,7 +22,7 @@ export const addCase = async (caseData) => {
     isActive,
   } = caseData
 
-  if (!serviceUserId || !serviceId || !serviceType || !isActive) {
+  if (!serviceUserId || !serviceId || !caseOwner || !isActive) {
     throw new CustomError(
       statusCodes.badRequest,
       Message.missingRequiredFields,
@@ -36,7 +36,7 @@ export const addCase = async (caseData) => {
   const newCase = await Case.create({
     serviceUserId,
     serviceId,
-    serviceType,
+    caseOwner,
     caseOpened,
     caseClosed,
     benificiary,
@@ -66,7 +66,7 @@ export const editCase = async (caseId, caseData) => {
   const {
     serviceUserId,
     serviceId,
-    serviceType,
+    caseOwner,
     caseOpened,
     caseClosed,
     benificiary,
@@ -94,7 +94,7 @@ export const editCase = async (caseId, caseData) => {
   if (
     !serviceUserId ||
     !serviceId ||
-    !serviceType ||
+    !caseOwner ||
     typeof activeStatus === 'undefined'
   ) {
     throw new CustomError(
@@ -116,7 +116,7 @@ export const editCase = async (caseId, caseData) => {
   const updateData = {
     serviceUserId,
     serviceId,
-    serviceType,
+    caseOwner,
     caseOpened,
     caseClosed,
     benificiary,
@@ -174,7 +174,7 @@ export const deleteCase = async (caseId) => {
 }
 
 export const searchCase = async (query) => {
-  const { serviceId, serviceStatus, serviceType, caseOpened } = query
+  const { serviceId, serviceStatus, caseOwner, caseOpened } = query
 
   const searchQuery = { isDeleted: false }
 
@@ -186,8 +186,8 @@ export const searchCase = async (query) => {
     searchQuery.serviceStatus = { $regex: serviceStatus, $options: 'i' }
   }
 
-  if (serviceType) {
-    searchQuery.serviceType = { $regex: serviceType, $options: 'i' }
+  if (caseOwner) {
+    searchQuery.caseOwner = { $regex: caseOwner, $options: 'i' }
   }
 
   if (caseOpened) {
@@ -232,6 +232,14 @@ export const getCaseById = async (caseId) => {
         localField: 'serviceId',
         foreignField: '_id',
         as: 'serviceDetails',
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'caseOwner',
+        foreignField: '_id',
+        as: 'caseOwnerDetails',
       },
     },
     {
@@ -319,7 +327,7 @@ export const getCasewithPagination = async (query) => {
     status,
     uniqueId,
     serviceId,
-    serviceType,
+    caseOwner,
     createdAt,
     country,
     name,
@@ -339,7 +347,7 @@ export const getCasewithPagination = async (query) => {
   const filter = {
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
-    ...(serviceType !== undefined && serviceType !== '' && { serviceType }),
+    ...(caseOwner !== undefined && caseOwner !== '' && { caseOwner }),
     ...(serviceId !== undefined && serviceId !== '' && { serviceId }),
     ...(createdAt !== undefined &&
       createdAt !== '' && {
@@ -368,6 +376,7 @@ export const getCasewithPagination = async (query) => {
     .sort({ createdAt: -1 })
     .populate('serviceUserId')
     .populate('serviceId')
+    .populate('caseOwner')
     .populate('benificiary')
     .populate('campaigns')
     .populate('engagement')

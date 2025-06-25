@@ -15,7 +15,11 @@ const caseSchema = new mongoose.Schema(
       ref: 'services',
       required: true,
     },
-    serviceType: { type: String, required: true },
+    caseOwner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'user',
+      required: true,
+    },
     caseOpened: { type: Date },
     caseClosed: { type: Date },
     benificiary: [
