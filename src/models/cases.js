@@ -59,11 +59,16 @@ const caseSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-   
+
     file: {
       type: String,
     },
     description: { type: String },
+    status: {
+      type: String,
+      enum: ['pending', 'close', 'open'],
+      required: true
+    }
   },
   { timestamps: true }
 )

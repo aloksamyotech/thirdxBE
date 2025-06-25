@@ -9,6 +9,7 @@ import responseInterceptor from './src/utils/responseInterceptor.js'
 import passport from './src/core/config/passportConfig.js'
 import AllRoutes from './src/routes/routes.js'
 import path from 'path'
+import './src/core/helpers/cron.js';
 // import { CheckCompanySubscriptionExpiry, ResetDailyLimit } from './src/utils/cronJob.js'
 
 const app = express()
