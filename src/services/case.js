@@ -343,25 +343,25 @@ export const getCasewithPagination = async (query) => {
     ...(serviceId !== undefined && serviceId !== '' && { serviceId }),
     ...(createdAt !== undefined &&
       createdAt !== '' && {
-        createdAt: {
-          $gte: new Date(createdAt),
-          $lt: new Date(
-            new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
-          ),
-        },
-      }),
+      createdAt: {
+        $gte: new Date(createdAt),
+        $lt: new Date(
+          new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
+        ),
+      },
+    }),
     ...(name !== undefined && name !== '' && { serviceUserId: name }),
     ...(uniqueId !== undefined &&
       uniqueId !== '' && { serviceUserId: uniqueId }),
     ...(caseOpened !== undefined &&
       caseOpened !== '' && {
-        caseOpened: {
-          $gte: new Date(caseOpened),
-          $lt: new Date(
-            new Date(caseOpened).setDate(new Date(caseOpened).getDate() + 1)
-          ),
-        },
-      }),
+      caseOpened: {
+        $gte: new Date(caseOpened),
+        $lt: new Date(
+          new Date(caseOpened).setDate(new Date(caseOpened).getDate() + 1)
+        ),
+      },
+    }),
   }
 
   const allCases = await Case.find(filter)
@@ -378,26 +378,26 @@ export const getCasewithPagination = async (query) => {
   const filteredCases =
     search || country
       ? allCases.filter((c) => {
-          const firstName =
-            c.serviceUserId?.personalInfo?.firstName?.toLowerCase() || ''
-          const lastName =
-            c.serviceUserId?.personalInfo?.lastName?.toLowerCase() || ''
-          const countryName =
-            c.serviceUserId?.contactInfo?.country?.toLowerCase() || ''
+        const firstName =
+          c.serviceUserId?.personalInfo?.firstName?.toLowerCase() || ''
+        const lastName =
+          c.serviceUserId?.personalInfo?.lastName?.toLowerCase() || ''
+        const countryName =
+          c.serviceUserId?.contactInfo?.country?.toLowerCase() || ''
 
-          const searchLower = search?.toLowerCase()
-          const countryLower = country?.toLowerCase()
+        const searchLower = search?.toLowerCase()
+        const countryLower = country?.toLowerCase()
 
-          const matchesSearch = search
-            ? firstName.includes(searchLower) || lastName.includes(searchLower)
-            : true
+        const matchesSearch = search
+          ? firstName.includes(searchLower) || lastName.includes(searchLower)
+          : true
 
-          const matchesCountry = country
-            ? countryName.includes(countryLower)
-            : true
+        const matchesCountry = country
+          ? countryName.includes(countryLower)
+          : true
 
-          return matchesSearch && matchesCountry
-        })
+        return matchesSearch && matchesCountry
+      })
       : allCases
 
   const paginatedCases = filteredCases.slice(skip, skip + limitNumber)
@@ -411,4 +411,42 @@ export const getCasewithPagination = async (query) => {
       totalPages: Math.ceil(filteredCases.length / limitNumber),
     },
   }
+}
+
+const BATCH_SIZE = 10;
+
+export const updateCaseStatus = async () => {
+    let skip = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+      const cases = await Case.find({ isDeleted: false }).skip(skip).limit(BATCH_SIZE).lean();
+
+      if (cases.length === 0) {
+        console.log("✅ All cases have been processed.");
+        break;
+      }
+
+      for (const item of cases) {
+        try {
+          const currentDate = new Date();
+          if (currentDate >= item.caseOpened && currentDate < item.caseClosed && item.status != 'open') {
+            await Case.findByIdAndUpdate(
+              item?._id,
+              { status: 'open' }
+            )
+          } else if (currentDate >= item.caseClosed && item.status != 'close') {
+            await Case.findByIdAndUpdate(
+              item?._id,
+              { status: 'close' }
+            )
+          }
+        } catch (error) {
+          console.error(`❌ Failed to update case status ${item._id}:`, error.message);
+        }
+      }
+
+      skip += BATCH_SIZE;
+      hasMore = cases.length === BATCH_SIZE;
+    }
 }
