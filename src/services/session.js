@@ -108,7 +108,7 @@ export const getSessionById = async (serviceId) => {
     )
   }
 
-  const userData = await Session.find({ serviceId, isDeleted: false })
+  const userData = await Session.find({ _id : serviceId, isDeleted: false })
     .populate('serviceId')
     .populate('serviceuser')
   if (!userData || userData.length === 0) {
