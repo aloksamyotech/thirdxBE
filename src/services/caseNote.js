@@ -71,22 +71,28 @@ export const getCaseNoteById = async (caseNoteId) => {
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
-    )
+    );
   }
 
   const caseNoteData = await CaseNote.findOne({
     _id: caseNoteId,
     isDeleted: false,
   })
+    .populate('configurationId')
+    .populate('createdBy')
+    .populate('caseId');
+
   if (!caseNoteData) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.userNotGet,
       errorCodes?.user_not_found
-    )
+    );
   }
-  return { caseNoteData }
-}
+
+  return { caseNoteData };
+};
+
 
 export const getAllCaseNote = async () => {
   const allCaseNote = await CaseNote.find({ isDeleted: false }).sort({
@@ -125,15 +131,15 @@ export const getAllWithPagination = async (query) => {
       caseId !== '' && { caseId: new mongoose.Types.ObjectId(caseId) }),
     ...(createdBy !== undefined &&
       createdBy !== '' && {
-        createdBy: new mongoose.Types.ObjectId(createdBy),
-      }),
+      createdBy: new mongoose.Types.ObjectId(createdBy),
+    }),
     ...(date !== undefined &&
       date !== '' && {
-        date: {
-          $gte: new Date(date),
-          $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
-        },
-      }),
+      date: {
+        $gte: new Date(date),
+        $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
+      },
+    }),
   }
 
   const allCaseNote = await CaseNote.find(filter)
