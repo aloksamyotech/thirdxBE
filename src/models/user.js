@@ -76,6 +76,7 @@ const UserSchema = new mongoose.Schema(
       restrictAccess: Boolean,
     },
 
+
     emergencyContact: {
       title: String,
       gender: String,
@@ -91,23 +92,40 @@ const UserSchema = new mongoose.Schema(
       town: String,
       postcode: String,
     },
+    RiskAssessment :{
+riskAssessment:String,
+keyIndicators:String
+    },
+    Service:{
+      serviceName:String,
+      startDate:Date,
+      lastDate:Date,
+      referrerName:String,
+      referrerJob:String,
+      referrerPhone:String,
+      referrerEmail:String,
+      emergencyPhone:String,
+      emergencyEmail:String,
+      referralType:String,
+      referredDate:Date,
+    },
 
     contactPreferences: {
       preferredMethod: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'configuration',
-        required: true,
+        
       },
       contactPurposes: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'configuration',
-        required: true,
+    
       },
       dateOfConfirmation: Date,
       reason: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'configuration',
-        required: true,
+      
       },
       email: String,
       phone: String,
