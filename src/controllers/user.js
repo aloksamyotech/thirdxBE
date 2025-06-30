@@ -22,7 +22,6 @@ export const addUser = async (req, res) => {
     userData.personalInfo = userData.personalInfo || {}
     userData.personalInfo.profileImage = normalizedProfileImage
   }
-
   const addUser = await userService.addUser(userData)
   res.status(statusCodes?.ok).send(addUser)
 }

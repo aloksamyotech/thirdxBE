@@ -91,33 +91,59 @@ const UserSchema = new mongoose.Schema(
       town: String,
       postcode: String,
     },
+    riskAssessment: {
+      riskAssessmentNotes: {
+        type: String,
+      },
+      keyIndicators: [
+        {
+          type: String,
+
+        },
+      ],
+    }
+    ,
 
     contactPreferences: {
       preferredMethod: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'configuration',
-        required: true,
       },
       contactPurposes: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'configuration',
-        required: true,
       },
       dateOfConfirmation: Date,
       reason: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'configuration',
-        required: true,
       },
       email: String,
       phone: String,
       contactMethods: {
         telephone: Boolean,
         email: Boolean,
+        letter: Boolean,
         sms: Boolean,
         whatsapp: Boolean,
         donor: Boolean,
       },
+    },
+    Service: {
+      serviceName: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'services',
+      },
+      startDate: Date,
+      lastDate: Date,
+      referrerName: String,
+      referrerJob: String,
+      referrerPhone: String,
+      referrerEmail: String,
+      emergencyPhone: String,
+      emergencyEmail: String,
+      referralType: String,
+      referredDate: Date,
     },
     companyInformation: {
       companyName: { type: String },
@@ -131,7 +157,6 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      required: true,
       enum: ['service_user', 'volunteer', 'donor', 'user'],
     },
     subRole: {

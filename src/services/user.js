@@ -236,7 +236,7 @@ export const deleteUser = async (userId) => {
   return { statusUpdate }
 }
 
-export const archiveUser = async (userId, archiveReason) => {  
+export const archiveUser = async (userId, archiveReason) => {
   const checkExist = await user.findById({ _id: userId });
 
   if (!checkExist) {
@@ -325,6 +325,7 @@ export const getUserwithPagination = async (query) => {
     'personalInfo.firstName': search,
     'personalInfo.lastName': search,
     'companyInformatiom.companyName': search,
+    'uniqueId': search,
     role: search,
     subRole: search,
     uniqueId: search,
@@ -350,8 +351,8 @@ export const getUserwithPagination = async (query) => {
 
     ...(campaigns !== undefined &&
       campaigns !== '' && {
-        'companyInformation.recruitmentCampaign': campaigns,
-      }),
+      'companyInformation.recruitmentCampaign': campaigns,
+    }),
     ...(country !== undefined &&
       country !== '' && { 'contactInfo.country': country }),
     ...(role !== undefined && role !== '' && { role: role }),
@@ -361,21 +362,21 @@ export const getUserwithPagination = async (query) => {
 
     ...(createdAt !== undefined &&
       createdAt !== '' && {
-        createdAt: {
-          $gte: new Date(createdAt),
-          $lt: new Date(
-            new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
-          ),
-        },
-      }),
+      createdAt: {
+        $gte: new Date(createdAt),
+        $lt: new Date(
+          new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
+        ),
+      },
+    }),
     ...(uniqueId !== undefined && uniqueId !== '' && { _id: uniqueId }),
     ...(dateOfBirth !== undefined &&
       dateOfBirth !== '' && {
-        'personalInfo.dateOfBirth': {
-          $gte: new Date(new Date(dateOfBirth).setHours(0, 0, 0, 0)),
-          $lt: new Date(new Date(dateOfBirth).setHours(23, 59, 59, 999)),
-        },
-      }),
+      'personalInfo.dateOfBirth': {
+        $gte: new Date(new Date(dateOfBirth).setHours(0, 0, 0, 0)),
+        $lt: new Date(new Date(dateOfBirth).setHours(23, 59, 59, 999)),
+      },
+    }),
   }
 
   const allUser = await user
@@ -394,6 +395,7 @@ export const getUserwithPagination = async (query) => {
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
     .populate('companyInformation.recruitmentCampaign')
+    .populate('Service.serviceName')
 
   const total = await user.countDocuments(filter)
   return {
