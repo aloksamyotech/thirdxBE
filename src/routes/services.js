@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
 import { Router } from 'express'
 import { asyncHandler } from '../utils/asyncWrapper.js'
 import {
@@ -10,6 +8,8 @@ import {
   getAllServices,
   editServices,
   getServiceswithPagination,
+  toggleArchiveSession,
+  deleteSession,
 } from '../controllers/services.js'
 import { upload } from '../core/helpers/multer.js'
 
@@ -21,10 +21,8 @@ router.get('/search', asyncHandler(searchServices))
 router.get('/getServiceById/:id', asyncHandler(getServiceById))
 router.get('/all', asyncHandler(getAllServices))
 router.get('/allwithpagination', asyncHandler(getServiceswithPagination))
-router.put(
-  '/editServices/:serviceId',
-  upload.single('file'),
-  asyncHandler(editServices)
-)
+router.put('/editServices/:serviceId', upload.single('file'), asyncHandler(editServices))
+router.post('/toggleArchive/:id', asyncHandler(toggleArchiveSession))
+router.post('/delete/:id', asyncHandler(deleteSession))
 
 export default router

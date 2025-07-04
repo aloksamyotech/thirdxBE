@@ -112,6 +112,9 @@ export const getServiceswithPagination = async (query) => {
 
   const filter = {
     $or: searchConditions,
+    isDeleted
+      : false,
+    isArchive: false,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
     ...(serviceType !== undefined &&
@@ -178,3 +181,65 @@ export const getAllServices = async () => {
       createdAt: -1,
     })
 }
+
+
+export const toggleArchiveSession = async (sessionId, isArchive = true, archiveReason = null) => {
+  const checkExist = await Services.findById(sessionId);
+
+  if (!checkExist) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    );
+  }
+
+  const statusUpdate = await Services.findByIdAndUpdate(
+    sessionId,
+    {
+      isArchive,
+      archiveReason: isArchive ? archiveReason : null
+    },
+    { new: true }
+  );
+
+  if (!statusUpdate) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    );
+  }
+
+  return { statusUpdate };
+};
+
+
+export const deleteSession = async (sessionId) => {
+  const checkExist = await Services.findById(sessionId);
+
+  if (!checkExist) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    );
+  }
+
+  const softDelete = await Services.findByIdAndUpdate(
+    sessionId, {
+    isDeleted: true
+  },
+    { new: true }
+  );
+
+  if (!softDelete) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    );
+  }
+
+  return { softDelete };
+};

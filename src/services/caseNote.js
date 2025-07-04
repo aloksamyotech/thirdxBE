@@ -126,6 +126,7 @@ export const getAllWithPagination = async (query) => {
   }
 
   const filter = {
+    isArchive: false,
     ...regexFilter(searchKeys),
     ...(caseId !== undefined &&
       caseId !== '' && { caseId: new mongoose.Types.ObjectId(caseId) }),
@@ -186,3 +187,35 @@ export const deleteCaseNote = async (caseNoteId) => {
   }
   return { caseNoteUpdate }
 }
+
+
+export const toggleArchiveCaseNote = async (sessionId, isArchive = true, archiveReason = null) => {
+  const checkExist = await CaseNote.findById(sessionId);
+
+  if (!checkExist) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    );
+  }
+
+  const statusUpdate = await CaseNote.findByIdAndUpdate(
+    sessionId,
+    {
+      isArchive,
+      archiveReason: isArchive ? archiveReason : null
+    },
+    { new: true }
+  );
+
+  if (!statusUpdate) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    );
+  }
+
+  return { statusUpdate };
+};

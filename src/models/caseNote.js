@@ -33,11 +33,15 @@ const caseNoteSchema = new mongoose.Schema({
   file: {
     type: String,
   },
- 
+
   isArchive: {
     type: Boolean,
     default: false,
   },
+  isDelete: {
+    type: Boolean,
+    default: false,
+  }
 })
 caseNoteSchema.plugin(commonFieldsPlugin)
 const CaseNote = mongoose.model('CaseNote', caseNoteSchema)

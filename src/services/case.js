@@ -427,7 +427,6 @@ export const updateCaseStatus = async () => {
     const cases = await Case.find({ isDeleted: false }).skip(skip).limit(BATCH_SIZE).lean();
 
     if (cases.length === 0) {
-      console.log("✅ All cases have been processed.");
       break;
     }
 
@@ -454,3 +453,36 @@ export const updateCaseStatus = async () => {
     hasMore = cases.length === BATCH_SIZE;
   }
 }
+
+export const toggleArchiveCase = async (sessionId, isArchive = true, archiveReason = null) => {
+  const checkExist = await Case.findById(sessionId);
+
+  if (!checkExist) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    );
+  }
+
+  const statusUpdate = await Case.findByIdAndUpdate(
+    sessionId,
+    {
+      isArchive,
+      archiveReason: isArchive ? archiveReason : null
+    },
+    { new: true }
+  );
+
+  if (!statusUpdate) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    );
+  }
+
+  return { statusUpdate };
+};
+
+

@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
 import { Router } from 'express'
 import { asyncHandler } from '../utils/asyncWrapper.js'
 import {
@@ -10,6 +8,7 @@ import {
   getAllCases,
   editCase,
   getCasewithPagination,
+  toggleArchiveCase,
 } from '../controllers/case.js'
 import { upload } from '../core/helpers/multer.js'
 
@@ -22,5 +21,6 @@ router.get('/getCaseById/:id', asyncHandler(getCaseById))
 router.get('/getAllCases', asyncHandler(getAllCases))
 router.put('/editCase/:caseId', upload.single('file'), asyncHandler(editCase))
 router.get('/allwithpagination', asyncHandler(getCasewithPagination))
+router.post('/toggleArchive/:id', asyncHandler(toggleArchiveCase))
 
 export default router
