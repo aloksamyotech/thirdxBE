@@ -9,6 +9,7 @@ import {
   deleteCaseNote,
   getAllCaseNote,
   getAllWithPagination,
+  toggleArchiveCaseNote,
 } from '../controllers/caseNote.js'
 import { upload } from '../core/helpers/multer.js'
 
@@ -24,5 +25,7 @@ router.put(
   upload.single('file'),
   asyncHandler(editCaseNote)
 )
+router.post('/toggleArchive/:id', asyncHandler(toggleArchiveCaseNote))
+
 
 export default router

@@ -71,7 +71,7 @@ export const getAllServices = async (req, res) => {
 }
 
 export const editServices = async (req, res) => {
-  const { serviceId } = req.params.serviceId
+  const serviceId = req.params.serviceId
 
   const {
     name,
@@ -107,4 +107,15 @@ export const editServices = async (req, res) => {
 
   const editServices = await services.editServices(serviceId, serviceData)
   res.status(statusCodes?.ok).send(editServices)
+}
+export const toggleArchiveSession = async (req, res) => {
+  const sessionId = req.params?.id;
+  const { isArchive, archiveReason } = req.body;
+  const data = await services.toggleArchiveSession(sessionId, isArchive, archiveReason)
+  res.status(statusCodes?.ok).send(data)
+}
+export const deleteSession = async (req, res) => {
+  const sessionId = req.params?.id;
+  const data = await services.deleteSession(sessionId)
+  res.status(statusCodes?.ok).send(data)
 }
