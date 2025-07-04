@@ -8,6 +8,7 @@ import Case from '../models/cases.js';
 import task from '../models/task.js';
 import path from 'path';
 import { convertToReadableFormat } from '../utils/valueFormatter.js';
+import dayjs from 'dayjs'
 
 export const getAllDonationTotal = async () => {
 
@@ -40,6 +41,125 @@ export const getAllActiveServiceUser = async () => {
   return { totalUser }
 };
 
+export const getAllCasesWithPagination = async (query) => {
+  const {
+    uniqueId,
+    serviceUserId,
+    serviceId,
+    caseOwner,
+    status,
+    isArchive,
+    caseOpened,
+    page = 1,
+    limit = 10,
+    range,
+  } = query || {}
+
+  let pageNumber = Number(page)
+  let limitNumber = Number(limit)
+  if (pageNumber < 1) pageNumber = 1
+  if (limitNumber < 1) limitNumber = 10
+
+  const skip = (pageNumber - 1) * limitNumber
+
+  const filter = {
+    ...(uniqueId && { uniqueId }),
+    ...(serviceUserId && { serviceUserId }),
+    ...(serviceId && { serviceId }),
+    ...(caseOwner && { caseOwner }),
+    ...(status && { status }),
+    ...(isArchive !== undefined && { isArchive: isArchive === 'true' }),
+  }
+
+  if (range && !caseOpened) {
+    let startDate
+    const endDate = dayjs().endOf('day')
+
+    switch (range) {
+      case 'this-week':
+        startDate = dayjs().startOf('week')
+        break
+      case 'this-month':
+        startDate = dayjs().startOf('month')
+        break
+      case 'this-year':
+        startDate = dayjs().startOf('year')
+        break
+      default:
+        startDate = null
+    }
+
+    if (startDate) {
+      filter.createdAt = {
+        $gte: startDate.toDate(),
+        $lte: endDate.toDate(),
+      }
+    }
+  }
+
+  if (caseOpened) {
+    const startOfDay = new Date(caseOpened)
+    const endOfDay = new Date(startOfDay)
+    endOfDay.setDate(endOfDay.getDate() + 1)
+
+    filter.caseOpened = {
+      $gte: startOfDay,
+      $lt: endOfDay,
+    }
+  }
+
+  // 1. Get paginated cases
+  const allCases = await Case.find(filter)
+    .skip(skip)
+    .limit(limitNumber)
+    .sort({ createdAt: -1 })
+    .populate('serviceUserId')
+    .populate('serviceId')
+    .populate('caseOwner')
+    .populate('benificiary')
+    .populate('campaigns')
+    .populate('engagement')
+    .populate('eventAttanded')
+    .populate('fundingInterest')
+    .populate('fundraisingActivities')
+
+  // 2. Count total matching documents
+  const total = await Case.countDocuments(filter)
+
+  // 3. Aggregate count by status
+  const statusCountsAggregation = await Case.aggregate([
+    { $match: filter },
+    {
+      $group: {
+        _id: '$status',
+        count: { $sum: 1 },
+      },
+    },
+  ])
+
+  // Convert aggregation result to an object for easier access
+  const statusCounts = {
+    pending: 0,
+    open: 0,
+    close: 0,
+  }
+  statusCountsAggregation.forEach(({ _id, count }) => {
+    if (_id in statusCounts) {
+      statusCounts[_id] = count
+    }
+  })
+
+  return {
+    data: allCases,
+    meta: {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
+      statusCounts,  // counts of pending, open, close
+    },
+  }
+}
 
 export const getAllOpenCased = async () => {
   const cases = await Case.find({ isActive: true, isArchive: false });
@@ -159,6 +279,90 @@ export const getAllTask = async () => {
   }
   return { allTask }
 }
+
+
+
+
+export const getAllTasksWithPagination = async (query) => {
+  const {
+    assignedTo,
+    isCompleted,
+    notification,
+    dueDate,
+    page = 1,
+    limit = 10,
+    range
+  } = query || {}
+
+  let pageNumber = Number(page)
+  let limitNumber = Number(limit)
+  if (pageNumber < 1) pageNumber = 1
+  if (limitNumber < 1) limitNumber = 10
+
+  const skip = (pageNumber - 1) * limitNumber
+
+  const filter = {
+    isDeleted: false,
+    ...(assignedTo && { assignedTo }),
+    ...(notification !== undefined && { notification: notification === 'true' }),
+    ...(isCompleted !== undefined && { isCompleted: isCompleted === 'true' }),
+  }
+
+  if (range && !dueDate) {
+    let startDate
+    const endDate = dayjs().endOf('day')
+
+    switch (range) {
+      case 'this-week':
+        startDate = dayjs().startOf('week')
+        break
+      case 'this-month':
+        startDate = dayjs().startOf('month')
+        break
+      case 'this-year':
+        startDate = dayjs().startOf('year')
+        break
+      default:
+        startDate = null
+    }
+
+    if (startDate) {
+      filter.createdAt = {
+        $gte: startDate.toDate(),
+        $lte: endDate.toDate()
+      }
+    }
+  }
+  if (dueDate) {
+    const startOfDay = new Date(dueDate)
+    const endOfDay = new Date(startOfDay)
+    endOfDay.setDate(endOfDay.getDate() + 1)
+
+    filter.dueDate = {
+      $gte: startOfDay,
+      $lt: endOfDay
+    }
+  }
+
+  const allTasks = await task.find(filter)
+    .skip(skip)
+    .limit(limitNumber)
+    .sort({ createdAt: -1 })
+    .populate('assignedTo')
+
+  const total = await task.countDocuments(filter)
+
+  return {
+    data: allTasks,
+    meta: {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
+    },
+  }
+}
+
 
 export const getAllMediaAttachments = async (limit = 10) => {
   const usersWithFiles = await user.find({

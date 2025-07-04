@@ -1,6 +1,7 @@
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import Session from '../models/session.js'
+import dayjs from 'dayjs'
 
 export const addSession = async (sessionData) => {
   const newSession = await Session.create(sessionData)
@@ -108,7 +109,7 @@ export const getSessionById = async (serviceId) => {
     )
   }
 
-  const userData = await Session.find({ _id : serviceId, isDeleted: false })
+  const userData = await Session.find({ _id: serviceId, isDeleted: false })
     .populate('serviceId')
     .populate('serviceuser')
   if (!userData || userData.length === 0) {
@@ -154,34 +155,59 @@ export const getAllWithPagination = async (query) => {
     serviceId,
     serviceuser,
     uniqueId,
+    range
   } = query || {}
+
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
-  if (pageNumber < 1) {
-    pageNumber = 1
-  }
+  if (pageNumber < 1) pageNumber = 1
+  if (limitNumber < 1) limitNumber = 10
 
-  if (limitNumber < 1) {
-    limitNumber = 10
-  }
   const skip = (pageNumber - 1) * limitNumber
   const filter = {
     isDeleted: false,
-    ...(serviceuser !== undefined && serviceuser !== '' && { serviceuser }),
+    ...(serviceuser && { serviceuser }),
     ...(serviceId && { serviceId }),
-    ...(country !== undefined && country !== '' && { country }),
-    ...(name !== undefined && name !== '' && { serviceuser: name }),
-    ...(date !== undefined &&
-      date !== '' && {
-        date: {
-          $gte: new Date(date),
-          $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
-        },
-      }),
-    ...(time !== undefined && time !== '' && { time }),
-    ...(status !== undefined &&
-      status !== '' && { isActive: status === 'true' }),
-    ...(uniqueId !== undefined && uniqueId !== '' && { serviceuser: uniqueId }),
+    ...(country && { country }),
+    ...(name && { serviceuser: name }),
+    ...(time && { time }),
+    ...(status !== undefined && status !== '' && { isActive: status === 'true' }),
+    ...(uniqueId && { serviceuser: uniqueId })
+  }
+  if (range) {
+    let startDate
+    const endDate = dayjs().endOf('day')
+
+    switch (range) {
+      case 'this-week':
+        startDate = dayjs().startOf('week')
+        break
+      case 'this-month':
+        startDate = dayjs().startOf('month')
+        break
+      case 'this-year':
+        startDate = dayjs().startOf('year')
+        break
+      default:
+        startDate = null
+    }
+
+    if (startDate) {
+      filter.date = {
+        $gte: startDate.toDate(),
+        $lte: endDate.toDate()
+      }
+    }
+  }
+  if (date) {
+    const startOfDay = new Date(date)
+    const endOfDay = new Date(startOfDay)
+    endOfDay.setDate(endOfDay.getDate() + 1)
+
+    filter.date = {
+      $gte: startOfDay,
+      $lt: endOfDay
+    }
   }
 
   const allSession = await Session.find(filter)
