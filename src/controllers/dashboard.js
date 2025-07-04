@@ -10,6 +10,10 @@ export const getAllSessionDelivered = async (req, res) => {
   const allMail = await dashboardService.getAllSessionDelivered()
   res.status(statusCodes?.ok).send(allMail)
 }
+export const getAllCasesWithPagination = async (req, res) => {
+  const allMail = await dashboardService.getAllCasesWithPagination()
+  res.status(statusCodes?.ok).send(allMail)
+}
 
 
 export const getAllActiveServiceUser = async (req, res) => {
@@ -23,31 +27,31 @@ export const getAllOpenCased = async (req, res) => {
 }
 
 export const addTask = async (req, res) => {
-     const  { details,assignedTo, dueDate, isCompleted, notification } = req.body;
-       const taskData = {
-      details,
-      assignedTo,
-      dueDate,
-      isCompleted,
-      notification,
-    };
+  const { details, assignedTo, dueDate, isCompleted, notification } = req.body;
+  const taskData = {
+    details,
+    assignedTo,
+    dueDate,
+    isCompleted,
+    notification,
+  };
 
   const addTask = await dashboardService.createTask(taskData);
   res.status(statusCodes?.ok).send(addTask)
 }
 
 export const editTask = async (req, res) => {
-    const taskId =   req.params.id 
-     const  { details,assignedTo, dueDate, isCompleted, notification } = req.body;
-       const taskData = {
-      details,
-      assignedTo,
-      dueDate,
-      isCompleted,
-      notification,
-    };
+  const taskId = req.params.id
+  const { details, assignedTo, dueDate, isCompleted, notification } = req.body;
+  const taskData = {
+    details,
+    assignedTo,
+    dueDate,
+    isCompleted,
+    notification,
+  };
 
-  const addTask = await dashboardService.editTask(taskId,taskData);
+  const addTask = await dashboardService.editTask(taskId, taskData);
   res.status(statusCodes?.ok).send(addTask)
 }
 
@@ -67,6 +71,10 @@ export const deleteTask = async (req, res) => {
 
 export const getAllTask = async (req, res) => {
   const getAllTasks = await dashboardService.getAllTask()
+  res.status(statusCodes?.ok).send(getAllTasks);
+}
+export const getAllTasksWithPagination = async (req, res) => {
+  const getAllTasks = await dashboardService.getAllTasksWithPagination()
   res.status(statusCodes?.ok).send(getAllTasks);
 }
 

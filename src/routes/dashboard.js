@@ -1,16 +1,18 @@
 import { Router } from 'express'
 import { asyncHandler } from '../utils/asyncWrapper.js'
 import {
-getAllDonationTotal,
-getAllSessionDelivered,
-getAllActiveServiceUser,
-getAllOpenCased,
-addTask,
-editTask,
-getTaskById,
-deleteTask,
-getAllTask,
-getAllMedia
+    getAllDonationTotal,
+    getAllSessionDelivered,
+    getAllActiveServiceUser,
+    getAllOpenCased,
+    addTask,
+    editTask,
+    getTaskById,
+    deleteTask,
+    getAllTask,
+    getAllMedia,
+    getAllTasksWithPagination,
+    getAllCasesWithPagination
 } from '../controllers/dashboard.js'
 
 const router = Router()
@@ -26,7 +28,8 @@ router.put('/editTask/:id', asyncHandler(editTask))
 router.get('/getTaskById/:id', asyncHandler(getTaskById))
 router.patch('/delete/:id', asyncHandler(deleteTask))
 router.get('/getAllTask', asyncHandler(getAllTask))
-
+router.get('/getAllTasksWithPagination', asyncHandler(getAllTasksWithPagination))
+router.get('/getAllCasesWithPagination', asyncHandler(getAllCasesWithPagination))
 router.get('/allMedia', asyncHandler(getAllMedia));
 
 
