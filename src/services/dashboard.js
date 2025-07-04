@@ -1,7 +1,6 @@
 import Transaction from '../models/transaction.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
-import { regexFilter } from '../core/common/common.js'
 import Session from '../models/session.js';
 import user from '../models/user.js';
 import Case from '../models/cases.js';
@@ -291,66 +290,76 @@ export const getAllTasksWithPagination = async (query) => {
     dueDate,
     page = 1,
     limit = 10,
-    range
-  } = query || {}
+    range,
+    name
+  } = query || {};
 
-  let pageNumber = Number(page)
-  let limitNumber = Number(limit)
-  if (pageNumber < 1) pageNumber = 1
-  if (limitNumber < 1) limitNumber = 10
+  let pageNumber = Number(page);
+  let limitNumber = Number(limit);
+  if (pageNumber < 1) pageNumber = 1;
+  if (limitNumber < 1) limitNumber = 10;
 
-  const skip = (pageNumber - 1) * limitNumber
+  const skip = (pageNumber - 1) * limitNumber;
 
   const filter = {
     isDeleted: false,
     ...(assignedTo && { assignedTo }),
     ...(notification !== undefined && { notification: notification === 'true' }),
     ...(isCompleted !== undefined && { isCompleted: isCompleted === 'true' }),
-  }
+  };
 
   if (range && !dueDate) {
-    let startDate
-    const endDate = dayjs().endOf('day')
+    let startDate;
+    const endDate = dayjs().endOf('day');
 
     switch (range) {
       case 'this-week':
-        startDate = dayjs().startOf('week')
-        break
+        startDate = dayjs().startOf('week');
+        break;
       case 'this-month':
-        startDate = dayjs().startOf('month')
-        break
+        startDate = dayjs().startOf('month');
+        break;
       case 'this-year':
-        startDate = dayjs().startOf('year')
-        break
+        startDate = dayjs().startOf('year');
+        break;
       default:
-        startDate = null
+        startDate = null;
     }
 
     if (startDate) {
-      filter.createdAt = {
+      filter.dueDate = {
         $gte: startDate.toDate(),
-        $lte: endDate.toDate()
-      }
+        $lte: endDate.toDate(),
+      };
     }
   }
+
   if (dueDate) {
-    const startOfDay = new Date(dueDate)
-    const endOfDay = new Date(startOfDay)
-    endOfDay.setDate(endOfDay.getDate() + 1)
+    const startOfDay = new Date(dueDate);
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setDate(endOfDay.getDate() + 1);
 
     filter.dueDate = {
       $gte: startOfDay,
-      $lt: endOfDay
-    }
+      $lt: endOfDay,
+    };
   }
 
-  const allTasks = await task.find(filter)
+  let allTasks = await task
+    .find(filter)
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
-    .populate('assignedTo')
+    .populate('assignedTo');
 
-  const total = await task.countDocuments(filter)
+  if (name) {
+    const regex = new RegExp(name, 'i');
+    allTasks = allTasks.filter((task) =>
+      regex.test(task?.assignedTo?.userName || '')
+    );
+  }
+
+  const total = allTasks.length;
 
   return {
     data: allTasks,

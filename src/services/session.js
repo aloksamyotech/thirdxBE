@@ -2,6 +2,7 @@ import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import Session from '../models/session.js'
 import dayjs from 'dayjs'
+import mongoose from 'mongoose'
 
 export const addSession = async (sessionData) => {
   const newSession = await Session.create(sessionData)
@@ -158,59 +159,61 @@ export const getAllWithPagination = async (query) => {
     range
   } = query || {}
 
-  let pageNumber = Number(page)
-  let limitNumber = Number(limit)
-  if (pageNumber < 1) pageNumber = 1
-  if (limitNumber < 1) limitNumber = 10
+  let pageNumber = Number(page);
+  let limitNumber = Number(limit);
+  if (pageNumber < 1) pageNumber = 1;
+  if (limitNumber < 1) limitNumber = 10;
 
-  const skip = (pageNumber - 1) * limitNumber
+  const skip = (pageNumber - 1) * limitNumber;
+
   const filter = {
     isDeleted: false,
-    ...(serviceuser && { serviceuser }),
-    ...(serviceId && { serviceId }),
     ...(country && { country }),
-    ...(name && { serviceuser: name }),
     ...(time && { time }),
     ...(status !== undefined && status !== '' && { isActive: status === 'true' }),
-    ...(uniqueId && { serviceuser: uniqueId })
-  }
+    ...(mongoose.Types.ObjectId.isValid(serviceId) && { serviceId }),
+    ...(mongoose.Types.ObjectId.isValid(serviceuser) && { serviceuser }),
+    ...(mongoose.Types.ObjectId.isValid(uniqueId) && { serviceuser: uniqueId }),
+  };
+
   if (range) {
-    let startDate
-    const endDate = dayjs().endOf('day')
+    let startDate;
+    const endDate = dayjs().endOf('day');
 
     switch (range) {
       case 'this-week':
-        startDate = dayjs().startOf('week')
-        break
+        startDate = dayjs().startOf('week');
+        break;
       case 'this-month':
-        startDate = dayjs().startOf('month')
-        break
+        startDate = dayjs().startOf('month');
+        break;
       case 'this-year':
-        startDate = dayjs().startOf('year')
-        break
+        startDate = dayjs().startOf('year');
+        break;
       default:
-        startDate = null
+        startDate = null;
     }
 
     if (startDate) {
       filter.date = {
         $gte: startDate.toDate(),
-        $lte: endDate.toDate()
-      }
+        $lte: endDate.toDate(),
+      };
     }
   }
+
   if (date) {
-    const startOfDay = new Date(date)
-    const endOfDay = new Date(startOfDay)
-    endOfDay.setDate(endOfDay.getDate() + 1)
+    const startOfDay = new Date(date);
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setDate(endOfDay.getDate() + 1);
 
     filter.date = {
       $gte: startOfDay,
-      $lt: endOfDay
-    }
+      $lt: endOfDay,
+    };
   }
 
-  const allSession = await Session.find(filter)
+  let allSession = await Session.find(filter)
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
@@ -220,9 +223,19 @@ export const getAllWithPagination = async (query) => {
       populate: {
         path: 'serviceType',
       },
-    })
+    });
 
-  const total = await Session.countDocuments(filter)
+  if (name) {
+    const regex = new RegExp(name, 'i');
+    allSession = allSession.filter(
+      (session) =>
+        regex.test(session?.serviceuser?.name || '') ||
+        regex.test(session?.serviceId?.name || '')
+    );
+  }
+
+  const total = allSession.length;
+
   return {
     data: allSession,
     meta: {
@@ -231,8 +244,9 @@ export const getAllWithPagination = async (query) => {
       limit: limitNumber,
       totalPages: Math.ceil(total / limitNumber),
     },
-  }
-}
+  };
+};
+
 
 export const archiveSession = async (sessionId, archiveReason) => {
   const checkExist = await Session.findById({ _id: sessionId })
