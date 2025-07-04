@@ -97,8 +97,8 @@ const UserSchema = new mongoose.Schema(
       },
       keyIndicators: [
         {
-          type: String,
-
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'configuration',
         },
       ],
     }

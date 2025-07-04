@@ -17,6 +17,11 @@ const TransactionSchema = new mongoose.Schema(
       ref: 'configuration',
       required: true,
     },
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'configuration',
+      required: true,
+    },
     processingCost: { type: Number, default: 0 },
     currency: {
       type: String,
