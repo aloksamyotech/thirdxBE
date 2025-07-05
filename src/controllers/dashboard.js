@@ -74,7 +74,7 @@ export const getAllTask = async (req, res) => {
   res.status(statusCodes?.ok).send(getAllTasks);
 }
 export const getAllTasksWithPagination = async (req, res) => {
-  const getAllTasks = await dashboardService.getAllTasksWithPagination()
+  const getAllTasks = await dashboardService.getAllTasksWithPagination(req?.query)
   res.status(statusCodes?.ok).send(getAllTasks);
 }
 
