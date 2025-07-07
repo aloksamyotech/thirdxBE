@@ -11,7 +11,7 @@ export const getAllSessionDelivered = async (req, res) => {
   res.status(statusCodes?.ok).send(allMail)
 }
 export const getAllCasesWithPagination = async (req, res) => {
-  const allMail = await dashboardService.getAllCasesWithPagination()
+  const allMail = await dashboardService.getAllCasesWithPagination(req?.query)
   res.status(statusCodes?.ok).send(allMail)
 }
 
