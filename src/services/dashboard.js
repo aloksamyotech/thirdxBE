@@ -12,7 +12,7 @@ import dayjs from 'dayjs'
 export const getAllDonationTotal = async () => {
 
   const result = await Transaction.aggregate([
-    { $match: { isDeleted: false } },
+    { $match: { isDelete: false } },
     {
       $group: {
         _id: null,
@@ -27,7 +27,7 @@ export const getAllDonationTotal = async () => {
 
 export const getAllSessionDelivered = async () => {
 
-  const result = await Session.find({ isDeleted: false })
+  const result = await Session.find({ isDelete: false })
   const totalSession = convertToReadableFormat(result.length);
   return { totalSession }
 
@@ -35,7 +35,7 @@ export const getAllSessionDelivered = async () => {
 
 
 export const getAllActiveServiceUser = async () => {
-  const result = await user.find({ role: "service_user", isDeleted: false })
+  const result = await user.find({ role: "service_user", isDelete: false })
   const totalUser = convertToReadableFormat(result.length);
   return { totalUser }
 };
@@ -224,7 +224,7 @@ export const getTaskById = async (taskId) => {
 
   const taskData = await task.findOne({
     _id: taskId,
-    isDeleted: false,
+    isDelete: false,
   })
   if (!taskData) {
     throw new CustomError(
@@ -249,7 +249,7 @@ export const deletetask = async (taskId) => {
   }
   const taskUpdate = await task.findByIdAndUpdate(
     Id,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 
@@ -265,7 +265,7 @@ export const deletetask = async (taskId) => {
 
 
 export const getAllTask = async () => {
-  const allTask = await task.find({ isDeleted: false }).sort({
+  const allTask = await task.find({ isDelete: false }).sort({
     createdAt: -1,
   })
     .populate('assignedTo')
@@ -302,7 +302,7 @@ export const getAllTasksWithPagination = async (query) => {
   const skip = (pageNumber - 1) * limitNumber;
 
   const filter = {
-    isDeleted: false,
+    isDelete: false,
     ...(assignedTo && { assignedTo }),
     ...(notification !== undefined && { notification: notification === 'true' }),
     ...(isCompleted !== undefined && { isCompleted: isCompleted === 'true' }),

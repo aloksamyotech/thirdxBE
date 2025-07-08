@@ -83,7 +83,7 @@ export const deleteMail = async (mailId) => {
   }
   const mailUpdate = await mail.findByIdAndUpdate(
     mailId,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 

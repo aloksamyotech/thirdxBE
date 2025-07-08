@@ -12,6 +12,14 @@ import { regexFilter } from '../core/common/common.js'
 import mongoose from 'mongoose'
 import { generateCustomId } from '../utils/generateCustomId.js'
 export const addUser = async (userData) => {
+  if (
+    userData?.Service &&
+    (userData.Service.serviceName === '' ||
+      !mongoose.Types.ObjectId.isValid(userData.Service.serviceName))
+  ) {
+    delete userData.Service.serviceName
+  }
+
   userData.uniqueId = await generateCustomId()
   const newUser = await user.create(userData)
   if (!newUser) {
@@ -26,7 +34,7 @@ export const addUser = async (userData) => {
 
 export const getAllServiceUser = async () => {
   const allUser = await user
-    .find({ isDeleted: false, isActive: true, role: checkRole.service_user })
+    .find({ isDelete: false, isActive: true, role: checkRole.service_user })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
@@ -50,7 +58,7 @@ export const getAllServiceUser = async () => {
 
 export const getAllVolunteer = async () => {
   const allVolunteer = await user
-    .find({ isDeleted: false, role: checkRole.volunteer })
+    .find({ isDelete: false, role: checkRole.volunteer })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
@@ -73,7 +81,7 @@ export const getAllVolunteer = async () => {
 }
 export const getAllUsers = async () => {
   const allVolunteer = await user
-    .find({ isDeleted: false, role: checkRole.user })
+    .find({ isDelete: false, role: checkRole.user })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
@@ -97,7 +105,7 @@ export const getAllUsers = async () => {
 
 export const getAllDonor = async () => {
   const allDonor = await user
-    .find({ isDeleted: false, role: checkRole.donor })
+    .find({ isDelete: false, role: checkRole.donor })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
@@ -129,7 +137,7 @@ export const getUserById = async (userId) => {
     )
   }
   const userData = await user
-    .findOne({ _id: userId, isDeleted: false })
+    .findOne({ _id: userId, isDelete: false })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
     .populate('otherInfo.engagement')
@@ -140,6 +148,7 @@ export const getUserById = async (userId) => {
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
     .populate('companyInformation.recruitmentCampaign')
+
 
   if (!userData) {
     throw new CustomError(
@@ -173,6 +182,13 @@ export const getAllUsDistricts = async () => {
 }
 
 export const editUser = async (userData) => {
+  if (
+    userData?.Service &&
+    (userData.Service.serviceName === '' ||
+      !mongoose.Types.ObjectId.isValid(userData.Service.serviceName))
+  ) {
+    delete userData.Service.serviceName
+  }
   const { userId, ...rest } = userData
 
   if (!userId) {
@@ -222,7 +238,7 @@ export const deleteUser = async (userId) => {
   }
   const statusUpdate = await user.findByIdAndUpdate(
     { _id: userId },
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 

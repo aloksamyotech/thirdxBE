@@ -155,7 +155,7 @@ export const deleteCase = async (caseId) => {
   }
   const statusUpdate = await Case.findByIdAndUpdate(
     caseId,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 
@@ -172,7 +172,7 @@ export const deleteCase = async (caseId) => {
 export const searchCase = async (query) => {
   const { serviceId, serviceStatus, caseOwner, caseOpened } = query
 
-  const searchQuery = { isDeleted: false }
+  const searchQuery = { isDelete: false }
 
   if (serviceId && mongoose.Types.ObjectId.isValid(serviceId)) {
     searchQuery.serviceId = new mongoose.Types.ObjectId(serviceId)
@@ -221,7 +221,7 @@ export const getCaseById = async (caseId) => {
   }
 
   const caseData = await Case.aggregate([
-    { $match: { _id: new mongoose.Types.ObjectId(caseId), isDeleted: false } },
+    { $match: { _id: new mongoose.Types.ObjectId(caseId), isDelete: false } },
     {
       $lookup: {
         from: 'services',
@@ -269,7 +269,7 @@ export const getCaseById = async (caseId) => {
 }
 export const getAllCases = async () => {
   const allService = await Case.aggregate([
-    { $match: { isDeleted: false } },
+    { $match: { isDelete: false } },
 
     {
       $lookup: {
@@ -424,7 +424,7 @@ export const updateCaseStatus = async () => {
   let hasMore = true;
 
   while (hasMore) {
-    const cases = await Case.find({ isDeleted: false }).skip(skip).limit(BATCH_SIZE).lean();
+    const cases = await Case.find({ isDelete: false }).skip(skip).limit(BATCH_SIZE).lean();
 
     if (cases.length === 0) {
       break;
