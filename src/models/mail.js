@@ -11,7 +11,11 @@ const MailingListSchema = new mongoose.Schema(
     channelSettings: [String],
     purposeSettings: [String],
     includeArchived: { type: Boolean, default: false },
-    isDeleted: {
+    isDelete: {
+      type: Boolean,
+      default: false,
+    },
+    isCompletlyDelete: {
       type: Boolean,
       default: false,
     },

@@ -66,7 +66,7 @@ export const deleteSession = async (sessionId) => {
   }
   const statusUpdate = await Session.findByIdAndUpdate(
     sessionId,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 
@@ -110,7 +110,7 @@ export const getSessionById = async (serviceId) => {
     )
   }
 
-  const userData = await Session.find({ _id: serviceId, isDeleted: false })
+  const userData = await Session.find({ _id: serviceId, isDelete: false })
     .populate('serviceId')
     .populate('serviceuser')
   if (!userData || userData.length === 0) {
@@ -124,7 +124,7 @@ export const getSessionById = async (serviceId) => {
 }
 
 export const getAllSession = async () => {
-  const allSession = await Session.find({ isDeleted: false })
+  const allSession = await Session.find({ isDelete: false })
     .populate('serviceId')
     .populate('serviceuser')
     .sort({
@@ -167,7 +167,7 @@ export const getAllWithPagination = async (query) => {
   const skip = (pageNumber - 1) * limitNumber;
 
   const filter = {
-    isDeleted: false,
+    isDelete: false,
     ...(country && { country }),
     ...(time && { time }),
     ...(status !== undefined && status !== '' && { isActive: status === 'true' }),

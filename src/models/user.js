@@ -163,6 +163,18 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: ['donar_individual', 'donar_company', 'donar_group'],
     },
+    isArchive: {
+      type: Boolean,
+      default: false,
+    },
+    isDelete: {
+      type: Boolean,
+      default: false,
+    },
+    isCompletlyDelete: {
+      type: Boolean,
+      default: false,
+    },
     archive: { type: Boolean, default: false },
     archiveReason: { type: String },
   },

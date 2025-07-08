@@ -99,7 +99,7 @@ export const deleteTransaction = async (id) => {
   }
   const updatedTransaction = await transaction.findByIdAndUpdate(
     id,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 

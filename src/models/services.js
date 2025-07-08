@@ -15,6 +15,14 @@ const ServiceSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isDelete: {
+      type: Boolean,
+      default: false,
+    },
+    isCompletlyDelete: {
+      type: Boolean,
+      default: false,
+    },
     serviceType: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'configuration',

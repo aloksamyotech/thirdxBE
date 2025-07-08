@@ -16,6 +16,7 @@ import admin from './admin.js'
 import reportRouter from './report.js'
 import { userAuth } from '../middlewares/userAuth.js'
 import { asyncHandler } from '../utils/asyncWrapper.js'
+import bulkFuntions from "./bulkFuntions.js"
 
 const router = express.Router()
 
@@ -34,5 +35,6 @@ router.use('/attendees', asyncHandler(userAuth), attendeesRouter)
 router.use('/forms', formsRouter)
 router.use('/responses', responsesRouter)
 router.use('/report', reportRouter)
+router.use('/bulk', asyncHandler(userAuth), bulkFuntions)
 
 export default router
