@@ -97,7 +97,7 @@ export const getServiceById = async (serviceId) => {
 }
 
 export const getServiceswithPagination = async (query) => {
-  const { search, status, serviceType, page = 1, limit = 10 } = query || {}
+  const { search, status, serviceType, page = 1, limit = 10,deleted,} = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -120,13 +120,13 @@ export const getServiceswithPagination = async (query) => {
 
   const filter = {
     $or: searchConditions,
-    isDelete
-      : false,
     isArchive: false,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
     ...(serviceType !== undefined &&
       serviceType !== '' && { serviceType: serviceType }),
+    ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
+
   }
 
   const allService = await Services.find(filter)
