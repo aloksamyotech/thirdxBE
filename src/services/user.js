@@ -322,11 +322,11 @@ export const getUserwithPagination = async (query) => {
     role,
     userId,
     name,
+    deleted,
     dateOfBirth,
     page = 1,
     limit = 10,
   } = query || {}
-
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -364,6 +364,7 @@ export const getUserwithPagination = async (query) => {
       gender !== '' && { 'personalInfo.gender': gender }),
     ...(nickName !== undefined &&
       nickName !== '' && { 'personalInfo.nickName': nickName }),
+    ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
 
     ...(campaigns !== undefined &&
       campaigns !== '' && {
@@ -400,7 +401,6 @@ export const getUserwithPagination = async (query) => {
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
-    .notDeleted()
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
     .populate('otherInfo.engagement')

@@ -328,6 +328,7 @@ export const getCasewithPagination = async (query) => {
     country,
     name,
     caseOpened,
+    deleted,
     page = 1,
     limit = 10,
   } = query || {}
@@ -344,6 +345,7 @@ export const getCasewithPagination = async (query) => {
     ...(caseOwner !== undefined && caseOwner !== '' && { caseOwner }),
     ...(status !== undefined && status !== '' && { status }),
     ...(serviceId !== undefined && serviceId !== '' && { serviceId }),
+    ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
     ...(createdAt !== undefined &&
       createdAt !== '' && {
       createdAt: {
