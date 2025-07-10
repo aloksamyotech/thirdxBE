@@ -94,7 +94,7 @@ export const getAdminById = async (id) => {
 }
 
 export const getAllAdmins = async () => {
-  const allAdmins = await Admin.find()
+  const allAdmins = await Admin.find({ isCompletlyDelete: false })
 
   if (!allAdmins) {
     return new CustomError(

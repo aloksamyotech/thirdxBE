@@ -46,7 +46,7 @@ export const updateConfiguration = async (configId, configData) => {
 
 export const getAllConfiguration = async () => {
   const allConfiguration = await configuration
-    .find({ isDelete: false })
+    .find({ isDelete: false, isCompletlyDelete: false })
     .sort({ createdAt: -1 })
   if (!allConfiguration) {
     throw new CustomError(
@@ -157,11 +157,13 @@ export const getConfigurationWithPagination = async (query) => {
   )
 
   const filter = {
+
     $or: searchConditions,
+    isCompletlyDelete: false,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
-      ...(configurationType !== undefined && configurationType !== '' && { 'configurationType': configurationType }),
-    
+    ...(configurationType !== undefined && configurationType !== '' && { 'configurationType': configurationType }),
+
   }
 
   const allConfiguration = await configuration

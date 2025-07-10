@@ -12,7 +12,7 @@ import dayjs from 'dayjs'
 export const getAllDonationTotal = async () => {
 
   const result = await Transaction.aggregate([
-    { $match: { isDelete: false } },
+    { $match: { isDelete: false, isCompletlyDelete: false, } },
     {
       $group: {
         _id: null,
@@ -27,7 +27,7 @@ export const getAllDonationTotal = async () => {
 
 export const getAllSessionDelivered = async () => {
 
-  const result = await Session.find({ isDelete: false })
+  const result = await Session.find({ isDelete: false, isCompletlyDelete: false, })
   const totalSession = convertToReadableFormat(result.length);
   return { totalSession }
 
@@ -35,7 +35,7 @@ export const getAllSessionDelivered = async () => {
 
 
 export const getAllActiveServiceUser = async () => {
-  const result = await user.find({ role: "service_user", isDelete: false })
+  const result = await user.find({ role: "service_user", isDelete: false, isCompletlyDelete: false, })
   const totalUser = convertToReadableFormat(result.length);
   return { totalUser }
 };
@@ -62,6 +62,7 @@ export const getAllCasesWithPagination = async (query) => {
   const skip = (pageNumber - 1) * limitNumber
 
   const filter = {
+    isCompletlyDelete: false,
     ...(uniqueId && { uniqueId }),
     ...(serviceUserId && { serviceUserId }),
     ...(serviceId && { serviceId }),
@@ -161,7 +162,7 @@ export const getAllCasesWithPagination = async (query) => {
 }
 
 export const getAllOpenCased = async () => {
-  const cases = await Case.find({ isActive: true, isArchive: false });
+  const cases = await Case.find({ isDelete: false, isArchive: false, isCompletlyDelete: false, });
   const totalcase = convertToReadableFormat(cases.length);
   return { totalcase };
 };
@@ -265,7 +266,7 @@ export const deletetask = async (taskId) => {
 
 
 export const getAllTask = async () => {
-  const allTask = await task.find({ isDelete: false }).sort({
+  const allTask = await task.find({ isDelete: false, isCompletlyDelete: false }).sort({
     createdAt: -1,
   })
     .populate('assignedTo')
@@ -303,6 +304,7 @@ export const getAllTasksWithPagination = async (query) => {
 
   const filter = {
     isDelete: false,
+    isCompletlyDelete: false,
     ...(assignedTo && { assignedTo }),
     ...(notification !== undefined && { notification: notification === 'true' }),
     ...(isCompleted !== undefined && { isCompleted: isCompleted === 'true' }),
@@ -375,7 +377,9 @@ export const getAllTasksWithPagination = async (query) => {
 
 export const getAllMediaAttachments = async (limit = 10) => {
   const usersWithFiles = await user.find({
+    isCompletlyDelete: false,
     $or: [
+
       { 'personalInfo.profileImage': { $ne: null } },
       { 'otherInfo.file': { $ne: null } },
     ]

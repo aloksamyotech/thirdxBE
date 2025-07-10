@@ -1,16 +1,8 @@
-import Case from "../models/cases.js";
-import Services from "../models/services.js";
-import user from "../models/user.js";
 
-export const bulkSoftDelete = async ({ ids, entityType }) => {
-    const modelMap = {
-        service_user: user,
-        cases: Case,
-        services: Services,
-        volunteer: user,
-        donor: user,
+import { statusCodes } from '../core/common/constant.js';
+import { modelMap } from "../core/helpers/modelMap.js"
+export const bulkSoftDelete = async ({ ids, entityType, isCompletlyDelete = false }) => {
 
-    };
     const Model = modelMap[entityType];
     if (!Model) {
         throw new CustomError(
@@ -19,21 +11,21 @@ export const bulkSoftDelete = async ({ ids, entityType }) => {
             errorCodes?.roleNotFound
         )
     }
+    const updateFields = isCompletlyDelete
+        ? { isCompletlyDelete: true }
+        : { isDelete: true };
+
+
+
+
     const deletedData = await Model.updateMany(
         { _id: { $in: ids } },
-        { $set: { isDelete: true } }
+        { $set: updateFields }
     );
     return { deletedData }
 };
 
 export const bulkSoftArchive = async ({ ids, entityType }) => {
-    const modelMap = {
-        service_user: user,
-        cases: Case,
-        services: Services,
-        volunteer: user,
-        donor: user,
-    };
     const Model = modelMap[entityType];
     if (!Model) {
         throw new CustomError(
