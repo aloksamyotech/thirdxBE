@@ -83,7 +83,7 @@ export const deleteMail = async (mailId) => {
   }
   const mailUpdate = await mail.findByIdAndUpdate(
     mailId,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 
@@ -98,7 +98,7 @@ export const deleteMail = async (mailId) => {
 }
 
 export const getMailWithPagination = async (query) => {
-  const { search, name, tag, page = 1, limit = 10 } = query || {}
+  const { search, name, tag, page = 1, limit = 10,deleted} = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -123,6 +123,8 @@ export const getMailWithPagination = async (query) => {
     $or: searchConditions,
     ...(name !== undefined && name !== '' && { name: name }),
     ...(tag !== undefined && tag !== '' && { tags: tag }),
+    ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
+
   }
 
   const allMail = await mail

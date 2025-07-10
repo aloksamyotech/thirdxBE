@@ -99,7 +99,7 @@ export const deleteTransaction = async (id) => {
   }
   const updatedTransaction = await transaction.findByIdAndUpdate(
     id,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 
@@ -122,6 +122,7 @@ export const getTransactionwithPagination = async (query) => {
     campaign,
     name,
     uniqueId,
+    deleted,
     page = 1,
     limit = 10,
   } = query || {}
@@ -148,6 +149,7 @@ export const getTransactionwithPagination = async (query) => {
   const filter = {
     ...(donorId !== undefined &&
       donorId !== '' && { donorId: new mongoose.Types.ObjectId(donorId) }),
+    ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
 
     ...(campaign !== undefined && campaign !== '' && { campaign: campaign }),
 

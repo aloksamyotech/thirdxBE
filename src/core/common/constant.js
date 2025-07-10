@@ -29,6 +29,9 @@ export const statusCodes = {
 
 export const Message = {
   notFound: 'Not Found',
+  noIdFound: 'No IDs provided',
+  serviceCodeExist: 'Service code already exists',
+  roleNotFound : 'Role/type is required',
   userAlreadyInSession: 'User already exists in this session',
   caseNotFound: 'Case Not Found',
   registerSuccessfully: 'Successfully Registered',
@@ -69,11 +72,13 @@ export const Message = {
   serviceNotUpdated: 'Service could not be updated',
   TagIDRequired: 'TagID Required',
   AccessTokenRequired: 'access_token is required!',
-  invalidGoogleToken:'Invalid google access token!'
+  invalidGoogleToken: 'Invalid google access token!'
 }
 
 export const errorCodes = Object.freeze({
   already_exist: 'ALREADY_EXIST',
+  no_Id_Found: 'NO_ID_PROVIDED',
+  roleNotFound : 'ROLE_IS_REQURIED',
   invalid_input: 'INVALID_INPUT',
   not_found: 'NOT_FOUND',
   unauthorized: 'UNAUTHORIZED',

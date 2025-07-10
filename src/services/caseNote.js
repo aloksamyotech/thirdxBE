@@ -76,7 +76,7 @@ export const getCaseNoteById = async (caseNoteId) => {
 
   const caseNoteData = await CaseNote.findOne({
     _id: caseNoteId,
-    isDeleted: false,
+    isDelete: false,
   })
     .populate('configurationId')
     .populate('createdBy')
@@ -95,7 +95,7 @@ export const getCaseNoteById = async (caseNoteId) => {
 
 
 export const getAllCaseNote = async () => {
-  const allCaseNote = await CaseNote.find({ isDeleted: false }).sort({
+  const allCaseNote = await CaseNote.find({ isDelete: false }).sort({
     createdAt: -1,
   })
   if (!allCaseNote) {
@@ -174,7 +174,7 @@ export const deleteCaseNote = async (caseNoteId) => {
   }
   const caseNoteUpdate = await CaseNote.findByIdAndUpdate(
     caseNoteId,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 

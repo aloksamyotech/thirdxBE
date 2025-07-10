@@ -15,8 +15,11 @@ import { upload } from '../core/helpers/multer.js'
 
 const router = Router()
 
-router.post('/addServices', upload.single('file'), asyncHandler(addServices))
-router.patch('/deleteService/:id', asyncHandler(deleteServices))
+router.post('/addServices', upload.fields([
+    { name: 'file', maxCount: 1 },
+    { name: 'attachment', maxCount: 1 },
+  ]), asyncHandler(addServices))
+router.post('/deleteService/:id', asyncHandler(deleteServices))
 router.get('/search', asyncHandler(searchServices))
 router.get('/getServiceById/:id', asyncHandler(getServiceById))
 router.get('/all', asyncHandler(getAllServices))

@@ -16,7 +16,7 @@ export const addTags = async (data) => {
 }
 
 export const getAllTags = async () => {
-  const allTags = await tag.find({ isDeleted: false,isActive:true }).sort({ createdAt: -1 })
+  const allTags = await tag.find({ isDelete: false,isActive:true }).sort({ createdAt: -1 })
   if (!allTags) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -111,7 +111,7 @@ export const deleteTags = async (tagId) => {
   }
   const tagUpdate = await tag.findByIdAndUpdate(
     tagId,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 

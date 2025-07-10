@@ -15,7 +15,7 @@ export const getUserServiceReport = async () => {
       $match: {
         archive: false,
         isActive: true,
-        isDeleted: false,
+        isDelete: false,
         role: 'user',
       },
     },
@@ -61,7 +61,7 @@ export const getCaseContactReport = async () => {
         caseOpened: { $ne: null },
         isArchive: false,
         isActive: true,
-        isDeleted: false,
+        isDelete: false,
         createdAt: {
           $gte: new Date(`${currentYear}-01-01`),
           $lte: new Date(`${currentYear}-12-31`),
@@ -100,7 +100,7 @@ export const getSessionContactReport = async () => {
       $match: {
         isArchive: false,
         isActive: true,
-        isDeleted: false,
+        isDelete: false,
         date: {
           $gte: new Date(`${currentYear}-01-01`),
           $lte: new Date(`${currentYear}-12-31`),
@@ -135,7 +135,7 @@ export const getDonorReport = async () => {
       $match: {
         archive: false,
         isActive: true,
-        isDeleted: false,
+        isDelete: false,
         role: 'donor',
       },
     },

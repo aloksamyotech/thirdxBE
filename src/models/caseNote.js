@@ -41,6 +41,10 @@ const caseNoteSchema = new mongoose.Schema({
   isDelete: {
     type: Boolean,
     default: false,
+  },
+  isCompletlyDelete: {
+    type: Boolean,
+    default: false,
   }
 })
 caseNoteSchema.plugin(commonFieldsPlugin)

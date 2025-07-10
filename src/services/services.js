@@ -1,12 +1,20 @@
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable no-undef */
 import Services from '../models/services.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import { regexFilter } from '../core/common/common.js'
 
 export const addServices = async (serviceData) => {
+  const existingService = await Services.findOne({ code: serviceData.code });
+
+  if (existingService) {
+    throw new CustomError(
+      statusCodes.badRequest,
+      Message.serviceCodeExist,
+      errorCodes.already_exist
+    )
+  }
   const newService = await Services.create(serviceData)
+
 
   if (!newService) {
     throw new CustomError(
@@ -31,7 +39,7 @@ export const deleteServices = async (serviceId) => {
   }
   const statusUpdate = await Services.findByIdAndUpdate(
     serviceId,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 
@@ -77,7 +85,7 @@ export const getServiceById = async (serviceId) => {
     )
   }
 
-  const userData = await Services.findOne({ _id: serviceId, isDeleted: false })
+  const userData = await Services.findOne({ _id: serviceId, isDelete: false })
   if (!userData) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -89,7 +97,7 @@ export const getServiceById = async (serviceId) => {
 }
 
 export const getServiceswithPagination = async (query) => {
-  const { search, status, serviceType, page = 1, limit = 10 } = query || {}
+  const { search, status, serviceType, page = 1, limit = 10,deleted,} = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -112,13 +120,13 @@ export const getServiceswithPagination = async (query) => {
 
   const filter = {
     $or: searchConditions,
-    isDeleted
-      : false,
     isArchive: false,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
     ...(serviceType !== undefined &&
       serviceType !== '' && { serviceType: serviceType }),
+    ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
+
   }
 
   const allService = await Services.find(filter)
@@ -176,7 +184,7 @@ export const editServices = async (serviceId, serviceData) => {
 }
 
 export const getAllServices = async () => {
-  return await Services.find({ isDeleted: false })
+  return await Services.find({ isDelete: false })
     .sort({
       createdAt: -1,
     })
@@ -228,7 +236,7 @@ export const deleteSession = async (sessionId) => {
 
   const softDelete = await Services.findByIdAndUpdate(
     sessionId, {
-    isDeleted: true
+    isDelete: true
   },
     { new: true }
   );

@@ -46,7 +46,7 @@ export const updateConfiguration = async (configId, configData) => {
 
 export const getAllConfiguration = async () => {
   const allConfiguration = await configuration
-    .find({ isDeleted: false })
+    .find({ isDelete: false })
     .sort({ createdAt: -1 })
   if (!allConfiguration) {
     throw new CustomError(
@@ -96,7 +96,7 @@ export const deleteConfiguration = async (configId) => {
   }
   const statusUpdate = await configuration.findByIdAndUpdate(
     configId,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 
@@ -113,7 +113,7 @@ export const deleteConfiguration = async (configId) => {
 export const searchConfigurationByName = async (name) => {
   const searchConfig = await configuration.find({
     name: { $regex: name },
-    isDeleted: false,
+    isDelete: false,
   })
 
   return searchConfig
@@ -123,11 +123,11 @@ export const filter = async (type, status) => {
   let filter = {}
   if (type) filter.configurationType = type
   if (status) filter.isActive = status
-  filter.isDeleted = false
+  filter.isDelete = false
 
   const filterConfig = await configuration.find({
     configurationType: { $regex: type },
-    isDeleted: false,
+    isDelete: false,
   })
 
   return filterConfig
