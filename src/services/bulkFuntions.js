@@ -7,7 +7,9 @@ export const bulkSoftDelete = async ({ ids, entityType }) => {
         service_user: user,
         cases: Case,
         services: Services,
-        volunteer: user
+        volunteer: user,
+        donor: user,
+
     };
     const Model = modelMap[entityType];
     if (!Model) {
@@ -29,7 +31,8 @@ export const bulkSoftArchive = async ({ ids, entityType }) => {
         service_user: user,
         cases: Case,
         services: Services,
-        volunteer: user
+        volunteer: user,
+        donor: user,
     };
     const Model = modelMap[entityType];
     if (!Model) {

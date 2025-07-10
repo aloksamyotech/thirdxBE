@@ -10,7 +10,7 @@ const ServiceSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-   
+
     isArchive: {
       type: Boolean,
       default: false,
@@ -29,6 +29,9 @@ const ServiceSchema = new mongoose.Schema(
       required: true,
     },
     file: {
+      type: String,
+    },
+    attachment: {
       type: String,
     },
     description: {
