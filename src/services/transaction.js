@@ -147,6 +147,7 @@ export const getTransactionwithPagination = async (query) => {
   )
 
   const filter = {
+    isCompletlyDelete: false,
     ...(donorId !== undefined &&
       donorId !== '' && { donorId: new mongoose.Types.ObjectId(donorId) }),
     ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
@@ -155,13 +156,13 @@ export const getTransactionwithPagination = async (query) => {
 
     ...(createdAt !== undefined &&
       createdAt !== '' && {
-        createdAt: {
-          $gte: new Date(createdAt),
-          $lt: new Date(
-            new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
-          ),
-        },
-      }),
+      createdAt: {
+        $gte: new Date(createdAt),
+        $lt: new Date(
+          new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
+        ),
+      },
+    }),
 
     ...(name !== undefined && name !== '' && { donorId: name }),
     ...(status !== undefined &&
@@ -179,18 +180,18 @@ export const getTransactionwithPagination = async (query) => {
 
   const filteredTransactions = search
     ? allTransaction.filter((c) => {
-        const firstName =
-          c.donorId?.personalInfo?.firstName?.toLowerCase() || ''
-        const lastName = c.donorId?.personalInfo?.lastName?.toLowerCase() || ''
-        const companyName =
-          c.donorId?.companyInformation?.companyName?.toLowerCase() || ''
-        const searchLower = search.toLowerCase()
-        return (
-          firstName.includes(searchLower) ||
-          lastName.includes(searchLower) ||
-          companyName.includes(searchLower)
-        )
-      })
+      const firstName =
+        c.donorId?.personalInfo?.firstName?.toLowerCase() || ''
+      const lastName = c.donorId?.personalInfo?.lastName?.toLowerCase() || ''
+      const companyName =
+        c.donorId?.companyInformation?.companyName?.toLowerCase() || ''
+      const searchLower = search.toLowerCase()
+      return (
+        firstName.includes(searchLower) ||
+        lastName.includes(searchLower) ||
+        companyName.includes(searchLower)
+      )
+    })
     : allTransaction
 
   const paginatedTransactions = filteredTransactions.slice(

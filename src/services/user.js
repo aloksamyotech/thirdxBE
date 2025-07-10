@@ -34,7 +34,7 @@ export const addUser = async (userData) => {
 
 export const getAllServiceUser = async () => {
   const allUser = await user
-    .find({ isDelete: false, isActive: true, role: checkRole.service_user })
+    .find({ isDelete: false, isActive: true, role: checkRole.service_user, isCompletlyDelete: false })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
@@ -58,7 +58,7 @@ export const getAllServiceUser = async () => {
 
 export const getAllVolunteer = async () => {
   const allVolunteer = await user
-    .find({ isDelete: false, role: checkRole.volunteer })
+    .find({ isDelete: false, role: checkRole.volunteer, isCompletlyDelete: false })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
@@ -81,7 +81,7 @@ export const getAllVolunteer = async () => {
 }
 export const getAllUsers = async () => {
   const allVolunteer = await user
-    .find({ isDelete: false, role: checkRole.user })
+    .find({ isDelete: false, role: checkRole.user, isCompletlyDelete: false })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
@@ -105,7 +105,7 @@ export const getAllUsers = async () => {
 
 export const getAllDonor = async () => {
   const allDonor = await user
-    .find({ isDelete: false, role: checkRole.donor })
+    .find({ isDelete: false, role: checkRole.donor, isCompletlyDelete: false })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
@@ -354,7 +354,10 @@ export const getUserwithPagination = async (query) => {
   )
 
   const filter = {
+
+
     $or: searchConditions,
+    isCompletlyDelete: false,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
     ...(archive !== undefined && archive !== '' && { archive: archive }),

@@ -16,7 +16,7 @@ export const addTags = async (data) => {
 }
 
 export const getAllTags = async () => {
-  const allTags = await tag.find({ isDelete: false,isActive:true }).sort({ createdAt: -1 })
+  const allTags = await tag.find({ isDelete: false, isActive: true, isCompletlyDelete: false }).sort({ createdAt: -1 })
   if (!allTags) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -139,15 +139,16 @@ export const getTagwithPagination = async (query) => {
   const skip = (pageNumber - 1) * limitNumber
   const searchKeys = {
     tagCategoryName: search,
-    name:search
+    name: search
   }
-const searchConditions = Object.entries(regexFilter(searchKeys)).map(
+  const searchConditions = Object.entries(regexFilter(searchKeys)).map(
     ([key, value]) => ({
       [key]: value,
     })
   )
   const filter = {
-     $or: searchConditions,
+    $or: searchConditions,
+    isCompletlyDelete: false,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
     ...(categoryName !== undefined &&

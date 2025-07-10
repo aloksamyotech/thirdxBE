@@ -73,6 +73,7 @@ export const getAttendees = async (query) => {
         })
     )
     const filter = {
+        isCompletlyDelete: false,
         $or: searchConditions,
     }
 
@@ -102,26 +103,26 @@ export const getAttendees = async (query) => {
 export const getAttendeeBySession = async ({ params, query }) => {
     const { sessionId } = params;
     const { search, status, page = 1, limit = 5 } = query || {};
-    
+
     // Rest of your implementation remains the same
     let pageNumber = Number(page);
     let limitNumber = Number(limit);
-    
+
     if (pageNumber < 1) pageNumber = 1;
     if (limitNumber < 1) limitNumber = 5;
-    
+
     const skip = (pageNumber - 1) * limitNumber;
-    
+
     const filter = {
         session: sessionId
     };
-    
+
     if (search) {
-        const searchKeys = {}; 
+        const searchKeys = {};
         const searchConditions = Object.entries(regexFilter(searchKeys)).map(
             ([key, value]) => ({ [key]: value })
         );
-        
+
         filter.$and = [
             ...searchConditions,
             { session: sessionId }

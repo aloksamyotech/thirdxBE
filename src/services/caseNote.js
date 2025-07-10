@@ -95,7 +95,7 @@ export const getCaseNoteById = async (caseNoteId) => {
 
 
 export const getAllCaseNote = async () => {
-  const allCaseNote = await CaseNote.find({ isDelete: false }).sort({
+  const allCaseNote = await CaseNote.find({ isDelete: false, isCompletlyDelete: false }).sort({
     createdAt: -1,
   })
   if (!allCaseNote) {
@@ -127,6 +127,7 @@ export const getAllWithPagination = async (query) => {
 
   const filter = {
     isArchive: false,
+    isCompletlyDelete: false,
     ...regexFilter(searchKeys),
     ...(caseId !== undefined &&
       caseId !== '' && { caseId: new mongoose.Types.ObjectId(caseId) }),

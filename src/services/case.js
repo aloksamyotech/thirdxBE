@@ -272,7 +272,7 @@ export const getCaseById = async (caseId) => {
 }
 export const getAllCases = async () => {
   const allService = await Case.aggregate([
-    { $match: { isDelete: false } },
+    { $match: { isDelete: false, isCompletlyDelete: false } },
 
     {
       $lookup: {
@@ -345,6 +345,7 @@ export const getCasewithPagination = async (query) => {
   const skip = (pageNumber - 1) * limitNumber
 
   const filter = {
+    isCompletlyDelete: false,
     ...(caseOwner !== undefined && caseOwner !== '' && { caseOwner }),
     ...(status !== undefined && status !== '' && { status }),
     ...(serviceId !== undefined && serviceId !== '' && { serviceId }),

@@ -16,7 +16,7 @@ export const addMail = async (data) => {
 }
 
 export const getAllMail = async () => {
-  const allMail = await mail.find().sort({ createdAt: -1 })
+  const allMail = await mail.find({ isCompletlyDelete: false }).sort({ createdAt: -1 })
   if (!allMail) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -98,7 +98,7 @@ export const deleteMail = async (mailId) => {
 }
 
 export const getMailWithPagination = async (query) => {
-  const { search, name, tag, page = 1, limit = 10,deleted} = query || {}
+  const { search, name, tag, page = 1, limit = 10, deleted } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -120,6 +120,7 @@ export const getMailWithPagination = async (query) => {
   )
 
   const filter = {
+    isCompletlyDelete: false,
     $or: searchConditions,
     ...(name !== undefined && name !== '' && { name: name }),
     ...(tag !== undefined && tag !== '' && { tags: tag }),

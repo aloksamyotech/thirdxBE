@@ -124,7 +124,7 @@ export const getSessionById = async (serviceId) => {
 }
 
 export const getAllSession = async () => {
-  const allSession = await Session.find({ isDelete: false })
+  const allSession = await Session.find({ isDelete: false, isCompletlyDelete: false })
     .populate('serviceId')
     .populate('serviceuser')
     .sort({
@@ -167,6 +167,7 @@ export const getAllWithPagination = async (query) => {
 
   const filter = {
     isDelete: false,
+    isCompletlyDelete: false,
     ...(mongoose.Types.ObjectId.isValid(country) && { country: new mongoose.Types.ObjectId(country) }),
     ...(time && { time }),
     ...(status !== undefined && status !== '' && { isActive: status === 'true' }),
