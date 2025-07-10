@@ -4,6 +4,9 @@ import Case from '../models/cases.js'
 import mongoose from 'mongoose'
 import { regexFilter } from '../core/common/common.js'
 import { generateCustomId } from '../utils/generateCustomId.js'
+import user from '../models/user.js'
+import Services from '../models/services.js'
+import tag from '../models/tags.js'
 export const addCase = async (caseData) => {
   const {
     serviceUserId,
@@ -487,4 +490,90 @@ export const toggleArchiveCase = async (sessionId, isArchive = true, archiveReas
   return { statusUpdate };
 };
 
+const getTagIdsByNames = async (names, tagCategoryName) => {
+  if (!names) return [];
+  const nameArray = names.split(',').map(n => n.trim());
+  const tags = await tag.find({ name: { $in: nameArray }, tagCategoryName }).select('_id');
+  return tags.map(tag => tag._id);
+};
+
+export const bulkUpload = async (cases) => {
+  const results = [];
+
+  for (const data of cases) {
+    try {
+      // Find Service User by name and role
+      const nameArray = data.service_user.split(' ').map(n => n.trim());
+      const serviceUser = await user.findOne({
+        'personalInfo.firstName': nameArray[0],
+        'personalInfo.lastName': nameArray[1],
+        role: 'service_user',
+      });
+      if (!serviceUser) {
+        console.log("service user not found for this - ", data.service_user);
+        continue;
+      }
+
+      // Find Case Owner by name and role
+      const nameArray2 = data.case_owner.split(' ').map(n => n.trim());
+      const caseOwner = await user.findOne({
+        'personalInfo.firstName': nameArray2[0],
+        'personalInfo.lastName': nameArray2[1],
+        role: 'service_user',
+      });
+      if (!caseOwner) {
+        console.log("Case owner user not found for this - ", data.case_owner);
+        continue;
+      }
+
+      // Find Service by name
+      const service = await Services.findOne({ name: data.service });
+      if (!service) {
+        console.log("service not found for this - ", data.case_owner);
+        continue;
+      }
+
+      // Tag-based fields
+      const beneficiaryInformation = await getTagIdsByNames(data.benificiary_information, 'Beneficiary Information') || [];
+      const campaignsSupported = await getTagIdsByNames(data.campaigns_supported, 'Campaigns Supported') || [];
+      const engagement = await getTagIdsByNames(data.engagement, 'Engagement') || [];
+      const eventsAttended = await getTagIdsByNames(data.events_attended, 'Event Attended') || [];
+      const fundingInterests = await getTagIdsByNames(data.funding_interests, 'Funding Interests') || [];
+      const fundraisingActivities = await getTagIdsByNames(data.fundraising_activities, 'Fundraising Activities') || [];
+
+      const uniqueId = await generateCustomId()
+      const openDate = new Date(data.case_open_date);
+      const currentDate = new Date();
+      const status = openDate > currentDate ? 'pending' : 'open';
+
+      // Create and save new Case
+      const newCase = new Case({
+
+        serviceUserId: serviceUser._id,
+        caseOwner: caseOwner._id,
+        serviceId: service._id,
+        benificiary: beneficiaryInformation,
+        campaigns: campaignsSupported,
+        engagement,
+        eventAttanded: eventsAttended,
+        fundingInterest: fundingInterests,
+        fundraisingActivities: fundraisingActivities,
+        caseOpened: new Date(data.case_open_date),
+        caseClosed: new Date(data.case_closed_date),
+        notes: data.notes,
+        file: data.file,
+        uniqueId,
+        status
+      });
+
+      await newCase.save();
+      results.push(newCase);
+    } catch (itemError) {
+      console.log("Error saving this item - ", data, itemError);
+    }
+  }
+
+  return { results };
+
+}
 

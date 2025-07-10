@@ -122,3 +122,9 @@ export const toggleArchiveCase = async (req, res) => {
   const data = await cases.toggleArchiveCase(sessionId, isArchive, archiveReason)
   res.status(statusCodes?.ok).send(data)
 }
+
+export const bulkUpload = async (req, res) => {
+  const data = req.body;
+  const response = await cases.bulkUpload(data);
+  res.status(statusCodes?.ok).send(response);
+}
