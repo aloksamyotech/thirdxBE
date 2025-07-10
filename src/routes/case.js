@@ -9,6 +9,7 @@ import {
   editCase,
   getCasewithPagination,
   toggleArchiveCase,
+  bulkUpload,
 } from '../controllers/case.js'
 import { upload } from '../core/helpers/multer.js'
 
@@ -21,6 +22,7 @@ router.get('/getCaseById/:id', asyncHandler(getCaseById))
 router.get('/getAllCases', asyncHandler(getAllCases))
 router.put('/editCase/:caseId', upload.single('file'), asyncHandler(editCase))
 router.get('/allwithpagination', asyncHandler(getCasewithPagination))
-router.post('/toggleArchive/:id', asyncHandler(toggleArchiveCase))
+router.post('/toggleArchive/:id', asyncHandler(toggleArchiveCase));
+router.post('/bulkUpload', asyncHandler(bulkUpload));
 
 export default router
