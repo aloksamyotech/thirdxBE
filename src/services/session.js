@@ -158,7 +158,6 @@ export const getAllWithPagination = async (query) => {
     uniqueId,
     range
   } = query || {}
-
   let pageNumber = Number(page);
   let limitNumber = Number(limit);
   if (pageNumber < 1) pageNumber = 1;
@@ -168,7 +167,7 @@ export const getAllWithPagination = async (query) => {
 
   const filter = {
     isDelete: false,
-    ...(country && { country }),
+    ...(mongoose.Types.ObjectId.isValid(country) && { country: new mongoose.Types.ObjectId(country) }),
     ...(time && { time }),
     ...(status !== undefined && status !== '' && { isActive: status === 'true' }),
     ...(mongoose.Types.ObjectId.isValid(serviceId) && { serviceId }),

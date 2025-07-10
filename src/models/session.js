@@ -8,16 +8,16 @@ const SessionSchema = new mongoose.Schema(
       required: true,
     },
     country: {
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'configuration',
     },
-   
+
     isArchive: {
       type: Boolean,
       default: false,
     },
-    archiveReason: { 
-      type: String 
+    archiveReason: {
+      type: String
     },
     file: {
       type: String,
