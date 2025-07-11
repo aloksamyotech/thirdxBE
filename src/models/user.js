@@ -128,23 +128,26 @@ const UserSchema = new mongoose.Schema(
         whatsapp: Boolean,
         donor: Boolean,
       },
-    },
-    Service: {
-      serviceName: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'services',
-      },
-      startDate: Date,
-      lastDate: Date,
-      referrerName: String,
-      referrerJob: String,
-      referrerPhone: String,
-      referrerEmail: String,
-      emergencyPhone: String,
-      emergencyEmail: String,
-      referralType: String,
-      referredDate: Date,
-    },
+    }, 
+    Service: [
+      {
+        serviceName: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'services',
+        },
+        startDate: Date,
+        lastDate: Date,
+        referrerName: String,
+        referrerJob: String,
+        referrerPhone: String,
+        referrerEmail: String,
+        emergencyPhone: String,
+        emergencyEmail: String,
+        referralType: String,
+        referredDate: Date,
+      }
+    ],
+
     companyInformation: {
       companyName: { type: String },
       mainContactName: { type: String },
