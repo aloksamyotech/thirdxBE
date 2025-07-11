@@ -15,7 +15,7 @@ export const addCase = async (req, res) => {
     fundingInterest,
     fundraisingActivities,
     description,
-    status,
+
   } = req.body
 
   const caseData = {
@@ -31,7 +31,7 @@ export const addCase = async (req, res) => {
     fundingInterest,
     fundraisingActivities,
     description,
-    status,
+
   }
 
   const filePath = req?.file?.path?.replace(/\\/g, '/')

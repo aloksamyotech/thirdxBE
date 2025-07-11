@@ -109,10 +109,12 @@ const UserSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: 'configuration',
       },
-      contactPurposes: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'configuration',
-      },
+      contactPurposes: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'configuration',
+        }
+      ],
       dateOfConfirmation: Date,
       reason: {
         type: mongoose.Schema.Types.ObjectId,

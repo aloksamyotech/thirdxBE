@@ -22,17 +22,29 @@ export const addCase = async (caseData) => {
     fundraisingActivities,
     description,
     file,
-    status,
-  } = caseData
+  } = caseData;
 
-  if (!serviceUserId || !serviceId || !caseOwner || !status) {
+  if (!serviceUserId || !serviceId || !caseOwner || !caseOpened) {
     throw new CustomError(
       statusCodes.badRequest,
       Message.missingRequiredFields,
       errorCodes.bad_request
-    )
+    );
   }
-  const uniqueId = await generateCustomId()
+
+  const today = new Date();
+  const openedDate = new Date(caseOpened);
+  openedDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  let finalStatus;
+  if (openedDate <= today) {
+    finalStatus = 'open';
+  } else {
+    finalStatus = 'pending';
+  }
+
+  const uniqueId = await generateCustomId();
 
   const newCase = await Case.create({
     serviceUserId,
@@ -48,20 +60,20 @@ export const addCase = async (caseData) => {
     fundraisingActivities,
     description,
     file,
-    status,
+    status: finalStatus,
     uniqueId,
-  })
+  });
 
   if (!newCase) {
     throw new CustomError(
       statusCodes.internalServerError,
       Message.notCreated,
       errorCodes.internal_error
-    )
+    );
   }
 
-  return { newCase }
-}
+  return { newCase };
+};
 
 export const editCase = async (caseId, caseData) => {
   const {
