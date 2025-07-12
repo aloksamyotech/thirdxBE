@@ -126,7 +126,7 @@ export const deleteTags = async (tagId) => {
 }
 
 export const getTagwithPagination = async (query) => {
-  const { search, status, categoryName, page = 1, limit = 10 } = query || {}
+  const { search, status, categoryName, page = 1, limit = 10, categoryId } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -150,9 +150,11 @@ export const getTagwithPagination = async (query) => {
     $or: searchConditions,
     isCompletlyDelete: false,
     ...(status !== undefined &&
-      status !== '' && { isActive: status === 'true' }),
+      status !== '' && { isActive: status }),
     ...(categoryName !== undefined &&
       categoryName !== '' && { tagCategoryName: categoryName }),
+    ...(categoryId !== undefined &&
+      categoryId !== '' && { tagCategoryId: categoryId }),
   }
 
   const allTag = await tag

@@ -5,8 +5,7 @@ import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 const TagCategorySchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    tagsCanBeAppliedTo: [String],
-    tags: [TagSchema],
+    appliedTo: [String],
     isArchive: {
       type: Boolean,
       default: false,

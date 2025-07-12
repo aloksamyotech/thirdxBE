@@ -1,9 +1,13 @@
 import mongoose from 'mongoose'
 import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
+
 const TagSchema = new mongoose.Schema({
-  tagDescription: { type: String, required: true },
-  tagCategoryName: { type: String, required: true },
   name: { type: String, required: true },
+  tagCategoryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'tagCategory',
+    required: true
+  },
   startDate: { type: Date },
   endDate: { type: Date },
 
