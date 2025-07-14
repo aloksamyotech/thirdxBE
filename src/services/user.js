@@ -148,8 +148,8 @@ export const getUserById = async (userId) => {
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
     .populate('companyInformation.recruitmentCampaign')
-    .populate('riskAssessment.keyIndicators');
-
+    .populate('riskAssessment.keyIndicators')
+    .populate('Service.serviceName');
 
   if (!userData) {
     throw new CustomError(
