@@ -71,25 +71,31 @@ export const getCaseNoteById = async (caseNoteId) => {
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
-    )
+    );
   }
 
   const caseNoteData = await CaseNote.findOne({
     _id: caseNoteId,
-    isDeleted: false,
+    isDelete: false,
   })
+    .populate('configurationId')
+    .populate('createdBy')
+    .populate('caseId');
+
   if (!caseNoteData) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.userNotGet,
       errorCodes?.user_not_found
-    )
+    );
   }
-  return { caseNoteData }
-}
+
+  return { caseNoteData };
+};
+
 
 export const getAllCaseNote = async () => {
-  const allCaseNote = await CaseNote.find({ isDeleted: false }).sort({
+  const allCaseNote = await CaseNote.find({ isDelete: false, isCompletlyDelete: false }).sort({
     createdAt: -1,
   })
   if (!allCaseNote) {
@@ -120,20 +126,22 @@ export const getAllWithPagination = async (query) => {
   }
 
   const filter = {
+    isArchive: false,
+    isCompletlyDelete: false,
     ...regexFilter(searchKeys),
     ...(caseId !== undefined &&
       caseId !== '' && { caseId: new mongoose.Types.ObjectId(caseId) }),
     ...(createdBy !== undefined &&
       createdBy !== '' && {
-        createdBy: new mongoose.Types.ObjectId(createdBy),
-      }),
+      createdBy: new mongoose.Types.ObjectId(createdBy),
+    }),
     ...(date !== undefined &&
       date !== '' && {
-        date: {
-          $gte: new Date(date),
-          $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
-        },
-      }),
+      date: {
+        $gte: new Date(date),
+        $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
+      },
+    }),
   }
 
   const allCaseNote = await CaseNote.find(filter)
@@ -167,7 +175,7 @@ export const deleteCaseNote = async (caseNoteId) => {
   }
   const caseNoteUpdate = await CaseNote.findByIdAndUpdate(
     caseNoteId,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 
@@ -180,3 +188,35 @@ export const deleteCaseNote = async (caseNoteId) => {
   }
   return { caseNoteUpdate }
 }
+
+
+export const toggleArchiveCaseNote = async (sessionId, isArchive = true, archiveReason = null) => {
+  const checkExist = await CaseNote.findById(sessionId);
+
+  if (!checkExist) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    );
+  }
+
+  const statusUpdate = await CaseNote.findByIdAndUpdate(
+    sessionId,
+    {
+      isArchive,
+      archiveReason: isArchive ? archiveReason : null
+    },
+    { new: true }
+  );
+
+  if (!statusUpdate) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    );
+  }
+
+  return { statusUpdate };
+};

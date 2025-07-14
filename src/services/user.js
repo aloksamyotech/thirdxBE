@@ -12,6 +12,14 @@ import { regexFilter } from '../core/common/common.js'
 import mongoose from 'mongoose'
 import { generateCustomId } from '../utils/generateCustomId.js'
 export const addUser = async (userData) => {
+  if (
+    userData?.Service &&
+    (userData.Service.serviceName === '' ||
+      !mongoose.Types.ObjectId.isValid(userData.Service.serviceName))
+  ) {
+    delete userData.Service.serviceName
+  }
+
   userData.uniqueId = await generateCustomId()
   const newUser = await user.create(userData)
   if (!newUser) {
@@ -26,7 +34,7 @@ export const addUser = async (userData) => {
 
 export const getAllServiceUser = async () => {
   const allUser = await user
-    .find({ isDeleted: false, isActive: true, role: checkRole.service_user })
+    .find({ isDelete: false, isActive: true, role: checkRole.service_user, isCompletlyDelete: false })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
@@ -50,7 +58,7 @@ export const getAllServiceUser = async () => {
 
 export const getAllVolunteer = async () => {
   const allVolunteer = await user
-    .find({ isDeleted: false, role: checkRole.volunteer })
+    .find({ isDelete: false, role: checkRole.volunteer, isCompletlyDelete: false })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
@@ -73,7 +81,7 @@ export const getAllVolunteer = async () => {
 }
 export const getAllUsers = async () => {
   const allVolunteer = await user
-    .find({ isDeleted: false, role: checkRole.user })
+    .find({ isDelete: false, role: checkRole.user, isCompletlyDelete: false })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
@@ -97,7 +105,7 @@ export const getAllUsers = async () => {
 
 export const getAllDonor = async () => {
   const allDonor = await user
-    .find({ isDeleted: false, role: checkRole.donor })
+    .find({ isDelete: false, role: checkRole.donor, isCompletlyDelete: false })
     .sort({ createdAt: -1 })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
@@ -129,7 +137,7 @@ export const getUserById = async (userId) => {
     )
   }
   const userData = await user
-    .findOne({ _id: userId, isDeleted: false })
+    .findOne({ _id: userId, isDelete: false })
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
     .populate('otherInfo.engagement')
@@ -140,6 +148,8 @@ export const getUserById = async (userId) => {
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
     .populate('companyInformation.recruitmentCampaign')
+    .populate('riskAssessment.keyIndicators')
+    .populate('Service.serviceName');
 
   if (!userData) {
     throw new CustomError(
@@ -173,6 +183,13 @@ export const getAllUsDistricts = async () => {
 }
 
 export const editUser = async (userData) => {
+  if (
+    userData?.Service &&
+    (userData.Service.serviceName === '' ||
+      !mongoose.Types.ObjectId.isValid(userData.Service.serviceName))
+  ) {
+    delete userData.Service.serviceName
+  }
   const { userId, ...rest } = userData
 
   if (!userId) {
@@ -222,7 +239,7 @@ export const deleteUser = async (userId) => {
   }
   const statusUpdate = await user.findByIdAndUpdate(
     { _id: userId },
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 
@@ -236,7 +253,7 @@ export const deleteUser = async (userId) => {
   return { statusUpdate }
 }
 
-export const archiveUser = async (userId, archiveReason) => {  
+export const archiveUser = async (userId, archiveReason) => {
   const checkExist = await user.findById({ _id: userId });
 
   if (!checkExist) {
@@ -306,11 +323,11 @@ export const getUserwithPagination = async (query) => {
     role,
     userId,
     name,
+    deleted,
     dateOfBirth,
     page = 1,
     limit = 10,
   } = query || {}
-
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -325,6 +342,7 @@ export const getUserwithPagination = async (query) => {
     'personalInfo.firstName': search,
     'personalInfo.lastName': search,
     'companyInformatiom.companyName': search,
+    'uniqueId': search,
     role: search,
     subRole: search,
     uniqueId: search,
@@ -337,7 +355,10 @@ export const getUserwithPagination = async (query) => {
   )
 
   const filter = {
+
+
     $or: searchConditions,
+    isCompletlyDelete: false,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
     ...(archive !== undefined && archive !== '' && { archive: archive }),
@@ -347,11 +368,12 @@ export const getUserwithPagination = async (query) => {
       gender !== '' && { 'personalInfo.gender': gender }),
     ...(nickName !== undefined &&
       nickName !== '' && { 'personalInfo.nickName': nickName }),
+    ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
 
     ...(campaigns !== undefined &&
       campaigns !== '' && {
-        'companyInformation.recruitmentCampaign': campaigns,
-      }),
+      'companyInformation.recruitmentCampaign': campaigns,
+    }),
     ...(country !== undefined &&
       country !== '' && { 'contactInfo.country': country }),
     ...(role !== undefined && role !== '' && { role: role }),
@@ -361,21 +383,21 @@ export const getUserwithPagination = async (query) => {
 
     ...(createdAt !== undefined &&
       createdAt !== '' && {
-        createdAt: {
-          $gte: new Date(createdAt),
-          $lt: new Date(
-            new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
-          ),
-        },
-      }),
+      createdAt: {
+        $gte: new Date(createdAt),
+        $lt: new Date(
+          new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
+        ),
+      },
+    }),
     ...(uniqueId !== undefined && uniqueId !== '' && { _id: uniqueId }),
     ...(dateOfBirth !== undefined &&
       dateOfBirth !== '' && {
-        'personalInfo.dateOfBirth': {
-          $gte: new Date(new Date(dateOfBirth).setHours(0, 0, 0, 0)),
-          $lt: new Date(new Date(dateOfBirth).setHours(23, 59, 59, 999)),
-        },
-      }),
+      'personalInfo.dateOfBirth': {
+        $gte: new Date(new Date(dateOfBirth).setHours(0, 0, 0, 0)),
+        $lt: new Date(new Date(dateOfBirth).setHours(23, 59, 59, 999)),
+      },
+    }),
   }
 
   const allUser = await user
@@ -383,7 +405,6 @@ export const getUserwithPagination = async (query) => {
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
-    .notDeleted()
     .populate('otherInfo.benificiary')
     .populate('otherInfo.campaigns')
     .populate('otherInfo.engagement')
@@ -394,6 +415,7 @@ export const getUserwithPagination = async (query) => {
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
     .populate('companyInformation.recruitmentCampaign')
+    .populate('Service.serviceName')
 
   const total = await user.countDocuments(filter)
   return {

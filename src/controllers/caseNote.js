@@ -67,3 +67,9 @@ export const editCaseNote = async (req, res) => {
   )
   res.status(statusCodes?.ok).send(updatedNote)
 }
+export const toggleArchiveCaseNote = async (req, res) => {
+  const sessionId = req.params?.id;
+  const { isArchive, archiveReason } = req.body;
+  const data = await casesNote.toggleArchiveCaseNote(sessionId, isArchive, archiveReason)
+  res.status(statusCodes?.ok).send(data)
+}

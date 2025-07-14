@@ -15,7 +15,7 @@ export const addCase = async (req, res) => {
     fundingInterest,
     fundraisingActivities,
     description,
-    status,
+
   } = req.body
 
   const caseData = {
@@ -31,7 +31,7 @@ export const addCase = async (req, res) => {
     fundingInterest,
     fundraisingActivities,
     description,
-    status,
+
   }
 
   const filePath = req?.file?.path?.replace(/\\/g, '/')
@@ -86,7 +86,7 @@ export const editCase = async (req, res) => {
     fundingInterest,
     fundraisingActivities,
     description,
-     status,
+    status,
   } = req.body
 
   const filePath = req?.file?.path
@@ -104,7 +104,7 @@ export const editCase = async (req, res) => {
     fundingInterest,
     fundraisingActivities,
     description,
-     status,
+    status,
   }
   if (filePath) caseData.file = `${filePath}`
 
@@ -115,4 +115,16 @@ export const editCase = async (req, res) => {
 export const getCasewithPagination = async (req, res) => {
   const searchData = await cases.getCasewithPagination(req?.query)
   res.status(statusCodes?.ok).send(searchData)
+}
+export const toggleArchiveCase = async (req, res) => {
+  const sessionId = req.params?.id;
+  const { isArchive, archiveReason } = req.body;
+  const data = await cases.toggleArchiveCase(sessionId, isArchive, archiveReason)
+  res.status(statusCodes?.ok).send(data)
+}
+
+export const bulkUpload = async (req, res) => {
+  const data = req.body;
+  const response = await cases.bulkUpload(data);
+  res.status(statusCodes?.ok).send(response);
 }

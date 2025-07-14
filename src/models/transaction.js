@@ -17,15 +17,27 @@ const TransactionSchema = new mongoose.Schema(
       ref: 'configuration',
       required: true,
     },
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'configuration',
+    },
     processingCost: { type: Number, default: 0 },
     currency: {
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'configuration',
     },
     receiptNumber: { type: String },
     transactionId: { type: String, unique: true },
 
     isArchive: {
+      type: Boolean,
+      default: false,
+    },
+    isDelete: {
+      type: Boolean,
+      default: false,
+    },
+    isCompletlyDelete: {
       type: Boolean,
       default: false,
     },

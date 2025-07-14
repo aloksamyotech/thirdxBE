@@ -91,34 +91,65 @@ const UserSchema = new mongoose.Schema(
       town: String,
       postcode: String,
     },
+    riskAssessment: {
+      riskAssessmentNotes: {
+        type: String,
+      },
+      keyIndicators: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'configuration',
+        },
+      ],
+    }
+    ,
 
     contactPreferences: {
       preferredMethod: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'configuration',
-        required: true,
       },
-      contactPurposes: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'configuration',
-        required: true,
-      },
+      contactPurposes: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'configuration',
+        }
+      ],
       dateOfConfirmation: Date,
       reason: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'configuration',
-        required: true,
       },
       email: String,
       phone: String,
       contactMethods: {
         telephone: Boolean,
         email: Boolean,
+        letter: Boolean,
         sms: Boolean,
         whatsapp: Boolean,
         donor: Boolean,
       },
-    },
+    }, 
+    Service: [
+      {
+        serviceName: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'services',
+        },
+        startDate: Date,
+        lastDate: Date,
+        referrerName: String,
+        referrerJob: String,
+        referrerPhone: String,
+        referrerEmail: String,
+        emergencyPhone: String,
+        emergencyEmail: String,
+        referralType: String,
+        referredDate: Date,
+      }
+    ],
+
     companyInformation: {
       companyName: { type: String },
       mainContactName: { type: String },
@@ -131,12 +162,23 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      required: true,
       enum: ['service_user', 'volunteer', 'donor', 'user'],
     },
     subRole: {
       type: String,
       enum: ['donar_individual', 'donar_company', 'donar_group'],
+    },
+    isArchive: {
+      type: Boolean,
+      default: false,
+    },
+    isDelete: {
+      type: Boolean,
+      default: false,
+    },
+    isCompletlyDelete: {
+      type: Boolean,
+      default: false,
     },
     archive: { type: Boolean, default: false },
     archiveReason: { type: String },

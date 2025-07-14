@@ -24,7 +24,7 @@ export const saveResponse = async (formId, body) => {
 
 export const getAllResponse = async (query) => {
 
-    const { page = 1, limit = 10, search, date } = query || {}
+    const { page = 1, limit = 10, search, date, status } = query || {}
     const skip = (page - 1) * limit;
     const searchQuery = search ? {
         title: { $regex: search, $options: 'i' }
@@ -38,6 +38,10 @@ export const getAllResponse = async (query) => {
                 $gte: new Date(date),
                 $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
             },
+        }),
+        ...(status !== undefined &&
+            status !== '' && {
+            status
         })
     }
 

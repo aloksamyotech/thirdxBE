@@ -1,12 +1,20 @@
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable no-undef */
 import Services from '../models/services.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import { regexFilter } from '../core/common/common.js'
 
 export const addServices = async (serviceData) => {
+  const existingService = await Services.findOne({ code: serviceData.code });
+
+  if (existingService) {
+    throw new CustomError(
+      statusCodes.badRequest,
+      Message.serviceCodeExist,
+      errorCodes.already_exist
+    )
+  }
   const newService = await Services.create(serviceData)
+
 
   if (!newService) {
     throw new CustomError(
@@ -31,7 +39,7 @@ export const deleteServices = async (serviceId) => {
   }
   const statusUpdate = await Services.findByIdAndUpdate(
     serviceId,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 
@@ -77,7 +85,7 @@ export const getServiceById = async (serviceId) => {
     )
   }
 
-  const userData = await Services.findOne({ _id: serviceId, isDeleted: false })
+  const userData = await Services.findOne({ _id: serviceId, isDelete: false })
   if (!userData) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -89,7 +97,7 @@ export const getServiceById = async (serviceId) => {
 }
 
 export const getServiceswithPagination = async (query) => {
-  const { search, status, serviceType, page = 1, limit = 10 } = query || {}
+  const { search, status, serviceType, page = 1, limit = 10, deleted, } = query || {}
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -112,10 +120,14 @@ export const getServiceswithPagination = async (query) => {
 
   const filter = {
     $or: searchConditions,
+    isArchive: false,
+    isCompletlyDelete: false,
     ...(status !== undefined &&
       status !== '' && { isActive: status === 'true' }),
     ...(serviceType !== undefined &&
       serviceType !== '' && { serviceType: serviceType }),
+    ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
+
   }
 
   const allService = await Services.find(filter)
@@ -173,8 +185,70 @@ export const editServices = async (serviceId, serviceData) => {
 }
 
 export const getAllServices = async () => {
-  return await Services.find({ isDeleted: false })
+  return await Services.find({ isDelete: false, isCompletlyDelete: false })
     .sort({
       createdAt: -1,
     })
 }
+
+
+export const toggleArchiveSession = async (sessionId, isArchive = true, archiveReason = null) => {
+  const checkExist = await Services.findById(sessionId);
+
+  if (!checkExist) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    );
+  }
+
+  const statusUpdate = await Services.findByIdAndUpdate(
+    sessionId,
+    {
+      isArchive,
+      archiveReason: isArchive ? archiveReason : null
+    },
+    { new: true }
+  );
+
+  if (!statusUpdate) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    );
+  }
+
+  return { statusUpdate };
+};
+
+
+export const deleteSession = async (sessionId) => {
+  const checkExist = await Services.findById(sessionId);
+
+  if (!checkExist) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notFound,
+      errorCodes?.not_found
+    );
+  }
+
+  const softDelete = await Services.findByIdAndUpdate(
+    sessionId, {
+    isDelete: true
+  },
+    { new: true }
+  );
+
+  if (!softDelete) {
+    throw new CustomError(
+      statusCodes?.notFound,
+      Message?.notUpdate,
+      errorCodes?.not_found
+    );
+  }
+
+  return { softDelete };
+};

@@ -1,6 +1,8 @@
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import Session from '../models/session.js'
+import dayjs from 'dayjs'
+import mongoose from 'mongoose'
 
 export const addSession = async (sessionData) => {
   const newSession = await Session.create(sessionData)
@@ -64,7 +66,7 @@ export const deleteSession = async (sessionId) => {
   }
   const statusUpdate = await Session.findByIdAndUpdate(
     sessionId,
-    { isDeleted: true },
+    { isDelete: true },
     { new: true }
   )
 
@@ -108,7 +110,7 @@ export const getSessionById = async (serviceId) => {
     )
   }
 
-  const userData = await Session.find({ _id : serviceId, isDeleted: false })
+  const userData = await Session.find({ _id: serviceId, isDelete: false })
     .populate('serviceId')
     .populate('serviceuser')
   if (!userData || userData.length === 0) {
@@ -122,7 +124,7 @@ export const getSessionById = async (serviceId) => {
 }
 
 export const getAllSession = async () => {
-  const allSession = await Session.find({ isDeleted: false })
+  const allSession = await Session.find({ isDelete: false, isCompletlyDelete: false })
     .populate('serviceId')
     .populate('serviceuser')
     .sort({
@@ -154,37 +156,64 @@ export const getAllWithPagination = async (query) => {
     serviceId,
     serviceuser,
     uniqueId,
+    range
   } = query || {}
-  let pageNumber = Number(page)
-  let limitNumber = Number(limit)
-  if (pageNumber < 1) {
-    pageNumber = 1
-  }
+  let pageNumber = Number(page);
+  let limitNumber = Number(limit);
+  if (pageNumber < 1) pageNumber = 1;
+  if (limitNumber < 1) limitNumber = 10;
 
-  if (limitNumber < 1) {
-    limitNumber = 10
-  }
-  const skip = (pageNumber - 1) * limitNumber
+  const skip = (pageNumber - 1) * limitNumber;
+
   const filter = {
-    isDeleted: false,
-    ...(serviceuser !== undefined && serviceuser !== '' && { serviceuser }),
-    ...(serviceId && { serviceId }),
-    ...(country !== undefined && country !== '' && { country }),
-    ...(name !== undefined && name !== '' && { serviceuser: name }),
-    ...(date !== undefined &&
-      date !== '' && {
-        date: {
-          $gte: new Date(date),
-          $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
-        },
-      }),
-    ...(time !== undefined && time !== '' && { time }),
-    ...(status !== undefined &&
-      status !== '' && { isActive: status === 'true' }),
-    ...(uniqueId !== undefined && uniqueId !== '' && { serviceuser: uniqueId }),
+    isDelete: false,
+    isCompletlyDelete: false,
+    ...(mongoose.Types.ObjectId.isValid(country) && { country: new mongoose.Types.ObjectId(country) }),
+    ...(time && { time }),
+    ...(status !== undefined && status !== '' && { isActive: status === 'true' }),
+    ...(mongoose.Types.ObjectId.isValid(serviceId) && { serviceId }),
+    ...(mongoose.Types.ObjectId.isValid(serviceuser) && { serviceuser }),
+    ...(mongoose.Types.ObjectId.isValid(uniqueId) && { serviceuser: uniqueId }),
+  };
+
+  if (range) {
+    let startDate;
+    const endDate = dayjs().endOf('day');
+
+    switch (range) {
+      case 'this-week':
+        startDate = dayjs().startOf('week');
+        break;
+      case 'this-month':
+        startDate = dayjs().startOf('month');
+        break;
+      case 'this-year':
+        startDate = dayjs().startOf('year');
+        break;
+      default:
+        startDate = null;
+    }
+
+    if (startDate) {
+      filter.date = {
+        $gte: startDate.toDate(),
+        $lte: endDate.toDate(),
+      };
+    }
   }
 
-  const allSession = await Session.find(filter)
+  if (date) {
+    const startOfDay = new Date(date);
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setDate(endOfDay.getDate() + 1);
+
+    filter.date = {
+      $gte: startOfDay,
+      $lt: endOfDay,
+    };
+  }
+
+  let allSession = await Session.find(filter)
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
@@ -194,9 +223,19 @@ export const getAllWithPagination = async (query) => {
       populate: {
         path: 'serviceType',
       },
-    })
+    });
 
-  const total = await Session.countDocuments(filter)
+  if (name) {
+    const regex = new RegExp(name, 'i');
+    allSession = allSession.filter(
+      (session) =>
+        regex.test(session?.serviceuser?.name || '') ||
+        regex.test(session?.serviceId?.name || '')
+    );
+  }
+
+  const total = allSession.length;
+
   return {
     data: allSession,
     meta: {
@@ -205,8 +244,9 @@ export const getAllWithPagination = async (query) => {
       limit: limitNumber,
       totalPages: Math.ceil(total / limitNumber),
     },
-  }
-}
+  };
+};
+
 
 export const archiveSession = async (sessionId, archiveReason) => {
   const checkExist = await Session.findById({ _id: sessionId })
