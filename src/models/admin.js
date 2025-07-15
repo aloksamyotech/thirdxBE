@@ -1,8 +1,11 @@
 import mongoose from 'mongoose'
-import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
+import { commonFieldsPlugin } from './plugin/commonFields.plugin.js';
 
 const adminSchema = new mongoose.Schema(
   {
+    name: {
+      type: String
+    },
     firstName: {
       type: String,
     },
@@ -42,7 +45,6 @@ const adminSchema = new mongoose.Schema(
     },
     userName: {
       type: String,
-      required: true,
     },
     password: {
       type: String,
@@ -59,6 +61,19 @@ const adminSchema = new mongoose.Schema(
     googleId: {
       type: String,
     },
+    accountType: {
+      type: String,
+      enum: ['admin', 'user'],
+      default: 'admin'
+    },
+    permissions: {
+      cases: { type: Boolean, default: false },
+      donorManagement: { type: Boolean, default: false },
+      forms: { type: Boolean, default: false },
+      mailingList: { type: Boolean, default: false },
+      people: { type: Boolean, default: false },
+      services: { type: Boolean, default: false }
+    }
   },
   {
     timestamps: true,

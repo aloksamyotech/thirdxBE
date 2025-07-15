@@ -107,3 +107,9 @@ export const resetPassword = async (req, res) => {
   const response = await adminService.resetPassword(adminData)
   res.status(statusCodes?.ok).send(response)
 }
+
+export const createConfigUser = async (req, res) => {
+  const data = req.body;
+  const response = await adminService.createConfigUser(data);
+  res.status(statusCodes?.ok).send(response);
+}

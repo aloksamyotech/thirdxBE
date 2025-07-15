@@ -255,3 +255,33 @@ export const resetPassword = async (adminData) => {
   await admin.save()
   return { admin }
 }
+
+export const createConfigUser = async (data) => {
+
+  const isUserExist = await Admin.find({ email: data?.email });
+
+  if (isUserExist.length > 0) {
+    return new CustomError(
+      statusCodes.badRequest,
+      Message.emailAlreadyRegistered,
+      errorCodes.user_exists
+    );
+  }
+
+  const newUser = await Admin.create({
+    name: data?.name,
+    email: data?.email,
+    accountType: data?.accountType,
+    permissions: data.permissions
+  });
+
+  if (!newUser) {
+    return new CustomError(
+      statusCodes.badRequest,
+      Message.notCreated,
+      errorCodes.bad_request
+    )
+  }
+
+  return { newUser };
+}

@@ -11,12 +11,14 @@ import {
   forgotPassword,
   verifyOtp,
   resetPassword,
+  createConfigUser,
 } from '../controllers/admin.js'
 import { userAuth } from '../middlewares/userAuth.js'
 import { upload } from '../core/helpers/multer.js'
 const router = Router()
 
 router.post('/', asyncHandler(signUpAdmin))
+router.post('/create-user', asyncHandler(createConfigUser))
 router.post('/login', asyncHandler(loginAdmin))
 router.post('/google-auth', asyncHandler(googleSignin))
 router.put(
