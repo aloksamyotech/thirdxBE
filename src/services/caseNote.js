@@ -3,6 +3,8 @@ import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import { regexFilter } from '../core/common/common.js'
 import mongoose from 'mongoose'
+import Case from '../models/cases.js'
+import UserTimeline from '../models/userTimeline.js'
 
 export const createCaseNote = async (caseNoteData) => {
   const {
@@ -33,7 +35,15 @@ export const createCaseNote = async (caseNoteData) => {
     file: filePath || '',
     time,
     createdBy,
-  })
+  });
+
+  const caseData = await Case.findById(caseId);
+
+  await UserTimeline.findOneAndUpdate(
+    { userId: caseData?.serviceUserId },
+    { $addToSet: { caseNoteId: newCaseNote._id } },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
 
   return newCaseNote
 }

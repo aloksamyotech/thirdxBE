@@ -3,6 +3,7 @@ import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import { regexFilter } from '../core/common/common.js'
 import mongoose from 'mongoose'
+import UserTimeline from '../models/userTimeline.js'
 export const addTransaction = async (data) => {
   const newTransaction = await transaction.create(data)
   if (!newTransaction) {
@@ -12,6 +13,13 @@ export const addTransaction = async (data) => {
       errorCodes?.bad_request
     )
   }
+
+  await UserTimeline.findOneAndUpdate(
+    { userId: newTransaction?.donorId },
+    { $addToSet: { donationId: newTransaction._id } },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
+
   return { newTransaction }
 }
 
