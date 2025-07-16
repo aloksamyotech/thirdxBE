@@ -18,6 +18,8 @@ import { userAuth } from '../middlewares/userAuth.js'
 import { asyncHandler } from '../utils/asyncWrapper.js'
 import bulkFuntions from "./bulkFuntions.js"
 import tagCategoryRouter from './tagCategory.js'
+import giftAidRouter from './giftAid.js'
+import UserTimelineRouter from './userTimeline.js'
 
 const router = express.Router()
 
@@ -38,6 +40,8 @@ router.use('/responses', responsesRouter)
 router.use('/report', reportRouter)
 router.use('/bulk', asyncHandler(userAuth), bulkFuntions)
 router.use('/tagCategory', asyncHandler(userAuth), tagCategoryRouter)
+router.use('/giftAid', asyncHandler(userAuth), giftAidRouter)
+router.use('/userTimeline', asyncHandler(userAuth), UserTimelineRouter)
 
 
 export default router
