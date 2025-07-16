@@ -113,6 +113,7 @@ export const getSessionById = async (serviceId) => {
   const userData = await Session.find({ _id: serviceId, isDelete: false })
     .populate('serviceId')
     .populate('serviceuser')
+    .populate('country')
   if (!userData || userData.length === 0) {
     throw new CustomError(
       statusCodes?.notFound,
