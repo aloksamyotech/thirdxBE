@@ -64,22 +64,28 @@ export const adminLogin = async (adminData) => {
 
   return { token }
 }
-export const editAdmin = async (adminData) => {
-  const { id, ...fieldsToUpdate } = adminData
+export const editAdmin = async (adminId, data) => {
+  if (!adminId) {
+    throw new Error("Admin ID is required");
+  }
+
   const updatedAdmin = await Admin.findByIdAndUpdate(
-    id,
-    { $set: fieldsToUpdate },
+    adminId,
+    { $set: data },
     { new: true }
-  )
+  );
+
   if (!updatedAdmin) {
-    return new CustomError(
+    throw new CustomError(
       statusCodes.notFound,
       Message.notFound,
       errorCodes.not_found
-    )
+    );
   }
-  return { updatedAdmin }
-}
+
+  return updatedAdmin;
+};
+
 
 export const getAdminById = async (id) => {
   const findAdmin = await Admin.findById(id)
@@ -285,3 +291,36 @@ export const createConfigUser = async (data) => {
 
   return { newUser };
 }
+export const deleteAdmin = async (adminId) => {
+  return await Admin.findByIdAndUpdate(
+    adminId,
+    { isDelete: true },
+    { new: true }
+  );
+};
+
+export const getUsersWithPagination = async (query) => {
+  const { page = 1, limit = 10 } = query;
+
+  const pageNumber = Math.max(Number(page), 1);
+  const limitNumber = Math.max(Number(limit), 1);
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const filter = { isDelete: false };
+
+  const totalUsers = await Admin.countDocuments(filter);
+  const users = await Admin.find(filter)
+    .skip(skip)
+    .limit(limitNumber)
+    .sort({ createdAt: -1 });
+
+  return {
+    data: users,
+    meta: {
+      total: totalUsers,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(totalUsers / limitNumber),
+    },
+  };
+};
