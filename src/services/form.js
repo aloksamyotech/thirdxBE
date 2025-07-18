@@ -4,7 +4,7 @@ import CustomError from '../utils/exception.js'
 
 export const addForm = async (fields) => {
     let setTitle
-    const formatfields = fields
+    const formatfields = fields?.formDataUpdated
         .map((f, index) => {
             if (f.type === 'header') {
                 setTitle = f.label
@@ -24,10 +24,12 @@ export const addForm = async (fields) => {
     const publicId = `surveyform-${10000 + formCount + 1}`;
 
     const form = new Form({
-        title: setTitle,
-        template: 'default',
+        title: setTitle || '',
+        type: fields?.formValues?.formType || '',
+        description: fields?.formValues?.description || '',
         fields: formatfields,
-        publicId
+        publicId,
+        records: fields?.formValues?.formRecord || ''
     });
     await form.save();
 
