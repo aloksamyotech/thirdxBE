@@ -1,10 +1,13 @@
 import User from '../models/user.js';
-
+import {
+  checkRole,
+} from '../core/common/constant.js'
 export const getDuplicate = async () => {
   const duplicates = await User.aggregate([
     {
       $match: {
-        isDelete: false
+        isDelete: false,
+        role: checkRole.service_user
       }
     },
     {
