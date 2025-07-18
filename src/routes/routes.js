@@ -20,6 +20,7 @@ import bulkFuntions from "./bulkFuntions.js"
 import tagCategoryRouter from './tagCategory.js'
 import giftAidRouter from './giftAid.js'
 import UserTimelineRouter from './userTimeline.js'
+import CommanFuntions from "./comman.js"
 
 const router = express.Router()
 
@@ -42,6 +43,7 @@ router.use('/bulk', asyncHandler(userAuth), bulkFuntions)
 router.use('/tagCategory', asyncHandler(userAuth), tagCategoryRouter)
 router.use('/giftAid', asyncHandler(userAuth), giftAidRouter)
 router.use('/userTimeline', asyncHandler(userAuth), UserTimelineRouter)
+router.use('/CommanFuntions', asyncHandler(userAuth), CommanFuntions)
 
 
 export default router
