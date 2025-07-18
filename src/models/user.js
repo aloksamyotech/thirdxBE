@@ -37,41 +37,11 @@ const UserSchema = new mongoose.Schema(
     otherInfo: {
       file: String,
       description: String,
-      benificiary: [
+      tags: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'tag',
-        },
-      ],
-      campaigns: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'tag',
-        },
-      ],
-      engagement: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'tag',
-        },
-      ],
-      eventAttanded: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'tag',
-        },
-      ],
-      fundingInterest: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'tag',
-        },
-      ],
-      fundraisingActivities: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'tag',
-        },
+          ref: 'Tag'
+        }
       ],
       restrictAccess: Boolean,
     },
@@ -130,7 +100,7 @@ const UserSchema = new mongoose.Schema(
         whatsapp: Boolean,
         donor: Boolean,
       },
-    }, 
+    },
     Service: [
       {
         serviceName: {
