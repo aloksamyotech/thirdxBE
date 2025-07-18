@@ -15,7 +15,9 @@ const FieldSchema = new mongoose.Schema({
 
 const FormSchema = new mongoose.Schema({
   title: String,
-  template: String,
+  type: String,
+  description: String,
+  records: String,
   fields: [FieldSchema],
   publicId: { type: String, unique: true },
   createdAt: {
