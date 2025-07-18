@@ -1,4 +1,5 @@
 import user from '../models/user.js'
+import '../models/tags.js';
 import {
   checkRole,
   errorCodes,
@@ -12,6 +13,8 @@ import { regexFilter } from '../core/common/common.js'
 import mongoose from 'mongoose'
 import { generateCustomId } from '../utils/generateCustomId.js'
 export const addUser = async (userData) => {
+
+
   if (
     userData?.Service &&
     (userData.Service.serviceName === '' ||
@@ -36,13 +39,14 @@ export const getAllServiceUser = async () => {
   const allUser = await user
     .find({ isDelete: false, isActive: true, role: checkRole.service_user, isCompletlyDelete: false })
     .sort({ createdAt: -1 })
-    .populate('otherInfo.benificiary')
-    .populate('otherInfo.campaigns')
-    .populate('otherInfo.engagement')
-    .populate('otherInfo.eventAttanded')
-    .populate('otherInfo.fundingInterest')
-    .populate('otherInfo.fundraisingActivities')
-    .populate('contactPreferences.preferredMethod')
+    .populate({
+      path: 'otherInfo.tags',
+      model: 'tag',
+      populate: {
+        path: 'tagCategoryId',
+        model: 'tagCategory'
+      }
+    }).populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
     .populate('companyInformation.recruitmentCampaign')
@@ -60,13 +64,14 @@ export const getAllVolunteer = async () => {
   const allVolunteer = await user
     .find({ isDelete: false, role: checkRole.volunteer, isCompletlyDelete: false })
     .sort({ createdAt: -1 })
-    .populate('otherInfo.benificiary')
-    .populate('otherInfo.campaigns')
-    .populate('otherInfo.engagement')
-    .populate('otherInfo.eventAttanded')
-    .populate('otherInfo.fundingInterest')
-    .populate('otherInfo.fundraisingActivities')
-    .populate('contactPreferences.preferredMethod')
+    .populate({
+      path: 'otherInfo.tags',
+      model: 'tag',
+      populate: {
+        path: 'tagCategoryId',
+        model: 'tagCategory'
+      }
+    }).populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
     .populate('companyInformation.recruitmentCampaign')
@@ -83,13 +88,14 @@ export const getAllUsers = async () => {
   const allVolunteer = await user
     .find({ isDelete: false, role: checkRole.user, isCompletlyDelete: false })
     .sort({ createdAt: -1 })
-    .populate('otherInfo.benificiary')
-    .populate('otherInfo.campaigns')
-    .populate('otherInfo.engagement')
-    .populate('otherInfo.eventAttanded')
-    .populate('otherInfo.fundingInterest')
-    .populate('otherInfo.fundraisingActivities')
-    .populate('contactPreferences.preferredMethod')
+    .populate({
+      path: 'otherInfo.tags',
+      model: 'tag',
+      populate: {
+        path: 'tagCategoryId',
+        model: 'tagCategory'
+      }
+    }).populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
     .populate('companyInformation.recruitmentCampaign')
@@ -107,13 +113,14 @@ export const getAllDonor = async () => {
   const allDonor = await user
     .find({ isDelete: false, role: checkRole.donor, isCompletlyDelete: false })
     .sort({ createdAt: -1 })
-    .populate('otherInfo.benificiary')
-    .populate('otherInfo.campaigns')
-    .populate('otherInfo.engagement')
-    .populate('otherInfo.eventAttanded')
-    .populate('otherInfo.fundingInterest')
-    .populate('otherInfo.fundraisingActivities')
-    .populate('contactPreferences.preferredMethod')
+    .populate({
+      path: 'otherInfo.tags',
+      model: 'tag',
+      populate: {
+        path: 'tagCategoryId',
+        model: 'tagCategory'
+      }
+    }).populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
     .populate('companyInformation.recruitmentCampaign')
@@ -138,13 +145,14 @@ export const getUserById = async (userId) => {
   }
   const userData = await user
     .findOne({ _id: userId, isDelete: false })
-    .populate('otherInfo.benificiary')
-    .populate('otherInfo.campaigns')
-    .populate('otherInfo.engagement')
-    .populate('otherInfo.eventAttanded')
-    .populate('otherInfo.fundingInterest')
-    .populate('otherInfo.fundraisingActivities')
-    .populate('contactPreferences.preferredMethod')
+    .populate({
+      path: 'otherInfo.tags',
+      model: 'tag',
+      populate: {
+        path: 'tagCategoryId',
+        model: 'tagCategory'
+      }
+    }).populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
     .populate('companyInformation.recruitmentCampaign')
@@ -405,12 +413,14 @@ export const getUserwithPagination = async (query) => {
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })
-    .populate('otherInfo.benificiary')
-    .populate('otherInfo.campaigns')
-    .populate('otherInfo.engagement')
-    .populate('otherInfo.eventAttanded')
-    .populate('otherInfo.fundingInterest')
-    .populate('otherInfo.fundraisingActivities')
+    .populate({
+      path: 'otherInfo.tags',
+      model: 'tag',
+      populate: {
+        path: 'tagCategoryId',
+        model: 'tagCategory'
+      }
+    })
     .populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
