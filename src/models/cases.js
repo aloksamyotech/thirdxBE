@@ -22,42 +22,6 @@ const caseSchema = new mongoose.Schema(
     },
     caseOpened: { type: Date },
     caseClosed: { type: Date },
-    benificiary: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    campaigns: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    engagement: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    eventAttanded: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    fundingInterest: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    fundraisingActivities: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
 
     isArchive: {
       type: Boolean,
@@ -75,6 +39,12 @@ const caseSchema = new mongoose.Schema(
     file: {
       type: String,
     },
+    tags: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tag'
+      }
+    ],
     description: { type: String },
     status: {
       type: String,

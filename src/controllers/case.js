@@ -8,28 +8,18 @@ export const addCase = async (req, res) => {
     caseOwner,
     caseOpened,
     caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags,
     description,
 
   } = req.body
-
   const caseData = {
     serviceUserId,
     serviceId,
     caseOwner,
     caseOpened,
     caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags: Array.isArray(tags) ? tags : tags ? [tags] : [],
+
     description,
 
   }
@@ -79,16 +69,10 @@ export const editCase = async (req, res) => {
     caseOwner,
     caseOpened,
     caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags,
     description,
     status,
   } = req.body
-
   const filePath = req?.file?.path
 
   const caseData = {
@@ -97,12 +81,7 @@ export const editCase = async (req, res) => {
     caseOwner,
     caseOpened,
     caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags: Array.isArray(tags) ? tags : tags ? [tags] : [],
     description,
     status,
   }
