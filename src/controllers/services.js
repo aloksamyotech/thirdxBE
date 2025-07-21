@@ -123,3 +123,8 @@ export const deleteSession = async (req, res) => {
   const data = await services.deleteSession(sessionId)
   res.status(statusCodes?.ok).send(data)
 }
+export const bulkUpload = async (req, res) => {
+  const data = req.body;
+  const response = await services.bulkUpload(data);
+  res.status(statusCodes?.ok).send(response);
+}
