@@ -2,6 +2,8 @@ import Services from '../models/services.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import { regexFilter } from '../core/common/common.js'
+import configuration from '../models/configuration.js'
+import tag from '../models/tags.js'
 
 export const addServices = async (serviceData) => {
   const existingService = await Services.findOne({ code: serviceData.code });
@@ -252,3 +254,51 @@ export const deleteSession = async (sessionId) => {
 
   return { softDelete };
 };
+const getTagIdsByNames = async (names, tagCategoryName) => {
+  if (!names) return [];
+  const nameArray = names.split(',').map(n => n.trim());
+  const tags = await tag.find({ name: { $in: nameArray }, tagCategoryName }).select('_id');
+  return tags.map(tag => tag._id);
+};
+export const bulkUpload = async (services) => {
+  const results = [];
+  for (const data of services) {
+    try {
+      const name =data?.service_type.trim();
+      const serviceType = await configuration.findOne({name:name,configurationType:'Service Types'});
+      if (!serviceType) {
+        console.log("service Types not found for this - ", data.service_type);
+        continue;
+      }
+      // Tag-based fields
+      const beneficiaryInformation = await getTagIdsByNames(data.benificiary_information, 'Beneficiary Information') || [];
+      const campaignsSupported = await getTagIdsByNames(data.campaigns_supported, 'Campaigns Supported') || [];
+      const engagement = await getTagIdsByNames(data.engagement, 'Engagement') || [];
+      const eventsAttended = await getTagIdsByNames(data.events_attended, 'Event Attended') || [];
+      const fundingInterests = await getTagIdsByNames(data.funding_interests, 'Funding Interests') || [];
+      const fundraisingActivities = await getTagIdsByNames(data.fundraising_activities, 'Fundraising Activities') || [];
+
+      const newService = new Services({
+        name: data?.service_name,
+        code: data?.service_code,
+        serviceType: serviceType?._id,
+        file: data?.file,
+        benificiary: beneficiaryInformation,
+        campaigns: campaignsSupported,
+        engagement,
+        eventAttanded: eventsAttended,
+        fundingInterest: fundingInterests,
+        fundraisingActivities: fundraisingActivities,
+        description: data.notes,
+      });
+
+      await newService.save();
+      results.push(newService);
+    } catch (itemError) {
+      console.log("Error saving this item - ", data, itemError);
+    }
+  }
+
+  return { results };
+
+}

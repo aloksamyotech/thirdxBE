@@ -119,3 +119,13 @@ export const unArchiveUser = async (req, res) => {
   const deleteUser = await userService.unArchiveUser(userId)
   res.status(statusCodes?.ok).send(deleteUser)
 }
+export const bulkUploadServiceUser = async (req, res) => {
+  const data = req.body;
+  const response = await userService.bulkUploadUsers(data);
+  res.status(statusCodes?.ok).send(response);
+}
+export const bulkUploadDonors = async (req, res) => {
+  const data = req.body;
+  const response = await userService.bulkUploadDonor(data);
+  res.status(statusCodes?.ok).send(response);
+}
