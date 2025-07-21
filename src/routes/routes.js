@@ -21,6 +21,7 @@ import tagCategoryRouter from './tagCategory.js'
 import giftAidRouter from './giftAid.js'
 import UserTimelineRouter from './userTimeline.js'
 import CommanFuntions from "./comman.js"
+import duplicateRouter from './duplicate.js'
 
 const router = express.Router()
 
@@ -44,6 +45,7 @@ router.use('/tagCategory', asyncHandler(userAuth), tagCategoryRouter)
 router.use('/giftAid', asyncHandler(userAuth), giftAidRouter)
 router.use('/userTimeline', asyncHandler(userAuth), UserTimelineRouter)
 router.use('/CommanFuntions', asyncHandler(userAuth), CommanFuntions)
+router.use('/duplicate', asyncHandler(userAuth), duplicateRouter)
 
 
 export default router
