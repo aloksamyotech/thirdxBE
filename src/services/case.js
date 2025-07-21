@@ -14,12 +14,7 @@ export const addCase = async (caseData) => {
     caseOwner,
     caseOpened,
     caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags,
     description,
     file,
   } = caseData;
@@ -52,12 +47,7 @@ export const addCase = async (caseData) => {
     caseOwner,
     caseOpened,
     caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags: Array.isArray(tags) ? tags : tags ? [tags] : [],
     description,
     file,
     status: finalStatus,
@@ -82,16 +72,11 @@ export const editCase = async (caseId, caseData) => {
     caseOwner,
     caseOpened,
     caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags,
     description,
     filePath,
     status,
-  } = caseData
+  } = caseData;
 
   if (!caseId) {
     throw new CustomError(
@@ -130,33 +115,29 @@ export const editCase = async (caseId, caseData) => {
     caseOwner,
     caseOpened,
     caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags: Array.isArray(tags) ? tags : tags ? [tags] : [],
     description,
     filePath,
     status
-  }
+  };
 
   const updatedCase = await Case.findByIdAndUpdate(
     caseId,
     { $set: updateData },
     { new: true }
-  )
+  );
 
   if (!updatedCase) {
     throw new CustomError(
       statusCodes.internalServerError,
       Message.notUpdated,
       errorCodes.internal_error
-    )
+    );
   }
 
-  return { updatedCase }
-}
+  return { updatedCase };
+};
+
 
 export const deleteCase = async (caseId) => {
   const caseData = await Case.findById(caseId)
@@ -390,12 +371,6 @@ export const getCasewithPagination = async (query) => {
     .populate('serviceUserId')
     .populate('serviceId')
     .populate('caseOwner')
-    .populate('benificiary')
-    .populate('campaigns')
-    .populate('engagement')
-    .populate('eventAttanded')
-    .populate('fundingInterest')
-    .populate('fundraisingActivities')
 
   const filteredCases =
     search || country

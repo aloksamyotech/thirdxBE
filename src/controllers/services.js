@@ -1,34 +1,23 @@
 import * as services from '../services/services.js'
 import { statusCodes } from '../core/common/constant.js'
-
 export const addServices = async (req, res) => {
-  const {
-    name,
-    code,
-    isActive,
-    serviceType,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-  } = req.body
-
-  const serviceData = {
-    name,
-    code,
-    isActive,
-    serviceType,
-    description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-  }
+  try {
+    const {
+      name,
+      code,
+      isActive,
+      serviceType,
+      description,
+      tags
+    } = req.body;
+    const serviceData = {
+      name,
+      code,
+      isActive,
+      serviceType,
+      description,
+      tags: Array.isArray(tags) ? tags : tags ? [tags] : []
+    };
 
   if (req.files?.file?.[0]) {
     serviceData.file = `uploads/${req.files.file[0].filename}`
@@ -83,12 +72,7 @@ export const editServices = async (req, res) => {
     isActive,
     type,
     description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags
   } = req.body
 
   const serviceData = {
@@ -97,12 +81,7 @@ export const editServices = async (req, res) => {
     isActive,
     type,
     description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags: Array.isArray(tags) ? tags : tags ? [tags] : []
   }
 
   if (req.file && req.file.filename) {

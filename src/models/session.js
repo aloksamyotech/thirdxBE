@@ -4,7 +4,7 @@ const SessionSchema = new mongoose.Schema(
   {
     serviceuser: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
+      ref: 'admin',
       required: true,
     },
     country: {
@@ -25,42 +25,7 @@ const SessionSchema = new mongoose.Schema(
     description: {
       type: String,
     },
-    benificiary: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    campaigns: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    engagement: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    eventAttanded: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    fundingInterest: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    fundraisingActivities: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
+
     time: {
       type: String,
     },
@@ -71,6 +36,12 @@ const SessionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'services',
     },
+    tags: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tag'
+      }
+    ],
   },
   { timestamps: true }
 )
