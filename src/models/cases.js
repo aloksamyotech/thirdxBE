@@ -17,7 +17,7 @@ const caseSchema = new mongoose.Schema(
     },
     caseOwner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
+      ref: 'admin',
       required: true,
     },
     caseOpened: { type: Date },

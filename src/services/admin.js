@@ -98,20 +98,22 @@ export const getAdminById = async (id) => {
   }
   return { findAdmin }
 }
-
 export const getAllAdmins = async () => {
-  const allAdmins = await Admin.find({ isCompletlyDelete: false })
+  const allAdmins = await Admin.find({
+    isDelete: false,
+    isCompletlyDelete: false
+  });
 
-  if (!allAdmins) {
+  if (!allAdmins || allAdmins.length === 0) {
     return new CustomError(
       statusCodes.notFound,
       Message.notFound,
       errorCodes.not_found
-    )
+    );
   }
 
-  return { allAdmins }
-}
+  return { allAdmins };
+};
 
 export const changePassword = async (adminData) => {
   const findAdmin = await Admin.findById(adminData?.id)
