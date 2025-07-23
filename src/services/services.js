@@ -84,19 +84,29 @@ export const getServiceById = async (serviceId) => {
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
-    )
+    );
   }
 
   const userData = await Services.findOne({ _id: serviceId, isDelete: false })
+    .populate({
+      path: 'tags',
+      model: 'tag',
+      populate: {
+        path: 'tagCategoryId',
+        model: 'tagCategory'
+      }
+    });
+
   if (!userData) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.userNotGet,
       errorCodes?.user_not_found
-    )
+    );
   }
-  return { userData }
-}
+
+  return { userData };
+};
 
 export const getServiceswithPagination = async (query) => {
   const { search, status, serviceType, page = 1, limit = 10, deleted, } = query || {}

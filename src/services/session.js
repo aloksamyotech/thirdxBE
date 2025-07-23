@@ -114,6 +114,14 @@ export const getSessionById = async (serviceId) => {
     .populate('serviceId')
     .populate('serviceuser')
     .populate('country')
+    .populate({
+      path: 'tags',
+      model: 'tag',
+      populate: {
+        path: 'tagCategoryId',
+        model: 'tagCategory'
+      }
+    });
   if (!userData || userData.length === 0) {
     throw new CustomError(
       statusCodes?.notFound,
@@ -128,6 +136,7 @@ export const getAllSession = async () => {
   const allSession = await Session.find({ isDelete: false, isCompletlyDelete: false })
     .populate('serviceId')
     .populate('serviceuser')
+    .populate('country')
     .sort({
       createdAt: -1,
     })
