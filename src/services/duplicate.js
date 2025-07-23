@@ -7,7 +7,11 @@ export const getDuplicate = async () => {
     {
       $match: {
         isDelete: false,
-        role: checkRole.service_user
+        role: checkRole.service_user,
+        "contactInfo.email": { $ne: null, $ne: "", $exists: true },
+        "personalInfo.firstName": { $ne: null, $ne: "", $exists: true },
+        "personalInfo.lastName": { $ne: null, $ne: "", $exists: true },
+        "personalInfo.dateOfBirth": { $ne: null, $ne: "", $exists: true }
       }
     },
     {
