@@ -2,10 +2,15 @@ import fs from 'fs'
 import multer from 'multer'
 import path from 'path'
 
-const uploadDir = './uploads'
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir)
-}
+import { v4 as uuidv4 } from 'uuid';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+const uploadDir = path.resolve(__dirname, '../../../uploads');
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -13,7 +18,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname)
-    cb(null, `${file.fieldname}-${Date.now()}${ext}`)
+    cb(null, `${file.originalname}-${uuidv4()}${ext}`)
   },
 })
 
@@ -40,3 +45,11 @@ export const upload = multer({
   fileFilter,
   limits: { fileSize: 1024 * 1024 * 5 }, // 5 MB
 })
+
+
+
+
+
+
+
+

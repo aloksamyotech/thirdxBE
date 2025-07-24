@@ -49,7 +49,8 @@ export const getAllServiceUser = async () => {
         path: 'tagCategoryId',
         model: 'tagCategory'
       }
-    }).populate('contactPreferences.preferredMethod')
+    })
+    .populate('contactPreferences.preferredMethod')
     .populate('contactPreferences.contactPurposes')
     .populate('contactPreferences.reason')
     .populate('companyInformation.recruitmentCampaign')
@@ -457,7 +458,7 @@ const getTagIdsByNames = async (names, tagCategoryName) => {
 const getConfigIdByName = async (name, configType) => {
   if (!name) return null;
   const config = await configuration.findOne({
-    name: { $regex: `^${name.trim()}$`, $options: 'i' }, 
+    name: { $regex: `^${name.trim()}$`, $options: 'i' },
     configurationType: configType
   }).select('_id');
 
@@ -471,7 +472,7 @@ const getConfigRiskIndicator = async (name, configType) => {
 };
 const getServiceName = async (name) => {
   if (!name) return null;
-  const Service = await Services.findOne({ name: name.trim()}).select('_id');
+  const Service = await Services.findOne({ name: name.trim() }).select('_id');
   return Service?._id || null;
 };
 
@@ -504,7 +505,7 @@ export const bulkUploadUsers = async (services) => {
           firstLanguage: data?.contactInfo_firstLanguage,
           otherId: data?.contactInfo_other_id,
         },
-      
+
         emergencyContact: {
           title: data?.emergencyContact_title,
           gender: data?.emergencyContact_gender,
@@ -529,40 +530,41 @@ export const bulkUploadUsers = async (services) => {
           eventAttanded: await getTagIdsByNames(data?.otherInfo_events_attended, 'Event Attended'),
           fundingInterest: await getTagIdsByNames(data?.otherInfo_funding_interests, 'Funding Interests'),
           fundraisingActivities: await getTagIdsByNames(data?.otherInfo_fundraising_activities, 'Fundraising Activities'),
-          restrictAccess:data?.otherInfo_restrict_access== true ||data?.otherInfo_restrict_access== "true"
+          restrictAccess: data?.otherInfo_restrict_access == true || data?.otherInfo_restrict_access == "true"
         },
         riskAssessment: {
-              riskAssessmentNotes:data?.riskAssessment_notes,
-              keyIndicators: await getConfigRiskIndicator(data.riskAssessment_key_indicators, "Key Indicators")
-            },
+          riskAssessmentNotes: data?.riskAssessment_notes,
+          keyIndicators: await getConfigRiskIndicator(data.riskAssessment_key_indicators, "Key Indicators")
+        },
         contactPreferences: {
           contactPurposes: await getConfigRiskIndicator(data.contactPreferences_contactPurposes, 'Contact Purpose'),
           dateOfConfirmation: data.contactPurposes_dateOfConfirmation,
           reason: await getConfigIdByName(data.contactPurposes_reason, 'Reason'),
           contactMethods: {
-            telephone: data.contactPurposes_contactMethods_telephone == 'true'|| data.contactPurposes_contactMethods_telephone == true,
-            email: data.contactPurposes_contactMethods_email == 'true'||data.contactPurposes_contactMethods_email == true,
-            letter: data.contactPurposes_contactMethods_letter == 'true'||data.contactPurposes_contactMethods_letter == true,
-            sms: data.contactPurposes_contactMethods_sms == 'true'||data.contactPurposes_contactMethods_sms == true,
-            whatsapp: data.contactPurposes_contactMethods_whatsapp == 'true'||data.contactPurposes_contactMethods_whatsapp == true,
+            telephone: data.contactPurposes_contactMethods_telephone == 'true' || data.contactPurposes_contactMethods_telephone == true,
+            email: data.contactPurposes_contactMethods_email == 'true' || data.contactPurposes_contactMethods_email == true,
+            letter: data.contactPurposes_contactMethods_letter == 'true' || data.contactPurposes_contactMethods_letter == true,
+            sms: data.contactPurposes_contactMethods_sms == 'true' || data.contactPurposes_contactMethods_sms == true,
+            whatsapp: data.contactPurposes_contactMethods_whatsapp == 'true' || data.contactPurposes_contactMethods_whatsapp == true,
           },
         },
         Service: [
-          { serviceName:await getServiceName(data?.service_name),
-                    startDate: data?.service_startDate,
-                    lastDate: data?.service_lastDate,
-                    referrerName: data?.service_referrer_name,
-                    referrerJob:data?.service_referrer_job,
-                    referrerPhone: data?.service_referrer_phone,
-                    referrerEmail: typeof data?.service_referrer_email === 'object' ? data.service_referrer_email.text : data?.service_referrer_email,
-                    emergencyPhone: data?.service_emergency_phone,
-                    emergencyEmail: typeof data?.service_emergency_email === 'object' ? data.service_emergency_email.text : data?.service_emergency_email,
-                    referralType: data.service_referral_type,
-                    referredDate: data.service_referred_date
-                  }
+          {
+            serviceName: await getServiceName(data?.service_name),
+            startDate: data?.service_startDate,
+            lastDate: data?.service_lastDate,
+            referrerName: data?.service_referrer_name,
+            referrerJob: data?.service_referrer_job,
+            referrerPhone: data?.service_referrer_phone,
+            referrerEmail: typeof data?.service_referrer_email === 'object' ? data.service_referrer_email.text : data?.service_referrer_email,
+            emergencyPhone: data?.service_emergency_phone,
+            emergencyEmail: typeof data?.service_emergency_email === 'object' ? data.service_emergency_email.text : data?.service_emergency_email,
+            referralType: data.service_referral_type,
+            referredDate: data.service_referred_date
+          }
         ],
         role: data.role || 'service_user',
-        uniqueId:await generateCustomId()
+        uniqueId: await generateCustomId()
       };
 
       const newUser = new user(userData);
@@ -576,7 +578,7 @@ export const bulkUploadUsers = async (services) => {
   return { results };
 };
 
-export const bulkUploadDonor= async (donors) => {
+export const bulkUploadDonor = async (donors) => {
   const results = [];
 
   for (const data of donors) {
@@ -609,30 +611,30 @@ export const bulkUploadDonor= async (donors) => {
           eventAttanded: await getTagIdsByNames(data?.otherInfo_events_attended, 'Event Attended'),
           fundingInterest: await getTagIdsByNames(data?.otherInfo_funding_interests, 'Funding Interests'),
           fundraisingActivities: await getTagIdsByNames(data?.otherInfo_fundraising_activities, 'Fundraising Activities'),
-          restrictAccess:data?.otherInfo_restrict_access== true ||data?.otherInfo_restrict_access== "true"
+          restrictAccess: data?.otherInfo_restrict_access == true || data?.otherInfo_restrict_access == "true"
         },
         contactPreferences: {
           contactPurposes: await getConfigRiskIndicator(data.contactPreferences_contactPurposes, 'Contact Purpose'),
           dateOfConfirmation: data.contactPurposes_dateOfConfirmation,
           reason: await getConfigIdByName(data.contactPurposes_reason, 'Reason'),
           contactMethods: {
-            donor: data.contactPurposes_contactMethods_donerTag == 'true'|| data.contactPurposes_contactMethods_donerTag == true,
-            email: data.contactPurposes_contactMethods_email == 'true'||data.contactPurposes_contactMethods_email == true,
-            letter: data.contactPurposes_contactMethods_letter == 'true'||data.contactPurposes_contactMethods_letter == true,
-            sms: data.contactPurposes_contactMethods_sms == 'true'||data.contactPurposes_contactMethods_sms == true,
-            whatsapp: data.contactPurposes_contactMethods_whatsapp == 'true'||data.contactPurposes_contactMethods_whatsapp == true,
+            donor: data.contactPurposes_contactMethods_donerTag == 'true' || data.contactPurposes_contactMethods_donerTag == true,
+            email: data.contactPurposes_contactMethods_email == 'true' || data.contactPurposes_contactMethods_email == true,
+            letter: data.contactPurposes_contactMethods_letter == 'true' || data.contactPurposes_contactMethods_letter == true,
+            sms: data.contactPurposes_contactMethods_sms == 'true' || data.contactPurposes_contactMethods_sms == true,
+            whatsapp: data.contactPurposes_contactMethods_whatsapp == 'true' || data.contactPurposes_contactMethods_whatsapp == true,
           },
         },
         companyInformation: {
-              companyName:data.companyInformation_companyName||"",
-              mainContactName: data.companyInformation_mainContact||"",
-              socialMediaLinks:data.companyInformation_socialMediaLinks,
-              recruitmentCampaign: await getConfigIdByName(data.companyInformation_recruitmentCampaign,"Campaign"),
-            },
+          companyName: data.companyInformation_companyName || "",
+          mainContactName: data.companyInformation_mainContact || "",
+          socialMediaLinks: data.companyInformation_socialMediaLinks,
+          recruitmentCampaign: await getConfigIdByName(data.companyInformation_recruitmentCampaign, "Campaign"),
+        },
         role: data.role || 'donor',
         subRole: data.subRole || 'donar_individual',
-        uniqueId:await generateCustomId()
-    };
+        uniqueId: await generateCustomId()
+      };
       const newUser = new user(userData);
       await newUser.save();
       results.push(newUser);
