@@ -5,6 +5,7 @@ import Session from '../models/session.js';
 import user from '../models/user.js';
 import Case from '../models/cases.js';
 import Services from "../models/services.js"
+import '../models/tags.js';
 import task from '../models/task.js';
 import path from 'path';
 import { convertToReadableFormat } from '../utils/valueFormatter.js';
@@ -113,13 +114,14 @@ export const getAllCasesWithPagination = async (query) => {
     .populate('serviceUserId')
     .populate('serviceId')
     .populate('caseOwner')
-    .populate('benificiary')
-    .populate('campaigns')
-    .populate('engagement')
-    .populate('eventAttanded')
-    .populate('fundingInterest')
-    .populate('fundraisingActivities')
-
+    .populate({
+      path: 'tags',
+      model: 'tag',
+      populate: {
+        path: 'tagCategoryId',
+        model: 'tagCategory'
+      }
+    })
   // 2. Count total matching documents
   const total = await Case.countDocuments(filter)
 
