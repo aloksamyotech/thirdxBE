@@ -41,7 +41,7 @@ const ServiceSchema = new mongoose.Schema(
     tags: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Tag'
+        ref: 'tag'
       }
     ],
   },

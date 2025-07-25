@@ -242,6 +242,54 @@ export const getCaseById = async (caseId) => {
         as: 'userServiceDetails',
       },
     },
+
+    {
+      $lookup: {
+        from: 'tags',
+        localField: 'tags',
+        foreignField: '_id',
+        as: 'tags'
+      }
+    },
+
+    {
+      $unwind: {
+        path: '$tags',
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $lookup: {
+        from: 'tagcategories', 
+        localField: 'tags.tagCategoryId',
+        foreignField: '_id',
+        as: 'tags.tagCategoryId'
+      }
+    },
+    {
+      $unwind: {
+        path: '$tags.tagCategoryId',
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $group: {
+        _id: '$_id',
+        doc: { $first: '$$ROOT' },
+        tags: { $push: '$tags' }
+      }
+    },
+    {
+      $addFields: {
+        'doc.tags': '$tags'
+      }
+    },
+    {
+      $replaceRoot: {
+        newRoot: '$doc'
+      }
+    },
+
     {
       $unwind: { path: '$serviceDetails', preserveNullAndEmptyArrays: true },
     },
