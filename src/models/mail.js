@@ -20,6 +20,9 @@ const MailingListSchema = new mongoose.Schema(
     includeArchived: { type: Boolean, default: false },
     filters: [
       {
+        id: {
+          type: Number,
+        },
         field: {
           type: String,
           required: true,
