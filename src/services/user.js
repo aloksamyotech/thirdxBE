@@ -448,10 +448,10 @@ export const isExistUser = async (userId) => {
   return Boolean(exists)
 }
 
-const getTagIdsByNames = async (names, tagCategoryName) => {
+const getTagIdsByNames = async (names) => {
   if (!names) return [];
   const nameArray = names.split(',').map(n => n.trim());
-  const tags = await tag.find({ name: { $in: nameArray }, tagCategoryName }).select('_id');
+  const tags = await tag.find({ name: { $in: nameArray }}).select('_id');
   return tags.map(tag => tag._id);
 };
 
@@ -524,12 +524,7 @@ export const bulkUploadUsers = async (services) => {
         otherInfo: {
           file: data.otherInfo_file,
           description: data.otherInfo_notes,
-          benificiary: await getTagIdsByNames(data?.otherInfo_benificiary_information, 'Beneficiary Information'),
-          campaigns: await getTagIdsByNames(data?.otherInfo_campaigns_supported, 'Campaigns Supported'),
-          engagement: await getTagIdsByNames(data?.otherInfo_engagement, 'Engagement'),
-          eventAttanded: await getTagIdsByNames(data?.otherInfo_events_attended, 'Event Attended'),
-          fundingInterest: await getTagIdsByNames(data?.otherInfo_funding_interests, 'Funding Interests'),
-          fundraisingActivities: await getTagIdsByNames(data?.otherInfo_fundraising_activities, 'Fundraising Activities'),
+          tags: await getTagIdsByNames(data?.otherInfo_tags),
           restrictAccess: data?.otherInfo_restrict_access == true || data?.otherInfo_restrict_access == "true"
         },
         riskAssessment: {
@@ -605,12 +600,7 @@ export const bulkUploadDonor = async (donors) => {
         otherInfo: {
           file: data.otherInfo_file,
           description: data.otherInfo_notes,
-          benificiary: await getTagIdsByNames(data?.otherInfo_benificiary_information, 'Beneficiary Information'),
-          campaigns: await getTagIdsByNames(data?.otherInfo_campaigns_supported, 'Campaigns Supported'),
-          engagement: await getTagIdsByNames(data?.otherInfo_engagement, 'Engagement'),
-          eventAttanded: await getTagIdsByNames(data?.otherInfo_events_attended, 'Event Attended'),
-          fundingInterest: await getTagIdsByNames(data?.otherInfo_funding_interests, 'Funding Interests'),
-          fundraisingActivities: await getTagIdsByNames(data?.otherInfo_fundraising_activities, 'Fundraising Activities'),
+          tags: await getTagIdsByNames(data?.otherInfo_tags),
           restrictAccess: data?.otherInfo_restrict_access == true || data?.otherInfo_restrict_access == "true"
         },
         contactPreferences: {

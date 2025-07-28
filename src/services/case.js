@@ -526,10 +526,10 @@ export const toggleArchiveCase = async (sessionId, isArchive = true, archiveReas
   return { statusUpdate };
 };
 
-const getTagIdsByNames = async (names, tagCategoryName) => {
+const getTagIdsByNames = async (names) => {
   if (!names) return [];
   const nameArray = names.split(',').map(n => n.trim());
-  const tags = await tag.find({ name: { $in: nameArray }, tagCategoryName }).select('_id');
+  const tags = await tag.find({ name: { $in: nameArray }}).select('_id');
   return tags.map(tag => tag._id);
 };
 
@@ -570,13 +570,7 @@ export const bulkUpload = async (cases) => {
       }
 
       // Tag-based fields
-      const beneficiaryInformation = await getTagIdsByNames(data.benificiary_information, 'Beneficiary Information') || [];
-      const campaignsSupported = await getTagIdsByNames(data.campaigns_supported, 'Campaigns Supported') || [];
-      const engagement = await getTagIdsByNames(data.engagement, 'Engagement') || [];
-      const eventsAttended = await getTagIdsByNames(data.events_attended, 'Event Attended') || [];
-      const fundingInterests = await getTagIdsByNames(data.funding_interests, 'Funding Interests') || [];
-      const fundraisingActivities = await getTagIdsByNames(data.fundraising_activities, 'Fundraising Activities') || [];
-
+      const tags = await getTagIdsByNames(data?.tags) || [];
       const uniqueId = await generateCustomId()
       const openDate = new Date(data.case_open_date);
       const currentDate = new Date();
@@ -588,12 +582,7 @@ export const bulkUpload = async (cases) => {
         serviceUserId: serviceUser._id,
         caseOwner: caseOwner._id,
         serviceId: service._id,
-        benificiary: beneficiaryInformation,
-        campaigns: campaignsSupported,
-        engagement,
-        eventAttanded: eventsAttended,
-        fundingInterest: fundingInterests,
-        fundraisingActivities: fundraisingActivities,
+        tags:tags,
         caseOpened: new Date(data.case_open_date),
         caseClosed: new Date(data.case_closed_date),
         notes: data.notes,
