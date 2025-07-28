@@ -26,19 +26,17 @@ export const saveResponse = async (formId, body) => {
 
 export const getAllResponse = async (query) => {
 
-    const { page = 1, limit = 10, search, date, status } = query || {}
+    const { page = 1, limit = 10, status, search, type, title, createdAt } = query || {}
     const skip = (page - 1) * limit;
-    const searchQuery = search ? {
-        title: { $regex: search, $options: 'i' }
-    } : {};
 
     const filter = {
-        ...searchQuery,
-        ...(date !== undefined &&
-            date !== '' && {
+        ...(search && { title: { $regex: search, $options: 'i' } }),
+        ...(title && { title: { $regex: title, $options: 'i' } }),
+        ...(createdAt !== undefined &&
+            createdAt !== '' && {
             submittedAt: {
-                $gte: new Date(date),
-                $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
+                $gte: new Date(createdAt),
+                $lt: new Date(new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)),
             },
         }),
         ...(status !== undefined &&
@@ -51,10 +49,10 @@ export const getAllResponse = async (query) => {
         .find(filter)
         .skip(skip)
         .limit(limit)
-        .sort({ createdAt: -1 })
         .populate('formId')
+        .sort({ submittedAt: -1 })
 
-    const total = await Response.countDocuments(searchQuery);
+    const total = await Response.countDocuments(filter);
 
     return {
         data: getAllResponse,
