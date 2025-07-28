@@ -62,7 +62,7 @@ export const getAllCases = async (req, res) => {
 }
 
 export const editCase = async (req, res) => {
-  const { caseId } = req.params.caseId
+  const { caseId } = req.params;
   const {
     serviceUserId,
     serviceId,
@@ -72,8 +72,9 @@ export const editCase = async (req, res) => {
     tags,
     description,
     status,
-  } = req.body
-  const filePath = req?.file?.path
+  } = req.body;
+
+  const filePath = req?.file?.path;
 
   const caseData = {
     serviceUserId,
@@ -84,8 +85,9 @@ export const editCase = async (req, res) => {
     tags: Array.isArray(tags) ? tags : tags ? [tags] : [],
     description,
     status,
-  }
-  if (filePath) caseData.file = `${filePath}`
+  };
+
+  if (filePath) caseData.file = `${filePath}`;
 
   const editCase = await cases.editCase(caseId, caseData)
   res.status(statusCodes?.ok).send(editCase)

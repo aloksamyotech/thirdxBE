@@ -74,7 +74,7 @@ export const editCase = async (caseId, caseData) => {
     caseClosed,
     tags,
     description,
-    filePath,
+    file,
     status,
   } = caseData;
 
@@ -91,7 +91,7 @@ export const editCase = async (caseId, caseData) => {
     !serviceUserId ||
     !serviceId ||
     !caseOwner ||
-    typeof activeStatus === 'undefined'
+    typeof status === 'undefined'
   ) {
     throw new CustomError(
       statusCodes.badRequest,
@@ -117,7 +117,7 @@ export const editCase = async (caseId, caseData) => {
     caseClosed,
     tags: Array.isArray(tags) ? tags : tags ? [tags] : [],
     description,
-    filePath,
+    file,
     status
   };
 
