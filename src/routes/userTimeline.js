@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import { asyncHandler } from '../utils/asyncWrapper.js';
-import { createEmailInbound, createEmailOutbound, createLetterReceived, createLetterSent, createPhoneCallInbound, createPhoneCallOutbound, createRegisterAttendance } from '../controllers/userTimeline.js';
+import { createEmailInbound, createEmailOutbound, createLetterReceived, createLetterSent, createPhoneCallInbound, createPhoneCallOutbound, createRegisterAttendance, getTimeLineData } from '../controllers/userTimeline.js';
 
 const router = Router();
 
+router.get('/:id', asyncHandler(getTimeLineData));
 router.post('/register-attendance/:id', asyncHandler(createRegisterAttendance));
 router.post('/email-inbound/:id', asyncHandler(createEmailInbound));
 router.post('/email-outbound/:id', asyncHandler(createEmailOutbound));

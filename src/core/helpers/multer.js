@@ -17,8 +17,13 @@ const storage = multer.diskStorage({
     cb(null, uploadDir)
   },
   filename: (req, file, cb) => {
+if (req.path === "/addServices") {
     const ext = path.extname(file.originalname)
     cb(null, `${file.originalname}-${uuidv4()}${ext}`)
+  } else {
+      const ext = path.extname(file.originalname)
+      cb(null, `${file.originalname}-${uuidv4()}${ext}`)
+  }
   },
 })
 

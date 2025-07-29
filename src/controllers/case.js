@@ -109,3 +109,12 @@ export const bulkUpload = async (req, res) => {
   const response = await cases.bulkUpload(data);
   res.status(statusCodes?.ok).send(response);
 }
+
+
+
+
+export const getCasesByServiceUserId = async (req, res) => {
+  const serviceUserId = req.params.id
+  const dataFound = await cases.getCasesByServiceUserId(serviceUserId)
+  res.status(statusCodes?.ok).send(dataFound)
+}
