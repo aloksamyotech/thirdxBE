@@ -47,31 +47,21 @@ export const getMailDetailById = async (id, page = 1, limit = 10) => {
       case "equals":
         condition = { [filter.field]: filter.value };
         break;
-
       case "not_equals":
         condition = { [filter.field]: { $ne: filter.value } };
         break;
-
       case "contains":
-        condition = {
-          [filter.field]: { $regex: filter.value, $options: "i" }
-        };
+        condition = { [filter.field]: { $regex: filter.value, $options: "i" } };
         break;
-
       case "not_contains":
-        condition = {
-          [filter.field]: { $not: { $regex: filter.value, $options: "i" } }
-        };
+        condition = { [filter.field]: { $not: { $regex: filter.value, $options: "i" } } };
         break;
-
       case "greater_than":
         condition = { [filter.field]: { $gt: filter.value } };
         break;
-
       case "less_than":
         condition = { [filter.field]: { $lt: filter.value } };
         break;
-
       default:
         throw new Error(`Unknown comparison operator: ${filter.comparison}`);
     }
@@ -82,7 +72,7 @@ export const getMailDetailById = async (id, page = 1, limit = 10) => {
 
   const skip = (page - 1) * limit;
 
-  const users = await user.aggregate([
+  const matchStages = [
     {
       $match: {
         role: mailData.userType,
@@ -108,59 +98,33 @@ export const getMailDetailById = async (id, page = 1, limit = 10) => {
           $elemMatch: { $in: purposeIds }
         }
       }
-    },
-    {
+    }
+  ];
+
+  if (filterMatchConditions.length > 0) {
+    matchStages.push({
       $match: {
         $and: filterMatchConditions
       }
-    },
+    });
+  }
+
+  const users = await user.aggregate([
+    ...matchStages,
     { $skip: skip },
     { $limit: limit }
   ]);
 
-
   const totalCountAgg = await user.aggregate([
-    {
-      $match: {
-        role: mailData.userType,
-        isDelete: false,
-        isCompletlyDelete: false,
-        isArchive: { $ne: true },
-        isActive: true
-      }
-    },
-    {
-      $match: {
-        "otherInfo.tags": { $all: tagIds }
-      }
-    },
-    {
-      $match: {
-        $or: channelMethodConditions
-      }
-    },
-    {
-      $match: {
-        "contactPreferences.contactPurposes": {
-          $elemMatch: { $in: purposeIds }
-        }
-      }
-    },
-    {
-      $match: {
-        $and: filterMatchConditions
-      }
-    },
-    {
-      $count: "total"
-    }
+    ...matchStages,
+    { $count: "total" }
   ]);
 
   const total = totalCountAgg[0]?.total || 0;
 
   return {
     users,
-    mailData: mailData,
+    mailData,
     meta: {
       page,
       limit,
@@ -169,7 +133,6 @@ export const getMailDetailById = async (id, page = 1, limit = 10) => {
     }
   };
 };
-
 
 export const filter = async (tag, name) => {
   let filter = {}
