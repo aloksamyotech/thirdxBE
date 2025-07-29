@@ -3,6 +3,7 @@ import configRouter from './configuration.js'
 import userRouter from './user.js'
 import serviceRouter from './services.js'
 import mailRouter from './mail.js'
+import listRouter from './list.js'
 import tagRouter from './tag.js'
 import transactionRouter from './transaction.js'
 import caseRouter from './case.js'
@@ -30,6 +31,7 @@ router.use('/config', asyncHandler(userAuth), configRouter)
 router.use('/user', asyncHandler(userAuth), userRouter)
 router.use('/dashboard', asyncHandler(userAuth), dashboardRoute)
 router.use('/services', asyncHandler(userAuth), serviceRouter)
+router.use('/list', asyncHandler(userAuth), listRouter)
 router.use('/mail', asyncHandler(userAuth), mailRouter)
 router.use('/tag', asyncHandler(userAuth), tagRouter)
 router.use('/transaction', asyncHandler(userAuth), transactionRouter)
