@@ -6,14 +6,9 @@ export const addSession = async (req, res) => {
     serviceuser,
     country,
     description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
+    tags,
     time,
     date,
-    fundraisingActivities,
     serviceId,
   } = req.body
 
@@ -21,14 +16,9 @@ export const addSession = async (req, res) => {
     serviceuser,
     country,
     description,
-    benificiary,
-    campaigns,
-    engagement,
     time,
     date,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags: Array.isArray(tags) ? tags : tags ? [tags] : [],
     serviceId,
   }
 
@@ -69,14 +59,9 @@ export const editSession = async (req, res) => {
     name,
     country,
     description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
     time,
     date,
-    fundraisingActivities,
+    tags,
     serviceId,
   } = req.body
 
@@ -84,14 +69,9 @@ export const editSession = async (req, res) => {
     name,
     country,
     description,
-    benificiary,
-    campaigns,
-    engagement,
     time,
     date,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags: Array.isArray(tags) ? tags : tags ? [tags] : [],
     serviceId,
   }
 

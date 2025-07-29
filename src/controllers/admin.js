@@ -21,43 +21,12 @@ export const loginAdmin = async (req, res) => {
   res.status(statusCodes?.ok).send(loginAdmin)
 }
 export const editAdmin = async (req, res) => {
-  const file = req?.file?.path
-  const { id } = req?.user
-  const {
-    firstName,
-    lastName,
-    email,
-    organization,
-    phoneNumber,
-    address,
-    state,
-    zipCode,
-    country,
-    language,
-    status,
-    currency,
-    userName,
-  } = req?.body
-  const adminData = {
-    firstName,
-    lastName,
-    email,
-    organization,
-    phoneNumber,
-    address,
-    state,
-    zipCode,
-    country,
-    language,
-    status,
-    currency,
-    userName,
-    id,
-    file,
-  }
-  const updateAdmin = await adminService.editAdmin(adminData)
-  res.status(statusCodes?.ok).send(updateAdmin)
-}
+  const { adminId } = req.params;
+  const data = req.body;
+  const result = await adminService.editAdmin(adminId, data);
+  res.status(200).json({ success: true, updatedAdmin: result });
+};
+
 export const getAdminById = async (req, res) => {
   const { id } = req?.user
   const getAdminData = await adminService.getAdminById(id)
@@ -107,3 +76,24 @@ export const resetPassword = async (req, res) => {
   const response = await adminService.resetPassword(adminData)
   res.status(statusCodes?.ok).send(response)
 }
+
+export const createConfigUser = async (req, res) => {
+  const data = req.body;
+  const response = await adminService.createConfigUser(data);
+  res.status(statusCodes?.ok).send(response);
+}
+export const deleteAdmin = async (req, res) => {
+  const { adminId } = req.params;
+  const result = await adminService.deleteAdmin(adminId);
+  res.status(200).json({ success: true, message: "Admin deleted", data: result });
+};
+
+
+export const getUserWithPagination = async (req, res) => {
+  try {
+    const result = await adminService.getUsersWithPagination(req.query);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch users', error: error.message });
+  }
+};

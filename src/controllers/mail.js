@@ -12,6 +12,15 @@ export const getAllMail = async (req, res) => {
   res.status(statusCodes?.ok).send(allMail)
 }
 
+export const getMailDetailById = async (req, res) => {
+  const { id } = req.params;
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+
+  const allMail = await mailService.getMailDetailById(id, page, limit);
+  res.status(statusCodes?.ok).send(allMail)
+}
+
 export const filter = async (req, res) => {
   const { tag, name } = req?.query || {}
   const filter = await mailService.filter(tag, name)

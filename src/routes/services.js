@@ -10,6 +10,7 @@ import {
   getServiceswithPagination,
   toggleArchiveSession,
   deleteSession,
+  bulkUpload,
 } from '../controllers/services.js'
 import { upload } from '../core/helpers/multer.js'
 
@@ -27,5 +28,6 @@ router.get('/allwithpagination', asyncHandler(getServiceswithPagination))
 router.put('/editServices/:serviceId', upload.single('file'), asyncHandler(editServices))
 router.post('/toggleArchive/:id', asyncHandler(toggleArchiveSession))
 router.post('/delete/:id', asyncHandler(deleteSession))
+router.post('/bulkUpload', asyncHandler(bulkUpload));
 
 export default router

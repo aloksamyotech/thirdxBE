@@ -3,32 +3,25 @@ import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 const MailingListSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    // tags: [String],
-    tags: {
+    userType:{ type: String, enum:['service_user', 'volunteer', 'donor']},
+    tags: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'tag',
-    },
-    channelSettings: [String],
-    purposeSettings: [String],
+    }],
+    channelSettings: [{
+      type: String,
+      enum: ['telephone', 'email', 'letter', 'sms', 'whatsapp', 'donor_tag'],
+      required: true,
+    }],
+    purposeSettings: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'configuration',
+    }],
     includeArchived: { type: Boolean, default: false },
-    isDelete: {
-      type: Boolean,
-      default: false,
-    },
-    isCompletlyDelete: {
-      type: Boolean,
-      default: false,
-    },
-    isArchive: {
-      type: Boolean,
-      default: false,
-    },
     filters: [
       {
-        logic: {
-          type: String,
-          enum: ['AND', 'OR'],
-          required: true,
+        id: {
+          type: Number,
         },
         field: {
           type: String,
@@ -49,6 +42,10 @@ const MailingListSchema = new mongoose.Schema(
         value: {
           type: mongoose.Schema.Types.Mixed,
           required: true,
+        },
+        operator_to_next: {
+          type: String,
+          enum: ['AND', 'OR'],
         },
       },
     ],

@@ -7,7 +7,7 @@ const configurationSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    
+
     isArchive: {
       type: Boolean,
       default: false,

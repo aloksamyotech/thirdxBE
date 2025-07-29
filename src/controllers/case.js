@@ -8,28 +8,18 @@ export const addCase = async (req, res) => {
     caseOwner,
     caseOpened,
     caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags,
     description,
 
   } = req.body
-
   const caseData = {
     serviceUserId,
     serviceId,
     caseOwner,
     caseOpened,
     caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags: Array.isArray(tags) ? tags : tags ? [tags] : [],
+
     description,
 
   }
@@ -72,24 +62,19 @@ export const getAllCases = async (req, res) => {
 }
 
 export const editCase = async (req, res) => {
-  const { caseId } = req.params.caseId
+  const { caseId } = req.params;
   const {
     serviceUserId,
     serviceId,
     caseOwner,
     caseOpened,
     caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags,
     description,
     status,
-  } = req.body
+  } = req.body;
 
-  const filePath = req?.file?.path
+  const filePath = req?.file?.path;
 
   const caseData = {
     serviceUserId,
@@ -97,16 +82,12 @@ export const editCase = async (req, res) => {
     caseOwner,
     caseOpened,
     caseClosed,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags: Array.isArray(tags) ? tags : tags ? [tags] : [],
     description,
     status,
-  }
-  if (filePath) caseData.file = `${filePath}`
+  };
+
+  if (filePath) caseData.file = `${filePath}`;
 
   const editCase = await cases.editCase(caseId, caseData)
   res.status(statusCodes?.ok).send(editCase)
@@ -127,4 +108,13 @@ export const bulkUpload = async (req, res) => {
   const data = req.body;
   const response = await cases.bulkUpload(data);
   res.status(statusCodes?.ok).send(response);
+}
+
+
+
+
+export const getCasesByServiceUserId = async (req, res) => {
+  const serviceUserId = req.params.id
+  const dataFound = await cases.getCasesByServiceUserId(serviceUserId)
+  res.status(statusCodes?.ok).send(dataFound)
 }

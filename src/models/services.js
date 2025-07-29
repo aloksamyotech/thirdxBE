@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
+
 const ServiceSchema = new mongoose.Schema(
   {
     name: {
@@ -37,41 +38,11 @@ const ServiceSchema = new mongoose.Schema(
     description: {
       type: String,
     },
-    benificiary: [
+    tags: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    campaigns: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    engagement: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    eventAttanded: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    fundingInterest: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
-    ],
-    fundraisingActivities: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
-      },
+        ref: 'tag'
+      }
     ],
   },
   { timestamps: true }

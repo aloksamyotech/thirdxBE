@@ -64,22 +64,28 @@ export const adminLogin = async (adminData) => {
 
   return { token }
 }
-export const editAdmin = async (adminData) => {
-  const { id, ...fieldsToUpdate } = adminData
+export const editAdmin = async (adminId, data) => {
+  if (!adminId) {
+    throw new Error("Admin ID is required");
+  }
+
   const updatedAdmin = await Admin.findByIdAndUpdate(
-    id,
-    { $set: fieldsToUpdate },
+    adminId,
+    { $set: data },
     { new: true }
-  )
+  );
+
   if (!updatedAdmin) {
-    return new CustomError(
+    throw new CustomError(
       statusCodes.notFound,
       Message.notFound,
       errorCodes.not_found
-    )
+    );
   }
-  return { updatedAdmin }
-}
+
+  return updatedAdmin;
+};
+
 
 export const getAdminById = async (id) => {
   const findAdmin = await Admin.findById(id)
@@ -92,20 +98,22 @@ export const getAdminById = async (id) => {
   }
   return { findAdmin }
 }
-
 export const getAllAdmins = async () => {
-  const allAdmins = await Admin.find({ isCompletlyDelete: false })
+  const allAdmins = await Admin.find({
+    isDelete: false,
+    isCompletlyDelete: false
+  });
 
-  if (!allAdmins) {
+  if (!allAdmins || allAdmins.length === 0) {
     return new CustomError(
       statusCodes.notFound,
       Message.notFound,
       errorCodes.not_found
-    )
+    );
   }
 
-  return { allAdmins }
-}
+  return { allAdmins };
+};
 
 export const changePassword = async (adminData) => {
   const findAdmin = await Admin.findById(adminData?.id)
@@ -255,3 +263,66 @@ export const resetPassword = async (adminData) => {
   await admin.save()
   return { admin }
 }
+
+export const createConfigUser = async (data) => {
+
+  const isUserExist = await Admin.find({ email: data?.email });
+
+  if (isUserExist.length > 0) {
+    return new CustomError(
+      statusCodes.badRequest,
+      Message.emailAlreadyRegistered,
+      errorCodes.user_exists
+    );
+  }
+
+  const newUser = await Admin.create({
+    name: data?.name,
+    email: data?.email,
+    accountType: data?.accountType,
+    permissions: data.permissions
+  });
+
+  if (!newUser) {
+    return new CustomError(
+      statusCodes.badRequest,
+      Message.notCreated,
+      errorCodes.bad_request
+    )
+  }
+
+  return { newUser };
+}
+export const deleteAdmin = async (adminId) => {
+  return await Admin.findByIdAndUpdate(
+    adminId,
+    { isDelete: true },
+    { new: true }
+  );
+};
+
+export const getUsersWithPagination = async (query) => {
+  const { page = 1, limit = 10 } = query;
+
+  const pageNumber = Math.max(Number(page), 1);
+  const limitNumber = Math.max(Number(limit), 1);
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const filter = { isDelete: false };
+
+  const totalUsers = await Admin.countDocuments(filter);
+  const users = await Admin.find(filter)
+    .skip(skip)
+    .limit(limitNumber)
+    .sort({ createdAt: -1 });
+
+  return {
+    data: users,
+    meta: {
+      total: totalUsers,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(totalUsers / limitNumber),
+    },
+  };
+};

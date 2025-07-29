@@ -2,6 +2,8 @@ import Services from '../models/services.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import { regexFilter } from '../core/common/common.js'
+import configuration from '../models/configuration.js'
+import tag from '../models/tags.js'
 
 export const addServices = async (serviceData) => {
   const existingService = await Services.findOne({ code: serviceData.code });
@@ -82,19 +84,29 @@ export const getServiceById = async (serviceId) => {
       statusCodes?.notFound,
       Message?.notFound,
       errorCodes?.not_found
-    )
+    );
   }
 
   const userData = await Services.findOne({ _id: serviceId, isDelete: false })
+    .populate({
+      path: 'tags',
+      model: 'tag',
+      populate: {
+        path: 'tagCategoryId',
+        model: 'tagCategory'
+      }
+    });
+
   if (!userData) {
     throw new CustomError(
       statusCodes?.notFound,
       Message?.userNotGet,
       errorCodes?.user_not_found
-    )
+    );
   }
-  return { userData }
-}
+
+  return { userData };
+};
 
 export const getServiceswithPagination = async (query) => {
   const { search, status, serviceType, page = 1, limit = 10, deleted, } = query || {}
@@ -252,3 +264,40 @@ export const deleteSession = async (sessionId) => {
 
   return { softDelete };
 };
+const getTagIdsByNames = async (names) => {
+  if (!names) return [];
+  const nameArray = names.split(',').map(n => n.trim());
+  const tags = await tag.find({ name: { $in: nameArray }}).select('_id');
+  return tags.map(tag => tag._id);
+};
+export const bulkUpload = async (services) => {
+  const results = [];
+  for (const data of services) {
+    try {
+      const name =data?.service_type.trim();
+      const serviceType = await configuration.findOne({name:name,configurationType:'Service Types'});
+      if (!serviceType) {
+        console.log("service Types not found for this - ", data.service_type);
+        continue;
+      }
+      // Tag-based fields
+      const tags = await getTagIdsByNames(data.tags) || [];
+      const newService = new Services({
+        name: data?.service_name,
+        code: data?.service_code,
+        serviceType: serviceType?._id,
+        file: data?.file,
+        tags:tags,
+        description: data.notes,
+      });
+
+      await newService.save();
+      results.push(newService);
+    } catch (itemError) {
+      console.log("Error saving this item - ", data, itemError);
+    }
+  }
+
+  return { results };
+
+}

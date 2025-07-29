@@ -2,6 +2,8 @@ import mail from '../models/mail.js'
 import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import { regexFilter } from '../core/common/common.js'
+import user from '../models/user.js'
+import mongoose from 'mongoose'
 
 export const addMail = async (data) => {
   const newMail = await mail.create(data)
@@ -26,6 +28,148 @@ export const getAllMail = async () => {
   }
   return { allMail }
 }
+
+export const getMailDetailById = async (id, page = 1, limit = 10) => {
+  const mailData = await mail.findById(id).lean();
+  if (!mailData) throw new Error("Mail not found");
+
+  const tagIds = mailData.tags.map(tag => new mongoose.Types.ObjectId(tag));
+  const purposeIds = mailData.purposeSettings.map(p => new mongoose.Types.ObjectId(p));
+
+  const channelMethodConditions = mailData.channelSettings.map(method => ({
+    [`contactPreferences.contactMethods.${method}`]: true
+  }));
+
+  const filterMatchConditions = [];
+  for (const filter of mailData.filters) {
+    let condition;
+    switch (filter.comparison) {
+      case "equals":
+        condition = { [filter.field]: filter.value };
+        break;
+
+      case "not_equals":
+        condition = { [filter.field]: { $ne: filter.value } };
+        break;
+
+      case "contains":
+        condition = {
+          [filter.field]: { $regex: filter.value, $options: "i" }
+        };
+        break;
+
+      case "not_contains":
+        condition = {
+          [filter.field]: { $not: { $regex: filter.value, $options: "i" } }
+        };
+        break;
+
+      case "greater_than":
+        condition = { [filter.field]: { $gt: filter.value } };
+        break;
+
+      case "less_than":
+        condition = { [filter.field]: { $lt: filter.value } };
+        break;
+
+      default:
+        throw new Error(`Unknown comparison operator: ${filter.comparison}`);
+    }
+    if (condition) {
+      filterMatchConditions.push(condition);
+    }
+  }
+
+  const skip = (page - 1) * limit;
+
+  const users = await user.aggregate([
+    {
+      $match: {
+        role: mailData.userType,
+        isDelete: false,
+        isCompletlyDelete: false,
+        isArchive: { $ne: true },
+        isActive: true
+      }
+    },
+    {
+      $match: {
+        "otherInfo.tags": { $all: tagIds }
+      }
+    },
+    {
+      $match: {
+        $or: channelMethodConditions
+      }
+    },
+    {
+      $match: {
+        "contactPreferences.contactPurposes": {
+          $elemMatch: { $in: purposeIds }
+        }
+      }
+    },
+    {
+      $match: {
+        $and: filterMatchConditions
+      }
+    },
+    { $skip: skip },
+    { $limit: limit }
+  ]);
+
+
+  const totalCountAgg = await user.aggregate([
+    {
+      $match: {
+        role: mailData.userType,
+        isDelete: false,
+        isCompletlyDelete: false,
+        isArchive: { $ne: true },
+        isActive: true
+      }
+    },
+    {
+      $match: {
+        "otherInfo.tags": { $all: tagIds }
+      }
+    },
+    {
+      $match: {
+        $or: channelMethodConditions
+      }
+    },
+    {
+      $match: {
+        "contactPreferences.contactPurposes": {
+          $elemMatch: { $in: purposeIds }
+        }
+      }
+    },
+    {
+      $match: {
+        $and: filterMatchConditions
+      }
+    },
+    {
+      $count: "total"
+    }
+  ]);
+
+  const total = totalCountAgg[0]?.total || 0;
+
+  return {
+    users,
+    mailData: mailData,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit)
+    }
+  };
+};
+
 
 export const filter = async (tag, name) => {
   let filter = {}
@@ -98,7 +242,13 @@ export const deleteMail = async (mailId) => {
 }
 
 export const getMailWithPagination = async (query) => {
-  const { search, name, tag, page = 1, limit = 10, deleted } = query || {}
+  const { search, name, tag, page = 1, limit = 10, deleted, tabValue } = query || {}
+  let userType = "service_user";
+  if (tabValue == 2) {
+    userType = "volunteer";
+  } else if (tabValue == 3) {
+    userType = "donor";
+  }
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -124,6 +274,7 @@ export const getMailWithPagination = async (query) => {
     $or: searchConditions,
     ...(name !== undefined && name !== '' && { name: name }),
     ...(tag !== undefined && tag !== '' && { tags: tag }),
+    ...(userType !== undefined && userType !== '' && { userType: userType }),
     ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
 
   }

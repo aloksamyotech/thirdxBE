@@ -7,12 +7,14 @@ import {
   editMail,
   deleteMail,
   getMailWithPagination,
+  getMailDetailById,
 } from '../controllers/mail.js'
 
 const router = Router()
 
 router.post('/addmail', asyncHandler(addMail))
 router.get('/getallmail', asyncHandler(getAllMail))
+router.get('/getMail/:id', asyncHandler(getMailDetailById))
 router.get('/filter', asyncHandler(filter))
 router.put('/editmail/:mailId', asyncHandler(editMail))
 

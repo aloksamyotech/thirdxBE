@@ -1,34 +1,23 @@
 import * as services from '../services/services.js'
 import { statusCodes } from '../core/common/constant.js'
-
 export const addServices = async (req, res) => {
+
   const {
     name,
     code,
     isActive,
     serviceType,
     description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-  } = req.body
-
+    tags
+  } = req.body;
   const serviceData = {
     name,
     code,
     isActive,
     serviceType,
     description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
-  }
+    tags: Array.isArray(tags) ? tags : tags ? [tags] : []
+  };
 
   if (req.files?.file?.[0]) {
     serviceData.file = `uploads/${req.files.file[0].filename}`
@@ -83,12 +72,7 @@ export const editServices = async (req, res) => {
     isActive,
     type,
     description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags
   } = req.body
 
   const serviceData = {
@@ -97,12 +81,7 @@ export const editServices = async (req, res) => {
     isActive,
     type,
     description,
-    benificiary,
-    campaigns,
-    engagement,
-    eventAttanded,
-    fundingInterest,
-    fundraisingActivities,
+    tags: Array.isArray(tags) ? tags : tags ? [tags] : []
   }
 
   if (req.file && req.file.filename) {
@@ -122,4 +101,9 @@ export const deleteSession = async (req, res) => {
   const sessionId = req.params?.id;
   const data = await services.deleteSession(sessionId)
   res.status(statusCodes?.ok).send(data)
+}
+export const bulkUpload = async (req, res) => {
+  const data = req.body;
+  const response = await services.bulkUpload(data);
+  res.status(statusCodes?.ok).send(response);
 }
