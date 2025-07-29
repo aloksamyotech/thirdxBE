@@ -72,64 +72,6 @@ export const createLetterSent = async (userId, data) => {
     return { newTimeline }
 }
 
-
-// export const getTimeLineData = async (userId) => {
-//     const newTimeline = await UserTimeline.findOne({ userId })
-//         .populate('userId')
-//         .populate('giftAidId')
-//         .populate('registerAttendance.serviceId')
-//         .populate('registerAttendance.sessionId')
-//         .populate('taskId')
-//         .populate('emailInbound._id')
-//         .populate('emailOutbound._id')
-//         .populate('caseNoteId')
-//         .populate('donationId')
-//         .populate('letterReceived._id')
-//         .populate('letterSent._id');
-
-//     if (!newTimeline) return { newTimeline: null, timeline: [] };
-
-//     const timelineItems = [];
-
-//     const pushItems = (items, type) => {
-//         if (!Array.isArray(items)) return;
-
-//         items.forEach(item => {
-//             const date = item?.createdAt || item?.createdDate;
-//             if (date) {
-//                 timelineItems.push({
-//                     type,
-//                     _id: item._id,
-//                     date: date
-//                 });
-//             }
-//         });
-//     };
-
-
-//     pushItems(newTimeline.donationId, 'donation');
-//     pushItems(newTimeline.caseNoteId, 'caseNote');
-//     pushItems(newTimeline.emailInbound, 'emailInbound');
-//     pushItems(newTimeline.emailOutbound, 'emailOutbound');
-//     pushItems(newTimeline.letterReceived, 'letterReceived');
-//     pushItems(newTimeline.letterSent, 'letterSent');
-//     pushItems(newTimeline.phoneCallInbound, 'phoneCallInbound');
-//     pushItems(newTimeline.phoneCallOutbound, 'phoneCallOutbound');
-//     pushItems(newTimeline.taskId, 'task');
-//     pushItems(newTimeline.registerAttendance, 'attendance');
-
-
-//     timelineItems.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-//     return {
-//         newTimeline,
-//         timeline: timelineItems
-//     };
-// };
-
-
-
-
 export const getTimeLineData = async (userId) => {
     try {
         let newTimeline = await UserTimeline.findOne({ userId }).populate([
@@ -191,7 +133,7 @@ export const getTimeLineData = async (userId) => {
             });
         }
 
-        timelineItems.sort((a, b) => new Date(a.date) - new Date(b.date));
+        timelineItems.sort((a, b) => new Date(b.date) - new Date(a.date))
 
         return { newTimeline, timeline: timelineItems };
 
