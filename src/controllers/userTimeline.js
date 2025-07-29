@@ -49,4 +49,9 @@ export const createLetterSent = async (req, res) => {
     const userTimeline = await userTimelineService.createLetterSent(id, data);
     res.status(statusCodes?.ok).send(userTimeline);
 }
+export const getTimeLineData = async (req, res) => {
+    const { id } = req.params;
+    const userTimeline = await userTimelineService.getTimeLineData(id);
+    res.status(statusCodes?.ok).send(userTimeline);
+}
 
