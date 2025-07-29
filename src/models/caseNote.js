@@ -46,7 +46,10 @@ const caseNoteSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   }
-})
+},
+  {
+    timestamps: true,
+  })
 caseNoteSchema.plugin(commonFieldsPlugin)
 const CaseNote = mongoose.model('CaseNote', caseNoteSchema)
 

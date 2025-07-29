@@ -74,7 +74,7 @@ export const editCase = async (caseId, caseData) => {
     caseClosed,
     tags,
     description,
-    filePath,
+    file,
     status,
   } = caseData;
 
@@ -91,7 +91,7 @@ export const editCase = async (caseId, caseData) => {
     !serviceUserId ||
     !serviceId ||
     !caseOwner ||
-    typeof activeStatus === 'undefined'
+    typeof status === 'undefined'
   ) {
     throw new CustomError(
       statusCodes.badRequest,
@@ -117,7 +117,7 @@ export const editCase = async (caseId, caseData) => {
     caseClosed,
     tags: Array.isArray(tags) ? tags : tags ? [tags] : [],
     description,
-    filePath,
+    file,
     status
   };
 
@@ -260,7 +260,7 @@ export const getCaseById = async (caseId) => {
     },
     {
       $lookup: {
-        from: 'tagcategories', 
+        from: 'tagcategories',
         localField: 'tags.tagCategoryId',
         foreignField: '_id',
         as: 'tags.tagCategoryId'
@@ -526,10 +526,10 @@ export const toggleArchiveCase = async (sessionId, isArchive = true, archiveReas
   return { statusUpdate };
 };
 
-const getTagIdsByNames = async (names, tagCategoryName) => {
+const getTagIdsByNames = async (names) => {
   if (!names) return [];
   const nameArray = names.split(',').map(n => n.trim());
-  const tags = await tag.find({ name: { $in: nameArray }, tagCategoryName }).select('_id');
+  const tags = await tag.find({ name: { $in: nameArray } }).select('_id');
   return tags.map(tag => tag._id);
 };
 
@@ -538,7 +538,6 @@ export const bulkUpload = async (cases) => {
 
   for (const data of cases) {
     try {
-      // Find Service User by name and role
       const nameArray = data.service_user.split(' ').map(n => n.trim());
       const serviceUser = await user.findOne({
         'personalInfo.firstName': nameArray[0],
@@ -546,11 +545,9 @@ export const bulkUpload = async (cases) => {
         role: 'service_user',
       });
       if (!serviceUser) {
-        console.log("service user not found for this - ", data.service_user);
         continue;
       }
 
-      // Find Case Owner by name and role
       const nameArray2 = data.case_owner.split(' ').map(n => n.trim());
       const caseOwner = await user.findOne({
         'personalInfo.firstName': nameArray2[0],
@@ -558,42 +555,26 @@ export const bulkUpload = async (cases) => {
         role: 'service_user',
       });
       if (!caseOwner) {
-        console.log("Case owner user not found for this - ", data.case_owner);
         continue;
       }
 
-      // Find Service by name
       const service = await Services.findOne({ name: data.service });
       if (!service) {
-        console.log("service not found for this - ", data.case_owner);
         continue;
       }
 
-      // Tag-based fields
-      const beneficiaryInformation = await getTagIdsByNames(data.benificiary_information, 'Beneficiary Information') || [];
-      const campaignsSupported = await getTagIdsByNames(data.campaigns_supported, 'Campaigns Supported') || [];
-      const engagement = await getTagIdsByNames(data.engagement, 'Engagement') || [];
-      const eventsAttended = await getTagIdsByNames(data.events_attended, 'Event Attended') || [];
-      const fundingInterests = await getTagIdsByNames(data.funding_interests, 'Funding Interests') || [];
-      const fundraisingActivities = await getTagIdsByNames(data.fundraising_activities, 'Fundraising Activities') || [];
-
+      const tags = await getTagIdsByNames(data?.tags) || [];
       const uniqueId = await generateCustomId()
       const openDate = new Date(data.case_open_date);
       const currentDate = new Date();
       const status = openDate > currentDate ? 'pending' : 'open';
 
-      // Create and save new Case
       const newCase = new Case({
 
         serviceUserId: serviceUser._id,
         caseOwner: caseOwner._id,
         serviceId: service._id,
-        benificiary: beneficiaryInformation,
-        campaigns: campaignsSupported,
-        engagement,
-        eventAttanded: eventsAttended,
-        fundingInterest: fundingInterests,
-        fundraisingActivities: fundraisingActivities,
+        tags: tags,
         caseOpened: new Date(data.case_open_date),
         caseClosed: new Date(data.case_closed_date),
         notes: data.notes,
@@ -612,4 +593,15 @@ export const bulkUpload = async (cases) => {
   return { results };
 
 }
+
+
+export const getCasesByServiceUserId = async (serviceUserId) => {
+
+  const caseData = await Case.findOne({
+    serviceUserId: new mongoose.Types.ObjectId(serviceUserId)
+  })
+    .sort({ createdAt: -1 })
+  return caseData
+}
+
 

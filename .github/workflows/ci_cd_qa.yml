@@ -28,11 +28,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /thirdexDev/thirdxBE
+            cd /thiredx/thirdxBE
             sudo git stash
             sudo git fetch --all
             sudo git checkout qa
             sudo git pull origin qa
             sudo git log -1
             sudo npm install
-            pm2 restart thirdexBE_Dev
+            pm2 restart thirdexQA
