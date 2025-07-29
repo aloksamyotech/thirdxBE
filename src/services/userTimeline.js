@@ -133,6 +133,23 @@ export const getTimeLineData = async (userId) => {
             });
         }
 
+        if (Array.isArray(newTimeline.giftAidId)) {
+            newTimeline.giftAidId.forEach(({ _id, createdAt }) => {
+                if (createdAt) {
+                    timelineItems.push({ type: 'giftAid', _id, date: createdAt });
+                } else {
+                    console.log(`Skipping giftAid with _id ${_id} due to missing createdAt`);
+                }
+            });
+        } else if (newTimeline.giftAidId && newTimeline.giftAidId.createdAt) {
+
+            timelineItems.push({
+                type: 'giftAid',
+                _id: newTimeline.giftAidId._id,
+                date: newTimeline.giftAidId.createdAt,
+            });
+        }
+
         timelineItems.sort((a, b) => new Date(b.date) - new Date(a.date))
 
         return { newTimeline, timeline: timelineItems };
