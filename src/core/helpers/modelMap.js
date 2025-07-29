@@ -4,6 +4,7 @@ import user from "../../models/user.js";
 import mail from "../../models/mail.js"
 import transaction from "../../models/transaction.js"
 import Form from "../../models/form.js"
+import list from "../../models/list.js";
 
 
 export const modelMap = {
@@ -14,5 +15,6 @@ export const modelMap = {
     donor: user,
     mailing_list: mail,
     donation: transaction,
-    form: Form
+    form: Form,
+    list: list
 };
