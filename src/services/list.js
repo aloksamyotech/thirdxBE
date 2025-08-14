@@ -34,7 +34,7 @@ export const getAllList = async () => {
 }
 
 export const getListWithPagination = async (query) => {
-  const { search, name, tag, page, limit , deleted,} = query || {}
+  const { search, name, tag, page, limit , deleted,archive} = query || {}  
   let pageNumber = Number(page)
   let limitNumber = Number(limit)
   if (pageNumber < 1) {
@@ -56,6 +56,7 @@ export const getListWithPagination = async (query) => {
   )
 
   const filter = {
+    isArchive: archive == 'true',
     isCompletlyDelete: false,
     $or: searchConditions,
     ...(name !== undefined && name !== '' && { name: name }),
@@ -82,7 +83,7 @@ export const getListWithPagination = async (query) => {
   }
 }
 
-export const getListDetailById = async (id, page = 1, limit = 10) => {
+export const getListDetailById = async (id, page = 1, limit) => {
   const listData = await list.findById(id).lean();
   if (!listData) throw new Error("List not found");
 
@@ -195,3 +196,69 @@ export const getListDetailById = async (id, page = 1, limit = 10) => {
     }
   };
 };
+
+
+export const assignTagToEntities = async ({ entityIds = [], tagId }) => {
+  if (!mongoose.Types.ObjectId.isValid(tagId)) {
+    return new CustomError(
+      statusCodes.badRequest,
+      'Invalid tagId provided',
+      errorCodes.bad_request
+    )
+  }
+
+  let updatedCount = 0
+
+  for (const id of entityIds) {
+    if (!mongoose.Types.ObjectId.isValid(id)) continue
+    const userResult = await user.updateOne(
+      { _id: id },
+      { $addToSet: { 'otherInfo.tags': tagId } }
+    )
+    if (userResult.modifiedCount > 0) {
+      updatedCount++
+      continue
+    }
+    const serviceResult = await service.updateOne(
+      { _id: id },
+      { $addToSet: { tags: tagId } }
+    )
+    if (serviceResult.modifiedCount > 0) {
+      updatedCount++
+      continue
+    }
+
+    // Try updating Case
+    const caseResult = await caseModel.updateOne(
+      { _id: id },
+      { $addToSet: { tags: tagId } }
+    )
+    if (caseResult.modifiedCount > 0) {
+      updatedCount++
+      continue
+    }
+
+    // Try updating Mailing List
+    const mailResult = await mail.updateOne(
+      { _id: id },
+      { $addToSet: { tags: tagId } }
+    )
+    if (mailResult.modifiedCount > 0) {
+      updatedCount++
+      continue
+    }
+  }
+
+  if (updatedCount === 0) {
+    return new CustomError(
+      statusCodes.notFound,
+      'No matching entities were found or updated.',
+      errorCodes.not_found
+    )
+  }
+
+  return {
+    message: `Tag assigned to ${updatedCount} entities.`,
+    updatedCount
+  }
+}

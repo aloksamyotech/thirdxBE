@@ -3,21 +3,31 @@ import { commonFieldsPlugin } from './plugin/commonFields.plugin.js'
 const ListSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    listType:{type: String},
-    userType:{ type: String, enum:['service_user', 'volunteer', 'donor']},
-    tags: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'tag',
-    }],
-    channelSettings: [{
-      type: String,
-      enum: ['telephone', 'email', 'letter', 'sms', 'whatsapp', 'donor_tag'],
-      required: true,
-    }],
-    purposeSettings: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'configuration',
-    }],
+    listType: { type: String },
+    isArchive: {
+      type: Boolean,
+      default: false,
+    },
+    userType: { type: String, enum: ['service_user', 'volunteer', 'donor'] },
+    tags: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag',
+      },
+    ],
+    channelSettings: [
+      {
+        type: String,
+        enum: ['telephone', 'email', 'letter', 'sms', 'whatsapp', 'donor_tag'],
+        required: true,
+      },
+    ],
+    purposeSettings: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'configuration',
+      },
+    ],
     includeArchived: { type: Boolean, default: false },
     filters: [
       {
