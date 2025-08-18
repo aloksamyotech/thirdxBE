@@ -2,6 +2,7 @@ import { errorCodes, Message, statusCodes } from '../core/common/constant.js'
 import CustomError from '../utils/exception.js'
 import UserTimeline from '../models/userTimeline.js'
 import CaseNote from "../models/caseNote.js"
+import mongoose from 'mongoose'
 
 export const createRegisterAttendance = async (userId, data) => {
     const newTimeline = await UserTimeline.findOneAndUpdate(
@@ -12,6 +13,17 @@ export const createRegisterAttendance = async (userId, data) => {
 
     return { newTimeline }
 }
+export const createRegisterTask = async (userId, data) => {
+    const taskObjectId = new mongoose.Types.ObjectId(data.taskId);
+
+    const newTimeline = await UserTimeline.findOneAndUpdate(
+        { userId: userId },
+        { $addToSet: { taskId: taskObjectId } },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+
+    return { newTimeline };
+};
 
 export const createEmailInbound = async (userId, data) => {
     const newTimeline = await UserTimeline.findOneAndUpdate(

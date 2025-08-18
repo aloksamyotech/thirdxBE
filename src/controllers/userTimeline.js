@@ -7,6 +7,12 @@ export const createRegisterAttendance = async (req, res) => {
     const userTimeline = await userTimelineService.createRegisterAttendance(id, data);
     res.status(statusCodes?.ok).send(userTimeline);
 }
+export const createRegisterTask = async (req, res) => {
+    const data = req?.body || {};
+    const { id } = req.params;
+    const userTimeline = await userTimelineService.createRegisterTask(id, data);
+    res.status(statusCodes?.ok).send(userTimeline);
+}
 
 export const createEmailInbound = async (req, res) => {
     const data = req?.body || {};
