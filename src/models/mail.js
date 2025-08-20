@@ -18,6 +18,7 @@ const MailingListSchema = new mongoose.Schema(
       ref: 'configuration',
     }],
     includeArchived: { type: Boolean, default: false },
+    archive: { type: Boolean, default: false },
     filters: [
       {
         id: {
@@ -27,6 +28,7 @@ const MailingListSchema = new mongoose.Schema(
           type: String,
           required: true,
         },
+        
         comparison: {
           type: String,
           enum: [

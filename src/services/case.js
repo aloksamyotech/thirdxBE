@@ -363,6 +363,8 @@ export const getAllCases = async () => {
 
 export const getCasewithPagination = async (query) => {
   const {
+    startDate,
+    endDate,
     search,
     status,
     uniqueId,
@@ -391,6 +393,12 @@ export const getCasewithPagination = async (query) => {
     ...(status !== undefined && status !== '' && { status }),
     ...(serviceId !== undefined && serviceId !== '' && { serviceId }),
     ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
+     ...(startDate && endDate && {
+      createdAt: {
+        $gte: new Date(new Date(startDate).setHours(0, 0, 0, 0)),
+        $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999)),
+      }
+    }),
     ...(createdAt !== undefined &&
       createdAt !== '' && {
       createdAt: {

@@ -123,6 +123,8 @@ export const deleteTransaction = async (id) => {
 
 export const getTransactionwithPagination = async (query) => {
   const {
+    startDate,
+    endDate,
     status,
     search,
     donorId,
@@ -161,7 +163,12 @@ export const getTransactionwithPagination = async (query) => {
     ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
 
     ...(campaign !== undefined && campaign !== '' && { campaign: campaign }),
-
+     ...(startDate && endDate && {
+      createdAt: {
+        $gte: new Date(new Date(startDate).setHours(0, 0, 0, 0)),
+        $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999)),
+      }
+    }),
     ...(createdAt !== undefined &&
       createdAt !== '' && {
       createdAt: {

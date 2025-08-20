@@ -322,6 +322,9 @@ export const unArchiveUser = async (userId) => {
 };
 export const getUserwithPagination = async (query) => {
   const {
+    subRole,
+    startDate,
+    endDate,
     search,
     status,
     district,
@@ -380,6 +383,7 @@ export const getUserwithPagination = async (query) => {
       gender !== '' && { 'personalInfo.gender': gender }),
     ...(nickName !== undefined &&
       nickName !== '' && { 'personalInfo.nickName': nickName }),
+    ...(subRole !== undefined &&subRole !== '' && { subRole : subRole }),
     ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
 
     ...(campaigns !== undefined &&
@@ -401,6 +405,12 @@ export const getUserwithPagination = async (query) => {
           new Date(createdAt).setDate(new Date(createdAt).getDate() + 1)
         ),
       },
+    }),
+    ...(startDate && endDate && {
+      createdAt: {
+        $gte: new Date(new Date(startDate).setHours(0, 0, 0, 0)),
+        $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999)),
+      }
     }),
     ...(uniqueId !== undefined && uniqueId !== '' && { _id: uniqueId }),
     ...(dateOfBirth !== undefined &&
@@ -451,7 +461,7 @@ export const isExistUser = async (userId) => {
 const getTagIdsByNames = async (names) => {
   if (!names) return [];
   const nameArray = names.split(',').map(n => n.trim());
-  const tags = await tag.find({ name: { $in: nameArray }}).select('_id');
+  const tags = await tag.find({ name: { $in: nameArray } }).select('_id');
   return tags.map(tag => tag._id);
 };
 
