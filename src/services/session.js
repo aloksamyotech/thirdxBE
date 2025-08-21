@@ -228,6 +228,7 @@ export const getAllWithPagination = async (query) => {
     .limit(limitNumber)
     .sort({ createdAt: -1 })
     .populate('serviceuser')
+    .populate('country')
     .populate({
       path: 'serviceId',
       populate: {
