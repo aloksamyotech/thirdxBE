@@ -41,7 +41,10 @@ const TransactionSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    amountDue: { type: Number, default: 0 },
+    quantity: { type: Number, default: 0 },
   },
+  
 
   { timestamps: true }
 )

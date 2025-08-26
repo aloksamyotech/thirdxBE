@@ -226,13 +226,13 @@ export const getCaseById = async (caseId) => {
         as: 'serviceDetails',
       },
     },
-    {
+   {
       $lookup: {
-        from: 'users',
+        from: 'admins',
         localField: 'caseOwner',
         foreignField: '_id',
-        as: 'caseOwnerDetails',
-      },
+        as: 'caseOwnerDetails'
+      }
     },
     {
       $lookup: {
