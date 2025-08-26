@@ -62,3 +62,9 @@ export const getTransactionwithPagination = async (req, res) => {
   )
   res.status(statusCodes?.ok).send(searchData)
 }
+export const getTransactionById = async (req, res) => {
+  const searchData = await transactionService.getTransactionById(
+    req?.params.id
+  )
+  res.status(statusCodes?.ok).send(searchData)
+}

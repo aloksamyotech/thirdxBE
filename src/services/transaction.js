@@ -223,3 +223,22 @@ export const getTransactionwithPagination = async (query) => {
     },
   }
 }
+export const getTransactionById= async (id) => {
+   if (!id) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      Message.notFound,
+      errorCodes?.bad_request
+    )
+  }
+  const allTransaction = await transaction
+    .findById(id)
+    .populate('campaign')
+    .populate('donorId')
+    .populate('currency')
+    .populate('productId')
+    .populate('paymentMethod')
+  return {
+    data: allTransaction,
+  }
+}
