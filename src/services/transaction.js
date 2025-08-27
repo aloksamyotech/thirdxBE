@@ -123,6 +123,8 @@ export const deleteTransaction = async (id) => {
 
 export const getTransactionwithPagination = async (query) => {
   const {
+    startDate,
+    endDate,
     status,
     search,
     donorId,
@@ -161,7 +163,12 @@ export const getTransactionwithPagination = async (query) => {
     ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),
 
     ...(campaign !== undefined && campaign !== '' && { campaign: campaign }),
-
+     ...(startDate && endDate && {
+      createdAt: {
+        $gte: new Date(new Date(startDate).setHours(0, 0, 0, 0)),
+        $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999)),
+      }
+    }),
     ...(createdAt !== undefined &&
       createdAt !== '' && {
       createdAt: {
@@ -214,5 +221,24 @@ export const getTransactionwithPagination = async (query) => {
       limit: limitNumber,
       totalPages: Math.ceil(filteredTransactions.length / limitNumber),
     },
+  }
+}
+export const getTransactionById= async (id) => {
+   if (!id) {
+    throw new CustomError(
+      statusCodes?.badRequest,
+      Message.notFound,
+      errorCodes?.bad_request
+    )
+  }
+  const allTransaction = await transaction
+    .findById(id)
+    .populate('campaign')
+    .populate('donorId')
+    .populate('currency')
+    .populate('productId')
+    .populate('paymentMethod')
+  return {
+    data: allTransaction,
   }
 }

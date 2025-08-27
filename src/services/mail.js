@@ -205,7 +205,7 @@ export const deleteMail = async (mailId) => {
 }
 
 export const getMailWithPagination = async (query) => {
-  const { search, name, tag, page = 1, limit = 10, deleted, tabValue } = query || {}
+  const { search, name, tag, page = 1, limit = 10, deleted, tabValue, archive,startDate,endDate, } = query || {}
   let userType = "service_user";
   if (tabValue == 2) {
     userType = "volunteer";
@@ -235,7 +235,14 @@ export const getMailWithPagination = async (query) => {
   const filter = {
     isCompletlyDelete: false,
     $or: searchConditions,
+    ...(archive !== undefined && archive !== '' && { archive: archive }),
     ...(name !== undefined && name !== '' && { name: name }),
+     ...(startDate && endDate && {
+      createdAt: {
+        $gte: new Date(new Date(startDate).setHours(0, 0, 0, 0)),
+        $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999)),
+      }
+    }),
     ...(tag !== undefined && tag !== '' && { tags: tag }),
     ...(userType !== undefined && userType !== '' && { userType: userType }),
     ...(typeof deleted !== 'undefined' ? { isDelete: deleted === 'true' } : { isDelete: false }),

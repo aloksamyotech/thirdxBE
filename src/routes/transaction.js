@@ -7,6 +7,7 @@ import {
   getAllTransaction,
   deleteTransaction,
   getTransactionwithPagination,
+  getTransactionById
 } from '../controllers/transaction.js'
 
 const router = Router()
@@ -17,5 +18,6 @@ router.get('/filter', asyncHandler(filter))
 router.put('/edit_transaction/:id', asyncHandler(editTransaction))
 router.put('/delete_transaction/:id', asyncHandler(deleteTransaction))
 router.get('/allwithpagination', asyncHandler(getTransactionwithPagination))
+router.get('/transactionbyid/:id', asyncHandler(getTransactionById))
 
 export default router
