@@ -114,7 +114,8 @@ export const getAttendeeBySession = async ({ params, query }) => {
     const skip = (pageNumber - 1) * limitNumber;
 
     const filter = {
-        session: sessionId
+        session: sessionId,
+        isDelete: { $ne: true }
     };
 
     if (search) {
@@ -125,7 +126,8 @@ export const getAttendeeBySession = async ({ params, query }) => {
 
         filter.$and = [
             ...searchConditions,
-            { session: sessionId }
+            { session: sessionId },
+            { isDelete: { $ne: true } }
         ];
     }
 
@@ -148,4 +150,29 @@ export const getAttendeeBySession = async ({ params, query }) => {
             totalPages: Math.ceil(total / limitNumber),
         },
     };
+};
+
+
+
+export const deleteAttendees = async (sessionId, attendeeId) => {
+    const checkExist = await Attendees.findOne({ session: sessionId, _id: attendeeId });
+
+    if (!checkExist) {
+        throw new CustomError(
+            statusCodes?.notFound,
+            Message?.notFound,
+            errorCodes?.not_found
+        );
+    }
+    const statusUpdate = await Attendees.findOneAndDelete({ session: sessionId, _id: attendeeId });
+
+    if (!statusUpdate) {
+        throw new CustomError(
+            statusCodes?.notFound,
+            Message?.notUpdate,
+            errorCodes?.not_found
+        );
+    }
+
+    return { statusUpdate };
 };

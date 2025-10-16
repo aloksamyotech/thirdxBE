@@ -14,6 +14,8 @@ const UserSchema = new mongoose.Schema(
       lastName: {
         type: String,
       },
+      preferredName : String,
+      otherId : String,
       nickName: String,
       gender: String,
       ethnicity: String,
@@ -27,6 +29,7 @@ const UserSchema = new mongoose.Schema(
       email: String,
       addressLine1: String,
       addressLine2: String,
+      addressLine3: String,
       town: String,
       district: String,
       postcode: String,
