@@ -16,8 +16,6 @@ import tag from '../models/tags.js'
 import configuration from '../models/configuration.js'
 import Services from '../models/services.js'
 export const addUser = async (userData) => {
-
-
   if (
     userData?.Service &&
     (userData.Service.serviceName === '' ||
