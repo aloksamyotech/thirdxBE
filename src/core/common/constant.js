@@ -175,10 +175,6 @@ export const checkRole = {
   service_user: 'service_user',
 }
 
-export const urls = {
-  success: `${process.env.FE_URL}/dashboard/payment/success`,
-  cancel: `${process.env.FE_URL}/dashboard/upgradepackage`,
-}
 
 export const externalAPI = {
   district: `https://api.census.gov/data/2020/dec/pl?get=NAME&for=place:*&in=state:*`,
